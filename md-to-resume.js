@@ -10,43 +10,82 @@
  * No dependencies — pure Node.js.
  */
 
-'use strict';
+"use strict";
 
-const fs   = require('fs');
-const path = require('path');
-const os   = require('os');
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
 
 // ── Inline markdown renderer ──────────────────────────────────────────────────
 
 function escapeHtml(str) {
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// SVG icon appended after external links
+const EXT_ICON = `<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 9V1h4v1H2v7h7V5h1v4H1z"/><path d="M9 1H6l1.1 1.1L4 5.2l.8.8 3.1-3.1L9 4V1z"/></svg>`;
+
+// Returns target/rel attrs + icon for http(s) URLs; empty string for mailto/tel
+function externalAttrs(url) {
+  return /^https?:\/\//i.test(url)
+    ? { attrs: ' target="_blank" rel="noopener external"', icon: EXT_ICON }
+    : { attrs: '', icon: '' };
 }
 
 function renderInline(text) {
-  // Protect bare URLs (not already inside a markdown link) from further processing
-  const urlPlaceholders = [];
-  text = text.replace(/(?<!\()(https?:\/\/[^\s)]+)/g, (url) => {
-    const i = urlPlaceholders.length;
-    urlPlaceholders.push(url);
-    return `\x00URL${i}\x00`;
+  const urls  = [];   // \x00Un\x00
+  const links = [];   // \x01Ln\x01
+
+  // 1. Stash ALL https?:// URLs so underscores inside them are never touched
+  text = text.replace(/(https?:\/\/[^\s)]+)/g, (url) => {
+    urls.push(url);
+    return `\x00U${urls.length - 1}\x00`;
   });
 
-  // [label](url)
-  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) =>
-    `<a href="${escapeHtml(url)}">${escapeHtml(label)}</a>`);
-  // ***bold italic***
-  text = text.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
-  // **bold**
-  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  // *italic* (asterisk only — avoid mangling underscores in URLs/identifiers)
-  text = text.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  // 2. Stash whole markdown links [label](url-or-stash) so the label and href
+  //    are both shielded while italic/bold rules run in step 3
+  text = text.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_, label, ref) => {
+    links.push({ label, ref });
+    return `\x01L${links.length - 1}\x01`;
+  });
 
-  // Restore protected URLs
-  text = text.replace(/\x00URL(\d+)\x00/g, (_, i) => escapeHtml(urlPlaceholders[i]));
+  // 3. Bold / italic on plain text only — no URLs or links present any more
+  text = text.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
+  text = text.replace(/\*\*([^*]+)\*\*/g,     "<strong>$1</strong>");
+  text = text.replace(/\*([^*\n]+)\*/g,        "<em>$1</em>");
+  text = text.replace(/_([^_\n]+)_/g,          "<em>$1</em>");
+
+  // 4. Restore markdown links — apply italic to label, resolve URL stash
+  text = text.replace(/\x01L(\d+)\x01/g, (_, i) => {
+    const { label, ref } = links[parseInt(i)];
+
+    // Resolve URL stash reference inside parens if present
+    const uMatch = ref.match(/^\x00U(\d+)\x00$/);
+    const url    = uMatch ? urls[parseInt(uMatch[1])] : ref;
+    if (uMatch) urls[parseInt(uMatch[1])] = null; // mark consumed
+
+    // Apply italic/bold to label text
+    let l = escapeHtml(label);
+    l = l.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
+    l = l.replace(/\*\*([^*]+)\*\*/g,     "<strong>$1</strong>");
+    l = l.replace(/\*([^*\n]+)\*/g,        "<em>$1</em>");
+    l = l.replace(/_([^_\n]+)_/g,          "<em>$1</em>");
+
+    const { attrs, icon } = externalAttrs(url);
+    return `<a href="${escapeHtml(url)}"${attrs}>${l}${icon}</a>`;
+  });
+
+  // 5. Restore remaining URL stashes (bare URLs not consumed by a markdown link)
+  text = text.replace(/\x00U(\d+)\x00/g, (_, i) => {
+    const url = urls[parseInt(i)];
+    if (!url) return "";
+    const { attrs, icon } = externalAttrs(url);
+    return `<a href="${escapeHtml(url)}"${attrs}>${escapeHtml(url)}${icon}</a>`;
+  });
 
   return text;
 }
@@ -54,43 +93,45 @@ function renderInline(text) {
 // ── Markdown parser ───────────────────────────────────────────────────────────
 
 function parseMarkdown(md) {
-  const lines = md.split('\n');
-  const cv = { name: '', contact: [], bio: [], sections: [] };
+  const lines = md.split("\n");
+  const cv = { name: "", contact: [], bio: [], sections: [] };
   let i = 0;
 
   // H1 → name
-  while (i < lines.length && !lines[i].startsWith('# ')) i++;
+  while (i < lines.length && !lines[i].startsWith("# ")) i++;
   if (i < lines.length) {
-    cv.name = lines[i].replace(/^#\s+/, '').trim();
+    cv.name = lines[i].replace(/^#\s+/, "").trim();
     i++;
   }
 
   // Contact lines + bio paragraphs (until first ## or ---)
   while (i < lines.length) {
-    const line  = lines[i];
-    const trim  = line.trim();
-    if (trim.startsWith('## ') || trim === '---') break;
+    const line = lines[i];
+    const trim = line.trim();
+    if (trim.startsWith("## ") || trim === "---") break;
 
-    const contactMatch = trim.match(/^(Email|Tel|LinkedIn|Phone|Web|Website):\s*(.+)/i);
+    const contactMatch = trim.match(
+      /^(Email|Tel|LinkedIn|Phone|Web|Website):\s*(.+)/i,
+    );
     if (contactMatch) {
       cv.contact.push(contactMatch[2].trim());
-    } else if (trim.length > 0 && !trim.startsWith('#')) {
+    } else if (trim.length > 0 && !trim.startsWith("#")) {
       cv.bio.push(trim);
     }
     i++;
   }
 
   // Skip dividers
-  while (i < lines.length && lines[i].trim() === '---') i++;
+  while (i < lines.length && lines[i].trim() === "---") i++;
 
   // ## Sections
   while (i < lines.length) {
     const trim = lines[i].trim();
-    if (trim.startsWith('## ')) {
-      const sectionName  = trim.replace(/^##\s+/, '');
+    if (trim.startsWith("## ")) {
+      const sectionName = trim.replace(/^##\s+/, "");
       const contentLines = [];
       i++;
-      while (i < lines.length && !lines[i].trim().startsWith('## ')) {
+      while (i < lines.length && !lines[i].trim().startsWith("## ")) {
         contentLines.push(lines[i]);
         i++;
       }
@@ -107,45 +148,58 @@ function parseMarkdown(md) {
 
 function renderTable(tableLines) {
   const rows = tableLines
-    .filter(l => l.trim().startsWith('|'))
-    .map(l => l.trim().split('|').slice(1, -1).map(c => c.trim()));
+    .filter((l) => l.trim().startsWith("|"))
+    .map((l) =>
+      l
+        .trim()
+        .split("|")
+        .slice(1, -1)
+        .map((c) => c.trim()),
+    );
 
-  if (rows.length < 2) return '';
+  if (rows.length < 2) return "";
 
   const headers = rows[0];
-  const body    = rows.slice(2); // skip separator row
+  const body = rows.slice(2); // skip separator row
 
   let html = '<table class="cv-table"><thead><tr>';
-  html += headers.map(h => `<th>${renderInline(h)}</th>`).join('');
-  html += '</tr></thead><tbody>';
-  body.forEach(row => {
-    html += '<tr>' + row.map(cell => `<td>${renderInline(cell)}</td>`).join('') + '</tr>';
+  html += headers.map((h) => `<th>${renderInline(h)}</th>`).join("");
+  html += "</tr></thead><tbody>";
+  body.forEach((row) => {
+    html +=
+      "<tr>" +
+      row.map((cell) => `<td>${renderInline(cell)}</td>`).join("") +
+      "</tr>";
   });
-  html += '</tbody></table>';
+  html += "</tbody></table>";
   return html;
 }
 
 function renderSectionContent(lines) {
-  let html = '';
-  let i    = 0;
+  let html = "";
+  let i = 0;
 
   while (i < lines.length) {
-    const line  = lines[i];
-    const trim  = line.trim();
+    const line = lines[i];
+    const trim = line.trim();
 
-    if (trim === '' || trim === '---') { i++; continue; }
+    if (trim === "" || trim === "---") {
+      i++;
+      continue;
+    }
 
     // ### Sub-heading
-    if (trim.startsWith('### ')) {
-      html += `<div class="sub-label">${escapeHtml(trim.replace(/^###\s+/, ''))}</div>`;
+    if (trim.startsWith("### ")) {
+      html += `<div class="sub-label">${escapeHtml(trim.replace(/^###\s+/, ""))}</div>`;
       i++;
       continue;
     }
 
     // Table block
-    if (trim.startsWith('|')) {
+    if (trim.startsWith("|")) {
       const block = [];
-      while (i < lines.length && lines[i].trim().startsWith('|')) block.push(lines[i++]);
+      while (i < lines.length && lines[i].trim().startsWith("|"))
+        block.push(lines[i++]);
       html += renderTable(block);
       continue;
     }
@@ -160,8 +214,8 @@ function renderSectionContent(lines) {
       html += `</div>`;
       i++;
       // Indented bullets under the entry
-      while (i < lines.length && lines[i].trim().startsWith('- ')) {
-        const bullet = lines[i].trim().replace(/^-\s+/, '');
+      while (i < lines.length && lines[i].trim().startsWith("- ")) {
+        const bullet = lines[i].trim().replace(/^-\s+/, "");
         html += `<div class="entry-desc">${renderInline(bullet)}</div>`;
         i++;
       }
@@ -170,14 +224,14 @@ function renderSectionContent(lines) {
     }
 
     // Bullet list
-    if (trim.startsWith('- ')) {
+    if (trim.startsWith("- ")) {
       html += '<ul class="cv-list">';
-      while (i < lines.length && lines[i].trim().startsWith('- ')) {
-        const item = lines[i].trim().replace(/^-\s+/, '');
+      while (i < lines.length && lines[i].trim().startsWith("- ")) {
+        const item = lines[i].trim().replace(/^-\s+/, "");
         html += `<li>${renderInline(item)}</li>`;
         i++;
       }
-      html += '</ul>';
+      html += "</ul>";
       continue;
     }
 
@@ -189,11 +243,11 @@ function renderSectionContent(lines) {
       // Collect following prose lines
       while (
         i < lines.length &&
-        lines[i].trim() !== '' &&
-        !lines[i].trim().startsWith('**') &&
-        !lines[i].trim().startsWith('-')  &&
-        !lines[i].trim().startsWith('|')  &&
-        !lines[i].trim().startsWith('#')
+        lines[i].trim() !== "" &&
+        !lines[i].trim().startsWith("**") &&
+        !lines[i].trim().startsWith("-") &&
+        !lines[i].trim().startsWith("|") &&
+        !lines[i].trim().startsWith("#")
       ) {
         html += `<div class="entry-desc">${renderInline(lines[i].trim())}</div>`;
         i++;
@@ -219,10 +273,11 @@ function renderContactItem(raw) {
   // Markdown link [label](url)
   const linkMatch = raw.match(/^\[(.+?)\]\((.+?)\)$/);
   if (linkMatch) {
-    const label = escapeHtml(linkMatch[1]);
-    const url   = escapeHtml(linkMatch[2]);
-    const icon  = linkMatch[2].includes('linkedin.com') ? LINKEDIN_LOGO : '';
-    return `<a href="${url}">${icon}${label}</a>`;
+    const label    = escapeHtml(linkMatch[1]);
+    const url      = escapeHtml(linkMatch[2]);
+    const liIcon   = linkMatch[2].includes("linkedin.com") ? LINKEDIN_LOGO : "";
+    const { attrs, icon } = externalAttrs(linkMatch[2]);
+    return `<a href="${url}"${attrs}>${liIcon}${label}${icon}</a>`;
   }
   // Plain text
   return `<span>${escapeHtml(raw)}</span>`;
@@ -231,30 +286,37 @@ function renderContactItem(raw) {
 // ── HTML builder ──────────────────────────────────────────────────────────────
 
 function buildHTML(cv) {
-  const contactHTML = cv.contact.map(renderContactItem).join('\n      ');
+  const contactHTML = cv.contact.map(renderContactItem).join("\n      ");
 
   const bioHTML = cv.bio
-    .filter(l => l.trim().length > 0)
-    .map(l => `<p class="summary">${renderInline(l)}</p>`)
-    .join('\n        ');
+    .filter((l) => l.trim().length > 0)
+    .map((l) => `<p class="summary">${renderInline(l)}</p>`)
+    .join("\n        ");
 
-  const profileSection = cv.bio.filter(l => l.trim()).length > 0 ? `
+  const profileSection =
+    cv.bio.filter((l) => l.trim()).length > 0
+      ? `
     <div class="section">
       <div class="section-divider"></div>
       <div class="section-label">Profile</div>
       <div class="section-content">
         ${bioHTML}
       </div>
-    </div>` : '';
+    </div>`
+      : "";
 
-  const sectionsHTML = cv.sections.map(s => `
+  const sectionsHTML = cv.sections
+    .map(
+      (s) => `
     <div class="section">
       <div class="section-divider"></div>
       <div class="section-label">${escapeHtml(s.name)}</div>
       <div class="section-content">
         ${renderSectionContent(s.content)}
       </div>
-    </div>`).join('\n');
+    </div>`,
+    )
+    .join("\n");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -468,6 +530,20 @@ function buildHTML(cv) {
 
     a:hover { border-bottom-color: #888; }
 
+    /* ── External link icon ── */
+    .ext-icon {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      fill: currentColor;
+      opacity: 0.45;
+      vertical-align: middle;
+      margin-left: 3px;
+      position: relative;
+      top: -1px;
+      flex-shrink: 0;
+    }
+
     /* ── Contact icons ── */
     .contact-icon {
       display: inline-block;
@@ -555,8 +631,8 @@ function buildHTML(cv) {
 // the primary output path. Add or remove paths to suit your setup.
 
 const MIRROR_DIRS = [
-  path.join(__dirname),                                                          // ~/resumes/
-  path.join(os.homedir(), 'Desktop/Job Applications/CVs/resumé updater'),       // ~/Desktop/.../resumé updater/
+  path.join(__dirname), // ~/resumes/
+  path.join(os.homedir(), "Desktop/Job Applications/CVs/resumé updater"), // ~/Desktop/.../resumé updater/
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -564,23 +640,23 @@ const MIRROR_DIRS = [
 const args = process.argv.slice(2);
 
 if (args.length === 0) {
-  console.error('Usage: node md-to-resume.js <input.md> [output.html]');
+  console.error("Usage: node md-to-resume.js <input.md> [output.html]");
   process.exit(1);
 }
 
-const inputPath  = path.resolve(args[0]);
+const inputPath = path.resolve(args[0]);
 const outputName = args[1]
   ? path.basename(args[1])
-  : path.basename(inputPath).replace(/\.md$/i, '.html');
+  : path.basename(inputPath).replace(/\.md$/i, ".html");
 
 if (!fs.existsSync(inputPath)) {
   console.error(`Error: file not found — ${inputPath}`);
   process.exit(1);
 }
 
-const markdown = fs.readFileSync(inputPath, 'utf-8');
-const cv       = parseMarkdown(markdown);
-const html     = buildHTML(cv);
+const markdown = fs.readFileSync(inputPath, "utf-8");
+const cv = parseMarkdown(markdown);
+const html = buildHTML(cv);
 
 // Write to every mirror directory that exists
 let written = 0;
@@ -590,12 +666,12 @@ for (const dir of MIRROR_DIRS) {
     continue;
   }
   const dest = path.join(dir, outputName);
-  fs.writeFileSync(dest, html, 'utf-8');
+  fs.writeFileSync(dest, html, "utf-8");
   console.log(`✓  ${dest}`);
   written++;
 }
 
 if (written === 0) {
-  console.error('Error: no output directories were available.');
+  console.error("Error: no output directories were available.");
   process.exit(1);
 }

@@ -17,27 +17,30 @@ He has developed creative coding curricula for Vidcode and serves as a consultan
 
 ## Education
 
-| Dates | Institution | Qualification |
-|-------|-------------|---------------|
-| Spring–Summer 2017 | Fullstack Academy, New York | |
-| Oct 2000 – May 2004 | University of the West of England, Bristol | Ph.D. — *"The creation of digital fine art print through the Woodburytype model"* |
-| Sept 1999 – June 2000 | University of the Arts, Philadelphia | Postgraduate studies |
-| Oct 1993 – July 1996 | University of the West of England, Bristol | BA (hons) Fine Art |
+| Dates                 | Institution                                | Qualification                                                                     |
+| --------------------- | ------------------------------------------ | --------------------------------------------------------------------------------- |
+| Spring–Summer 2017    | Fullstack Academy, New York                |                                                                                   |
+| Oct 2000 – May 2004   | University of the West of England, Bristol | Ph.D. — _"The creation of digital fine art print through the Woodburytype model"_ |
+| Sept 1999 – June 2000 | University of the Arts, Philadelphia       | Postgraduate studies                                                              |
+| Oct 1993 – July 1996  | University of the West of England, Bristol | BA (hons) Fine Art                                                                |
 
 ---
 
 ## Professional Experience
 
-**Montclair State University, Montclair, NJ** — *2004–present*
+**Montclair State University, Montclair, NJ** — _2004–present_
+
 - Deputy Chair, Dept. of Art and Design, September 2019 – May 2023
 - Assistant Professor of Digital Photography, September 2004 – Present
 - Department of Art and Design Summer Chair, Summers 2014–17, 2019–24
 - Director of the MFA in Studio Arts, Sept 2009 – Jan 2017
 
-**Vidcode — Curriculum Developer** — *2017–2019*
+**Vidcode — Curriculum Developer** — _2017–2019_
+
 - Developed curriculum for introductory creative coding courses including for Girl Scouts and BrainPop
 
-**Institute for the Advancement of Philosophy for Children** — *2021–present*
+**Institute for the Advancement of Philosophy for Children** — _2021–present_
+
 - Updated novel design for accessibility and digital access
 
 ---
@@ -45,31 +48,35 @@ He has developed creative coding curricula for Vidcode and serves as a consultan
 ## Classes Taught
 
 ### Photography
-| Dates | Course | Title |
-|-------|--------|-------|
+
+| Dates   | Course  | Title                             |
+| ------- | ------- | --------------------------------- |
 | 2004–23 | ARPH201 | Digital Photography and Imaging 1 |
 | 2005–19 | ARPH211 | Digital Photography and Imaging 2 |
-| 2024–25 | ARST215 | Photography for Majors |
+| 2024–25 | ARST215 | Photography for Majors            |
 
 ### Visual Arts
-| Dates | Course | Title |
-|-------|--------|-------|
-| 2005–17 | ARST502, 503, 532, 604, 610, 633 | Various MFA Thesis Independent Studies |
-| 2015–17 | ARST600 | MA Thesis Seminar |
-| 2009–27 | ARST650/1 | MFA Thesis Exhibition/Thesis Extension |
-| 2019–24 | ARST406/411 | Integrative Studio III – BA Thesis Exhibition |
+
+| Dates   | Course                           | Title                                         |
+| ------- | -------------------------------- | --------------------------------------------- |
+| 2005–17 | ARST502, 503, 532, 604, 610, 633 | Various MFA Thesis Independent Studies        |
+| 2015–17 | ARST600                          | MA Thesis Seminar                             |
+| 2009–27 | ARST650/1                        | MFA Thesis Exhibition/Thesis Extension        |
+| 2019–24 | ARST406/411                      | Integrative Studio III – BA Thesis Exhibition |
 
 ### Creative Coding and Digital Arts
-| Dates | Course | Title |
-|-------|--------|-------|
-| 2019–23 | ARFD106 | Digital Literacy |
+
+| Dates   | Course          | Title                                             |
+| ------- | --------------- | ------------------------------------------------- |
+| 2019–23 | ARFD106         | Digital Literacy                                  |
 | 2022–25 | VCDS225/ARGS260 | Creative Coding for Graphic Designers/for Artists |
 
 ### Other Courses
-| Dates | Course | Title |
-|-------|--------|-------|
-| 2017–19, 22–23 | ARGS280 | Art Forum |
-| 2021–23 | COED401 | Cooperative Education Mentor |
+
+| Dates          | Course  | Title                        |
+| -------------- | ------- | ---------------------------- |
+| 2017–19, 22–23 | ARGS280 | Art Forum                    |
+| 2021–23        | COED401 | Cooperative Education Mentor |
 
 ---
 
@@ -104,6 +111,7 @@ Hired faculty, administered schedules, promoted and enacted department vision.
 2020–24 — Board Member, helped create partnership between MSU and the Passaic Public School, designing two school courses for equivalency at MSU.
 
 **Conference Organiser**
+
 - 2023 — Ocean Memory Project, Remembering/Writing, Friday Harbor Labs, San Juan Island, University of Washington, WA
 - 2022 — Ocean Memory Project, Sense Submerged Workshop, Puerto Morelos, Mexico
 - 2009 — Society for Photographic Education, Mid-Atlantic Region Annual conference, Montclair State University, Montclair, NJ
@@ -111,9 +119,11 @@ Hired faculty, administered schedules, promoted and enacted department vision.
 - 2007 — Society for Photographic Education, Mid-Atlantic Region Annual conference, Center for Photography at Woodstock, Woodstock, NY
 
 **External Reviewer**
+
 - 2012 — Whitecliffe College of Art and Design, Auckland, New Zealand
 
 **Juror**
+
 - 2008 — Photography exhibition, New Jersey Printmaking Council, Somerville, NJ
 
 ---
@@ -121,7 +131,8 @@ Hired faculty, administered schedules, promoted and enacted department vision.
 ## Scholarship, Publications, and Related Activities
 
 ### Bibliography
-- 2025 — Jody W. Deming; Ocean Memory: Unimagined Perspectives. *Leonardo* 2025; 58 (1): 105–110. doi: https://doi.org/10.1162/leon_a_02644
+
+- 2025 — Jody W. Deming; [Ocean Memory: Unimagined Perspectives. _Leonardo_ 2025; 58 (1): 105–110.](https://doi.org/10.1162/leon_a_02644)
 - 2017 — Zona Imaginaria, Buenos Aires
 - 2010 — La Voz del Interior, 19th, 20th and 21st of July 2010; Revista Ohlala, August 2010
 - 2009 — 30 Years of the Sol Mednick Gallery
@@ -129,16 +140,18 @@ Hired faculty, administered schedules, promoted and enacted department vision.
 - 2007 — Gyeongnam International Art Festival catalogue
 - 2004 — In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue
 - 2003 — Gravat.olot, CD-ROM Catalogue, Spain; International Print Biennial catalogue, Bulgaria; Beijing International Print Biennial catalogue
-- 2002 — 'The history book that never was' review, *The Art Book*, Sept.; 20:20, 20 artists using photomechanical processes, CD-ROM, Impact Press; Artists' Book Yearbook review, *The Art Book*
-- 2001 — Artists' Book Yearbook, Ed. Sarah Bodman. Impact Press; *Ceramics and Print*, Paul Scott, A&C Black; Mutating Image: 12th Tallinn print triennial catalogue; A Tale of Two Cities, Ed. Sarah Bodman. Impact Press
+- 2002 — 'The history book that never was' review, _The Art Book_, Sept.; 20:20, 20 artists using photomechanical processes, CD-ROM, Impact Press; Artists' Book Yearbook review, _The Art Book_
+- 2001 — Artists' Book Yearbook, Ed. Sarah Bodman. Impact Press; _Ceramics and Print_, Paul Scott, A&C Black; Mutating Image: 12th Tallinn print triennial catalogue; A Tale of Two Cities, Ed. Sarah Bodman. Impact Press
 - 2000 — Photomechanical Print Survey, Ed. Carinna Parraman, Impact Press; World Etching, Chongqing Print Festival
 - 1999 — Artists' Newsletter, Sarah Bodman; Artists' Books, Ed. Sarah Bodman. Impact Press
 
 ### Writer
+
 - AfterImage, 2008–2009
 - Architect's Newspaper, November 2005–2010
 
 ### Curator
+
 - 2008–10 — Emerging Photographers, Palezzetto Eucherio Sanvitale, Parma, Italy (traveled to Philadelphia, 2009; Cordoba, 2010)
 - 2009 — The End Days of Print: Raffone in Naples, EI institute, Columbia University
 - 2008 — Co-curator, Italian Sense of Place II: Luigi Ghirri, Franco Guerzoni, and Nancy Goldring, George Segal Gallery, MSU, Montclair
@@ -149,7 +162,7 @@ Hired faculty, administered schedules, promoted and enacted department vision.
 
 ## Selected Exhibitions
 
-- 2022 — CCRM, Ocean Memory Concert, Stanford University
+- 2022 — [CCRMA, Ocean Memory Concert, Stanford University](https://vimeo.com/553111781?share=copy#t=424)
 - 2017 — Last Stop Before Utopia, Sarasota Art Center, Sarasota, FL
 - 2017 — Zona Imaginaria, Buenos Aires, Argentina
 - 2015 — Faculty Exhibition, Segal Gallery, Montclair State University, Montclair, NJ
@@ -267,7 +280,7 @@ Hired faculty, administered schedules, promoted and enacted department vision.
 
 ## Artist Residencies
 
-- 2003 — Gravat.olot, Olot, Spain *(Awarded gold prize)*
+- 2003 — Gravat.olot, Olot, Spain _(Awarded gold prize)_
 - 2003 — Sally R. Bishop Fellowship and residency, Center for Book Arts, NY
 - 2003 — Artist in Residence, Glasgow School of Art, UK
 - 2002 — Residency, Frans Masereel Centrum, Kasterlee, Belgium
