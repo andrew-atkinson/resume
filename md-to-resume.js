@@ -55,8 +55,11 @@ function renderInline(text) {
 
   // 3. Bold / italic on plain text only — no URLs or links present any more
   text = text.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
-  text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  text = text.replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+  text = text.replace(
+    /\*\*([^*]+)\*\*/g,
+    "<span style='color:var(--ink-1)'><strong>$1</strong></span>",
+  );
+  text = text.replace(/\*([^*\n]+)\*/g, "<em>--$1</em>");
   text = text.replace(/_([^_\n]+)_/g, "<em>$1</em>");
 
   // 4. Restore markdown links — apply italic to label, resolve URL stash
@@ -225,7 +228,7 @@ function renderSectionContent(lines) {
 
     // Bullet list
     if (trim.startsWith("- ")) {
-      html += `<ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;">`;
+      html += `<ul class="cv-list">`;
       while (i < lines.length && lines[i].trim().startsWith("- ")) {
         const item = lines[i].trim().replace(/^-\s+/, "");
         // Wrap leading year (e.g. "2022 —" or "2022–23 —") in .item-date span
@@ -363,10 +366,6 @@ function buildHTML(cv) {
       background: var(--bg);
       color: var(--ink-1);
       transition: background 0.2s, color 0.2s;
-    }
-
-    li::marker {
-      color: var(--ink-4);
     }
 
     .resume {
@@ -522,10 +521,12 @@ function buildHTML(cv) {
       color: var(--ink-3);
       line-height: 1.6;
       margin: 3px 0 0 0;
+      font-style: bold;
     }
 
     .entry-desc--bullet {
-      padding-left: 1rem;
+      padding-left: 1.25rem;
+      text-indent: -1.25rem;
     }
 
     .entry-subtitle {
@@ -548,16 +549,17 @@ function buildHTML(cv) {
     .cv-list {
       margin: 0;
       padding: 0;
-      list-style: none;
     }
 
     .cv-list li {
       font-size: 12px;
       color: var(--ink-3);
       line-height: 1.75;
+      list-style: none;
     }
 
     .cv-list li::before { content: none; }
+
 
     /* ── Inline date spans (year prefix in list items) ── */
     .item-date {
