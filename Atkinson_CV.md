@@ -19,7 +19,7 @@ He has developed creative coding curricula for Vidcode and serves as a consultan
 
 | Dates                 | Institution                                | Qualification                                                                     |
 | --------------------- | ------------------------------------------ | --------------------------------------------------------------------------------- |
-| Spring–Summer 2017    | Fullstack Academy, New York                |                                                                                   |
+| Spring – Summer 2017  | Fullstack Academy, New York                |                                                                                   |
 | Oct 2000 – May 2004   | University of the West of England, Bristol | Ph.D. — _"The creation of digital fine art print through the Woodburytype model"_ |
 | Sept 1999 – June 2000 | University of the Arts, Philadelphia       | Postgraduate studies                                                              |
 | Oct 1993 – July 1996  | University of the West of England, Bristol | BA (hons) Fine Art                                                                |
