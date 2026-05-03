@@ -14,6 +14,7 @@
 
 const fs   = require('fs');
 const path = require('path');
+const os   = require('os');
 
 // ── Inline markdown renderer ──────────────────────────────────────────────────
 
@@ -549,6 +550,15 @@ function buildHTML(cv) {
 </html>`;
 }
 
+// ── Output directories ────────────────────────────────────────────────────────
+// The generated HTML is written to every folder listed here, in addition to
+// the primary output path. Add or remove paths to suit your setup.
+
+const MIRROR_DIRS = [
+  path.join(__dirname),                                                          // ~/resumes/
+  path.join(os.homedir(), 'Desktop/Job Applications/CVs/resumé updater'),       // ~/Desktop/.../resumé updater/
+];
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
@@ -559,9 +569,9 @@ if (args.length === 0) {
 }
 
 const inputPath  = path.resolve(args[0]);
-const outputPath = args[1]
-  ? path.resolve(args[1])
-  : inputPath.replace(/\.md$/i, '.html');
+const outputName = args[1]
+  ? path.basename(args[1])
+  : path.basename(inputPath).replace(/\.md$/i, '.html');
 
 if (!fs.existsSync(inputPath)) {
   console.error(`Error: file not found — ${inputPath}`);
@@ -572,5 +582,20 @@ const markdown = fs.readFileSync(inputPath, 'utf-8');
 const cv       = parseMarkdown(markdown);
 const html     = buildHTML(cv);
 
-fs.writeFileSync(outputPath, html, 'utf-8');
-console.log(`✓  ${path.basename(outputPath)}`);
+// Write to every mirror directory that exists
+let written = 0;
+for (const dir of MIRROR_DIRS) {
+  if (!fs.existsSync(dir)) {
+    console.warn(`⚠  Skipping missing directory: ${dir}`);
+    continue;
+  }
+  const dest = path.join(dir, outputName);
+  fs.writeFileSync(dest, html, 'utf-8');
+  console.log(`✓  ${dest}`);
+  written++;
+}
+
+if (written === 0) {
+  console.error('Error: no output directories were available.');
+  process.exit(1);
+}
