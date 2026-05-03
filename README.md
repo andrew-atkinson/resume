@@ -9,6 +9,7 @@ This folder contains Andrew Atkinson's CV source files and the script that conve
 Converts a Markdown CV file into a self-contained HTML page using the same typographic style as `andrew_atkinson_resume.html`. No external dependencies — pure Node.js.
 
 The generated HTML is written to **two places automatically**:
+
 - `~/resumes/` (this folder)
 - `~/Desktop/Job Applications/CVs/resumé updater/`
 
@@ -19,7 +20,7 @@ The generated HTML is written to **two places automatically**:
 node md-to-resume.js Atkinson_CV.md
 
 # Custom output filename:
-node md-to-resume.js Atkinson_CV.md my-output.html
+node md-to-resume.js Atkinson_CV.md index.html
 ```
 
 The output filename defaults to the input filename with `.html` substituted for `.md`.
@@ -63,8 +64,11 @@ Use `##` headings for each CV section. The heading text becomes the left-column 
 
 ```markdown
 ## Education
+
 ## Professional Experience
+
 ## Selected Exhibitions
+
 ## Grants
 ```
 
@@ -76,9 +80,11 @@ Use `###` for category labels inside a section (e.g. grouping courses by discipl
 ## Classes Taught
 
 ### Photography
+
 ...
 
 ### Creative Coding
+
 ...
 ```
 
@@ -87,10 +93,10 @@ Use `###` for category labels inside a section (e.g. grouping courses by discipl
 Markdown tables render as clean HTML tables. The first column is displayed in muted grey (good for years/dates):
 
 ```markdown
-| Dates       | Institution                        | Qualification       |
-|-------------|-------------------------------------|---------------------|
-| 2000 – 2004 | University of the West of England   | Ph.D.               |
-| 1993 – 1996 | University of the West of England   | BA (hons) Fine Art  |
+| Dates       | Institution                       | Qualification      |
+| ----------- | --------------------------------- | ------------------ |
+| 2000 – 2004 | University of the West of England | Ph.D.              |
+| 1993 – 1996 | University of the West of England | BA (hons) Fine Art |
 ```
 
 ### Professional experience entries
@@ -98,7 +104,8 @@ Markdown tables render as clean HTML tables. The first column is displayed in mu
 Use `**bold** — *italic*` for title–date pairs. Bullet points directly below become description lines:
 
 ```markdown
-**Montclair State University, Montclair, NJ** — *2004–present*
+**Montclair State University, Montclair, NJ** — _2004–present_
+
 - Assistant Professor of Digital Photography
 - Director of the MFA in Studio Arts, 2009–2017
 ```
@@ -123,10 +130,10 @@ Co-authored major rewrites of undergraduate degree programs. Chaired committee 2
 
 ### Inline formatting
 
-| Markdown | Output |
-|----------|--------|
-| `*italic*` | *italic* |
-| `**bold**` | **bold** |
+| Markdown       | Output         |
+| -------------- | -------------- |
+| `*italic*`     | _italic_       |
+| `**bold**`     | **bold**       |
 | `[label](url)` | clickable link |
 
 Bare URLs (e.g. DOI links) are rendered as plain text and protected from italic/bold processing.
