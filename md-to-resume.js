@@ -33,12 +33,12 @@ const EXT_ICON = `<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewB
 function externalAttrs(url) {
   return /^https?:\/\//i.test(url)
     ? { attrs: ' target="_blank" rel="noopener external"', icon: EXT_ICON }
-    : { attrs: '', icon: '' };
+    : { attrs: "", icon: "" };
 }
 
 function renderInline(text) {
-  const urls  = [];   // \x00Un\x00
-  const links = [];   // \x01Ln\x01
+  const urls = []; // \x00Un\x00
+  const links = []; // \x01Ln\x01
 
   // 1. Stash ALL https?:// URLs so underscores inside them are never touched
   text = text.replace(/(https?:\/\/[^\s)]+)/g, (url) => {
@@ -55,9 +55,9 @@ function renderInline(text) {
 
   // 3. Bold / italic on plain text only — no URLs or links present any more
   text = text.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
-  text = text.replace(/\*\*([^*]+)\*\*/g,     "<strong>$1</strong>");
-  text = text.replace(/\*([^*\n]+)\*/g,        "<em>$1</em>");
-  text = text.replace(/_([^_\n]+)_/g,          "<em>$1</em>");
+  text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  text = text.replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+  text = text.replace(/_([^_\n]+)_/g, "<em>$1</em>");
 
   // 4. Restore markdown links — apply italic to label, resolve URL stash
   text = text.replace(/\x01L(\d+)\x01/g, (_, i) => {
@@ -65,15 +65,15 @@ function renderInline(text) {
 
     // Resolve URL stash reference inside parens if present
     const uMatch = ref.match(/^\x00U(\d+)\x00$/);
-    const url    = uMatch ? urls[parseInt(uMatch[1])] : ref;
+    const url = uMatch ? urls[parseInt(uMatch[1])] : ref;
     if (uMatch) urls[parseInt(uMatch[1])] = null; // mark consumed
 
     // Apply italic/bold to label text
     let l = escapeHtml(label);
     l = l.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
-    l = l.replace(/\*\*([^*]+)\*\*/g,     "<strong>$1</strong>");
-    l = l.replace(/\*([^*\n]+)\*/g,        "<em>$1</em>");
-    l = l.replace(/_([^_\n]+)_/g,          "<em>$1</em>");
+    l = l.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    l = l.replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+    l = l.replace(/_([^_\n]+)_/g, "<em>$1</em>");
 
     const { attrs, icon } = externalAttrs(url);
     return `<a href="${escapeHtml(url)}"${attrs}>${l}${icon}</a>`;
@@ -209,14 +209,14 @@ function renderSectionContent(lines) {
     if (entryMatch) {
       html += `<div class="entry">`;
       html += `<div class="entry-header">`;
-      html += `<span class="entry-title">${renderInline(entryMatch[1])}</span>`;
+      html += `<span class="entry-title entry-title--org">${renderInline(entryMatch[1])}</span>`;
       html += `<span class="entry-date">${renderInline(entryMatch[2])}</span>`;
       html += `</div>`;
       i++;
       // Indented bullets under the entry
       while (i < lines.length && lines[i].trim().startsWith("- ")) {
         const bullet = lines[i].trim().replace(/^-\s+/, "");
-        html += `<div class="entry-desc">${renderInline(bullet)}</div>`;
+        html += `<div class="entry-desc entry-desc--bullet">${renderInline(bullet)}</div>`;
         i++;
       }
       html += `</div>`;
@@ -225,10 +225,15 @@ function renderSectionContent(lines) {
 
     // Bullet list
     if (trim.startsWith("- ")) {
-      html += '<ul class="cv-list">';
+      html += `<ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;">`;
       while (i < lines.length && lines[i].trim().startsWith("- ")) {
         const item = lines[i].trim().replace(/^-\s+/, "");
-        html += `<li>${renderInline(item)}</li>`;
+        // Wrap leading year (e.g. "2022 —" or "2022–23 —") in .item-date span
+        const dated = item.replace(
+          /^(\d{4}(?:[–\-]\d{2,4})?)\s*(—|–|-)\s*/,
+          (_, yr, dash) => `<span class="item-date">${yr} ${dash}</span> `,
+        );
+        html += `<li>${renderInline(dated)}</li>`;
         i++;
       }
       html += "</ul>";
@@ -273,9 +278,9 @@ function renderContactItem(raw) {
   // Markdown link [label](url)
   const linkMatch = raw.match(/^\[(.+?)\]\((.+?)\)$/);
   if (linkMatch) {
-    const label    = escapeHtml(linkMatch[1]);
-    const url      = escapeHtml(linkMatch[2]);
-    const liIcon   = linkMatch[2].includes("linkedin.com") ? LINKEDIN_LOGO : "";
+    const label = escapeHtml(linkMatch[1]);
+    const url = escapeHtml(linkMatch[2]);
+    const liIcon = linkMatch[2].includes("linkedin.com") ? LINKEDIN_LOGO : "";
     const { attrs, icon } = externalAttrs(linkMatch[2]);
     return `<a href="${url}"${attrs}>${liIcon}${label}${icon}</a>`;
   }
@@ -319,7 +324,7 @@ function buildHTML(cv) {
     .join("\n");
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -327,24 +332,84 @@ function buildHTML(cv) {
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap');
 
+    /* ── Colour tokens ── */
+    :root {
+      --bg:     #ffffff;
+      --ink-1:  #1a1a1a;
+      --ink-2:  #444444;
+      --ink-3:  #555555;
+      --ink-4:  #999999;
+      --rule-1: #cccccc;
+      --rule-2: #e8e8e8;
+      --rule-3: #f2f2f2;
+    }
+
+    [data-theme="dark"] {
+      --bg:     #161616;
+      --ink-1:  #e2e2e2;
+      --ink-2:  #b2b2b2;
+      --ink-3:  #909090;
+      --ink-4:  #5e5e5e;
+      --rule-1: #383838;
+      --rule-2: #2c2c2c;
+      --rule-3: #242424;
+    }
+
     *, *::before, *::after { box-sizing: border-box; }
 
     body {
       margin: 0;
       padding: 2.5rem;
-      background: #fff;
-      color: #1a1a1a;
+      background: var(--bg);
+      color: var(--ink-1);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    li::marker {
+      color: var(--ink-4);
     }
 
     .resume {
       font-family: 'DM Sans', sans-serif;
       font-weight: 300;
       font-size: 13px;
-      color: #1a1a1a;
+      color: var(--ink-1);
       max-width: 740px;
       margin: 0 auto;
       padding: 2rem 0;
       line-height: 1.6;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg);
+      border: 0.5px solid var(--rule-1);
+      border-radius: 4px;
+      color: var(--ink-4);
+      cursor: pointer;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      z-index: 100;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .theme-toggle:hover {
+      color: var(--ink-2);
+      border-color: var(--ink-4);
+    }
+    .theme-toggle svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+      flex-shrink: 0;
     }
 
     /* ── Header ── */
@@ -366,14 +431,14 @@ function buildHTML(cv) {
       gap: 20px;
       flex-wrap: wrap;
       font-size: 12px;
-      color: #555;
+      color: var(--ink-3);
     }
 
     .resume-contact a,
     .resume-contact span {
-      color: #555;
+      color: var(--ink-3);
       text-decoration: none;
-      border-bottom: 0.5px solid #ccc;
+      border-bottom: 0.5px solid var(--rule-1);
     }
 
     /* ── Body grid ── */
@@ -387,14 +452,14 @@ function buildHTML(cv) {
 
     .section-divider {
       grid-column: 1 / -1;
-      border-top: 0.5px solid #ccc;
+      border-top: 0.5px solid var(--rule-1);
     }
 
     .section-label {
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #999;
+      color: var(--ink-4);
       padding: 1.25rem 1rem 0 0;
       line-height: 1.4;
     }
@@ -406,7 +471,7 @@ function buildHTML(cv) {
     /* ── Profile ── */
     .summary {
       font-size: 13px;
-      color: #444;
+      color: var(--ink-2);
       line-height: 1.7;
       max-width: 500px;
       margin: 0 0 0.75rem 0;
@@ -425,13 +490,21 @@ function buildHTML(cv) {
 
     .entry-title {
       font-weight: 400;
-      color: #1a1a1a;
+      color: var(--ink-1);
       font-size: 13px;
+    }
+
+    .entry-title--org {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink-1);
     }
 
     .entry-date {
       font-size: 11px;
-      color: #999;
+      color: var(--ink-4);
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -440,21 +513,25 @@ function buildHTML(cv) {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-size: 13px;
-      color: #555;
+      color: var(--ink-3);
       margin-bottom: 3px;
     }
 
     .entry-desc {
       font-size: 12px;
-      color: #555;
+      color: var(--ink-3);
       line-height: 1.6;
       margin: 3px 0 0 0;
+    }
+
+    .entry-desc--bullet {
+      padding-left: 1rem;
     }
 
     .entry-subtitle {
       font-weight: 400;
       font-size: 13px;
-      color: #1a1a1a;
+      color: var(--ink-1);
       margin: 0.9rem 0 2px 0;
     }
 
@@ -463,7 +540,7 @@ function buildHTML(cv) {
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #999;
+      color: var(--ink-4);
       margin: 1rem 0 0.4rem 0;
     }
 
@@ -476,25 +553,31 @@ function buildHTML(cv) {
 
     .cv-list li {
       font-size: 12px;
-      color: #555;
+      color: var(--ink-3);
       line-height: 1.75;
-      padding-left: 1rem;
-      position: relative;
     }
 
-    .cv-list li::before {
-      content: '–';
-      position: absolute;
-      left: 0;
-      color: #bbb;
+    .cv-list li::before { content: none; }
+
+    /* ── Inline date spans (year prefix in list items) ── */
+    .item-date {
+      color: var(--ink-4);
     }
 
     /* ── Tables ── */
     .cv-table {
       border-collapse: collapse;
+      table-layout: fixed;
       width: 100%;
       font-size: 12px;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .cv-table th,
+    .cv-table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+      vertical-align: top;
     }
 
     .cv-table th {
@@ -503,32 +586,41 @@ function buildHTML(cv) {
       font-size: 10px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #999;
+      color: var(--ink-4);
       padding: 0 14px 6px 0;
-      border-bottom: 0.5px solid #e8e8e8;
+      border-bottom: 0.5px solid var(--rule-2);
     }
 
     .cv-table td {
       padding: 5px 14px 5px 0;
-      color: #444;
-      vertical-align: top;
-      border-bottom: 0.5px solid #f2f2f2;
+      color: var(--ink-2);
+      border-bottom: 0.5px solid var(--rule-3);
     }
 
+    /* col 1 — dates */
+    .cv-table th:first-child,
     .cv-table td:first-child {
-      color: #999;
-      white-space: nowrap;
+      width: 72px;
+      color: var(--ink-4);
       font-size: 11px;
     }
+
+    /* col 2 — course codes / institutions */
+    .cv-table th:nth-child(2),
+    .cv-table td:nth-child(2) {
+      width: 155px;
+    }
+
+    /* col 3 — titles / qualifications — fills remaining space, wraps freely */
 
     /* ── Links ── */
     a {
       color: inherit;
       text-decoration: none;
-      border-bottom: 0.5px solid #ccc;
+      border-bottom: 0.5px solid var(--rule-1);
     }
 
-    a:hover { border-bottom-color: #888; }
+    a:hover { border-bottom-color: var(--ink-4); }
 
     /* ── External link icon ── */
     .ext-icon {
@@ -559,54 +651,39 @@ function buildHTML(cv) {
     /* ── Mobile ── */
     @media (max-width: 600px) {
       body { padding: 1.25rem; }
-
       .resume { padding: 1rem 0; }
-
       .resume-name { font-size: 28px; }
-
       .resume-contact { gap: 12px; }
-
-      .resume-body {
-        grid-template-columns: 1fr;
-      }
-
-      .section-divider {
-        grid-column: 1;
-        margin-top: 0.25rem;
-      }
-
-      .section-label {
-        padding: 0.75rem 0 0.2rem 0;
-        border: none;
-      }
-
-      .section-content {
-        padding: 0.25rem 0 0.75rem 0;
-      }
-
-      .entry-header {
-        flex-wrap: wrap;
-        gap: 2px;
-      }
-
-      .entry-date {
-        width: 100%;
-        order: -1;
-        font-size: 10px;
-      }
-
+      .resume-body { grid-template-columns: 1fr; }
+      .section-divider { grid-column: 1; margin-top: 0.25rem; }
+      .section-label { padding: 0.75rem 0 0.2rem 0; border: none; }
+      .section-content { padding: 0.25rem 0 0.75rem 0; }
+      .entry-header { flex-wrap: wrap; gap: 2px; }
+      .entry-date { width: 100%; order: -1; font-size: 10px; }
       .cv-table { font-size: 11px; }
       .cv-table th, .cv-table td { padding-right: 8px; }
+      .cv-table th:first-child, .cv-table td:first-child { width: 58px; }
+      .cv-table th:nth-child(2), .cv-table td:nth-child(2) { width: 100px; }
+      .theme-toggle { top: 0.6rem; right: 0.6rem; }
     }
 
     /* ── Print ── */
     @media print {
       body { padding: 0; }
       .resume { max-width: 100%; }
+      .theme-toggle { display: none; }
     }
   </style>
 </head>
 <body>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+  <svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path id="toggle-path" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+  </svg>
+  <span id="toggle-label">Dark</span>
+</button>
+
 <div class="resume">
 
   <div class="resume-header">
@@ -622,6 +699,38 @@ function buildHTML(cv) {
   </div>
 
 </div>
+
+<script>
+  (function () {
+    const root   = document.documentElement;
+    const btn    = document.getElementById('theme-toggle');
+    const label  = document.getElementById('toggle-label');
+    const path   = document.getElementById('toggle-path');
+
+    // Sun icon path
+    const SUN  = 'M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-4a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V4a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm9-9h-1a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zM4 12a1 1 0 0 1-1 1H2a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm14.95 5.54-.7-.71a1 1 0 0 1 1.41-1.41l.71.7a1 1 0 0 1-1.41 1.42zm-13.9 0a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7zM18.24 6.46a1 1 0 0 1 0-1.41l.71-.71a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0zm-13.9 0a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 3.63 4.34l.71.71a1 1 0 0 1 0 1.41z';
+    // Moon icon path
+    const MOON = 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z';
+
+    function applyTheme(dark) {
+      root.setAttribute('data-theme', dark ? 'dark' : 'light');
+      path.setAttribute('d', dark ? SUN : MOON);
+      label.textContent = dark ? 'Light' : 'Dark';
+    }
+
+    // Restore saved preference
+    const saved = localStorage.getItem('cv-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(saved ? saved === 'dark' : prefersDark);
+
+    btn.addEventListener('click', function () {
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      applyTheme(!isDark);
+      localStorage.setItem('cv-theme', isDark ? 'light' : 'dark');
+    });
+  })();
+</script>
+
 </body>
 </html>`;
 }

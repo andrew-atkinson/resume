@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,24 +7,84 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap');
 
+    /* ── Colour tokens ── */
+    :root {
+      --bg:     #ffffff;
+      --ink-1:  #1a1a1a;
+      --ink-2:  #444444;
+      --ink-3:  #555555;
+      --ink-4:  #999999;
+      --rule-1: #cccccc;
+      --rule-2: #e8e8e8;
+      --rule-3: #f2f2f2;
+    }
+
+    [data-theme="dark"] {
+      --bg:     #161616;
+      --ink-1:  #e2e2e2;
+      --ink-2:  #b2b2b2;
+      --ink-3:  #909090;
+      --ink-4:  #5e5e5e;
+      --rule-1: #383838;
+      --rule-2: #2c2c2c;
+      --rule-3: #242424;
+    }
+
     *, *::before, *::after { box-sizing: border-box; }
 
     body {
       margin: 0;
       padding: 2.5rem;
-      background: #fff;
-      color: #1a1a1a;
+      background: var(--bg);
+      color: var(--ink-1);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    li::marker {
+      color: var(--ink-4);
     }
 
     .resume {
       font-family: 'DM Sans', sans-serif;
       font-weight: 300;
       font-size: 13px;
-      color: #1a1a1a;
+      color: var(--ink-1);
       max-width: 740px;
       margin: 0 auto;
       padding: 2rem 0;
       line-height: 1.6;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg);
+      border: 0.5px solid var(--rule-1);
+      border-radius: 4px;
+      color: var(--ink-4);
+      cursor: pointer;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      z-index: 100;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .theme-toggle:hover {
+      color: var(--ink-2);
+      border-color: var(--ink-4);
+    }
+    .theme-toggle svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+      flex-shrink: 0;
     }
 
     /* ── Header ── */
@@ -46,14 +106,14 @@
       gap: 20px;
       flex-wrap: wrap;
       font-size: 12px;
-      color: #555;
+      color: var(--ink-3);
     }
 
     .resume-contact a,
     .resume-contact span {
-      color: #555;
+      color: var(--ink-3);
       text-decoration: none;
-      border-bottom: 0.5px solid #ccc;
+      border-bottom: 0.5px solid var(--rule-1);
     }
 
     /* ── Body grid ── */
@@ -67,14 +127,14 @@
 
     .section-divider {
       grid-column: 1 / -1;
-      border-top: 0.5px solid #ccc;
+      border-top: 0.5px solid var(--rule-1);
     }
 
     .section-label {
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #999;
+      color: var(--ink-4);
       padding: 1.25rem 1rem 0 0;
       line-height: 1.4;
     }
@@ -86,7 +146,7 @@
     /* ── Profile ── */
     .summary {
       font-size: 13px;
-      color: #444;
+      color: var(--ink-2);
       line-height: 1.7;
       max-width: 500px;
       margin: 0 0 0.75rem 0;
@@ -105,13 +165,21 @@
 
     .entry-title {
       font-weight: 400;
-      color: #1a1a1a;
+      color: var(--ink-1);
       font-size: 13px;
+    }
+
+    .entry-title--org {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink-1);
     }
 
     .entry-date {
       font-size: 11px;
-      color: #999;
+      color: var(--ink-4);
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -120,21 +188,25 @@
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-size: 13px;
-      color: #555;
+      color: var(--ink-3);
       margin-bottom: 3px;
     }
 
     .entry-desc {
       font-size: 12px;
-      color: #555;
+      color: var(--ink-3);
       line-height: 1.6;
       margin: 3px 0 0 0;
+    }
+
+    .entry-desc--bullet {
+      padding-left: 1rem;
     }
 
     .entry-subtitle {
       font-weight: 400;
       font-size: 13px;
-      color: #1a1a1a;
+      color: var(--ink-1);
       margin: 0.9rem 0 2px 0;
     }
 
@@ -143,7 +215,7 @@
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #999;
+      color: var(--ink-4);
       margin: 1rem 0 0.4rem 0;
     }
 
@@ -156,25 +228,31 @@
 
     .cv-list li {
       font-size: 12px;
-      color: #555;
+      color: var(--ink-3);
       line-height: 1.75;
-      padding-left: 1rem;
-      position: relative;
     }
 
-    .cv-list li::before {
-      content: '–';
-      position: absolute;
-      left: 0;
-      color: #bbb;
+    .cv-list li::before { content: none; }
+
+    /* ── Inline date spans (year prefix in list items) ── */
+    .item-date {
+      color: var(--ink-4);
     }
 
     /* ── Tables ── */
     .cv-table {
       border-collapse: collapse;
+      table-layout: fixed;
       width: 100%;
       font-size: 12px;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .cv-table th,
+    .cv-table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+      vertical-align: top;
     }
 
     .cv-table th {
@@ -183,32 +261,41 @@
       font-size: 10px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #999;
+      color: var(--ink-4);
       padding: 0 14px 6px 0;
-      border-bottom: 0.5px solid #e8e8e8;
+      border-bottom: 0.5px solid var(--rule-2);
     }
 
     .cv-table td {
       padding: 5px 14px 5px 0;
-      color: #444;
-      vertical-align: top;
-      border-bottom: 0.5px solid #f2f2f2;
+      color: var(--ink-2);
+      border-bottom: 0.5px solid var(--rule-3);
     }
 
+    /* col 1 — dates */
+    .cv-table th:first-child,
     .cv-table td:first-child {
-      color: #999;
-      white-space: nowrap;
+      width: 72px;
+      color: var(--ink-4);
       font-size: 11px;
     }
+
+    /* col 2 — course codes / institutions */
+    .cv-table th:nth-child(2),
+    .cv-table td:nth-child(2) {
+      width: 155px;
+    }
+
+    /* col 3 — titles / qualifications — fills remaining space, wraps freely */
 
     /* ── Links ── */
     a {
       color: inherit;
       text-decoration: none;
-      border-bottom: 0.5px solid #ccc;
+      border-bottom: 0.5px solid var(--rule-1);
     }
 
-    a:hover { border-bottom-color: #888; }
+    a:hover { border-bottom-color: var(--ink-4); }
 
     /* ── External link icon ── */
     .ext-icon {
@@ -239,54 +326,39 @@
     /* ── Mobile ── */
     @media (max-width: 600px) {
       body { padding: 1.25rem; }
-
       .resume { padding: 1rem 0; }
-
       .resume-name { font-size: 28px; }
-
       .resume-contact { gap: 12px; }
-
-      .resume-body {
-        grid-template-columns: 1fr;
-      }
-
-      .section-divider {
-        grid-column: 1;
-        margin-top: 0.25rem;
-      }
-
-      .section-label {
-        padding: 0.75rem 0 0.2rem 0;
-        border: none;
-      }
-
-      .section-content {
-        padding: 0.25rem 0 0.75rem 0;
-      }
-
-      .entry-header {
-        flex-wrap: wrap;
-        gap: 2px;
-      }
-
-      .entry-date {
-        width: 100%;
-        order: -1;
-        font-size: 10px;
-      }
-
+      .resume-body { grid-template-columns: 1fr; }
+      .section-divider { grid-column: 1; margin-top: 0.25rem; }
+      .section-label { padding: 0.75rem 0 0.2rem 0; border: none; }
+      .section-content { padding: 0.25rem 0 0.75rem 0; }
+      .entry-header { flex-wrap: wrap; gap: 2px; }
+      .entry-date { width: 100%; order: -1; font-size: 10px; }
       .cv-table { font-size: 11px; }
       .cv-table th, .cv-table td { padding-right: 8px; }
+      .cv-table th:first-child, .cv-table td:first-child { width: 58px; }
+      .cv-table th:nth-child(2), .cv-table td:nth-child(2) { width: 100px; }
+      .theme-toggle { top: 0.6rem; right: 0.6rem; }
     }
 
     /* ── Print ── */
     @media print {
       body { padding: 0; }
       .resume { max-width: 100%; }
+      .theme-toggle { display: none; }
     }
   </style>
 </head>
 <body>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+  <svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path id="toggle-path" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+  </svg>
+  <span id="toggle-label">Dark</span>
+</button>
+
 <div class="resume">
 
   <div class="resume-header">
@@ -308,7 +380,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Education</div>
       <div class="section-content">
-        <table class="cv-table"><thead><tr><th>Dates</th><th>Institution</th><th>Qualification</th></tr></thead><tbody><tr><td>Spring–Summer 2017</td><td>Fullstack Academy, New York</td><td></td></tr><tr><td>Oct 2000 – May 2004</td><td>University of the West of England, Bristol</td><td>Ph.D. — <em>"The creation of digital fine art print through the Woodburytype model"</em></td></tr><tr><td>Sept 1999 – June 2000</td><td>University of the Arts, Philadelphia</td><td>Postgraduate studies</td></tr><tr><td>Oct 1993 – July 1996</td><td>University of the West of England, Bristol</td><td>BA (hons) Fine Art</td></tr></tbody></table>
+        <table class="cv-table"><thead><tr><th>Dates</th><th>Institution</th><th>Qualification</th></tr></thead><tbody><tr><td>Spring – Summer 2017</td><td>Fullstack Academy, New York</td><td></td></tr><tr><td>Oct 2000 – May 2004</td><td>University of the West of England, Bristol</td><td>Ph.D. — <em>"The creation of digital fine art print through the Woodburytype model"</em></td></tr><tr><td>Sept 1999 – June 2000</td><td>University of the Arts, Philadelphia</td><td>Postgraduate studies</td></tr><tr><td>Oct 1993 – July 1996</td><td>University of the West of England, Bristol</td><td>BA (hons) Fine Art</td></tr></tbody></table>
       </div>
     </div>
 
@@ -316,7 +388,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Professional Experience</div>
       <div class="section-content">
-        <p class="entry-desc"><strong>Montclair State University, Montclair, NJ</strong> — <em>2004–present</em></p><ul class="cv-list"><li>Deputy Chair, Dept. of Art and Design, September 2019 – May 2023</li><li>Assistant Professor of Digital Photography, September 2004 – Present</li><li>Department of Art and Design Summer Chair, Summers 2014–17, 2019–24</li><li>Director of the MFA in Studio Arts, Sept 2009 – Jan 2017</li></ul><p class="entry-desc"><strong>Vidcode — Curriculum Developer</strong> — <em>2017–2019</em></p><ul class="cv-list"><li>Developed curriculum for introductory creative coding courses including for Girl Scouts and BrainPop</li></ul><p class="entry-desc"><strong>Institute for the Advancement of Philosophy for Children</strong> — <em>2021–present</em></p><ul class="cv-list"><li>Updated novel design for accessibility and digital access</li></ul>
+        <p class="entry-desc"><strong>Montclair State University, Montclair, NJ</strong> — <em>2004–present</em></p><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li>Deputy Chair, Dept. of Art and Design, September 2019 – May 2023</li><li>Assistant Professor of Digital Photography, September 2004 – Present</li><li>Department of Art and Design Summer Chair, Summers 2014–17, 2019–24</li><li>Director of the MFA in Studio Arts, Sept 2009 – Jan 2017</li></ul><p class="entry-desc"><strong>Vidcode — Curriculum Developer</strong> — <em>2017–2019</em></p><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li>Developed curriculum for introductory creative coding courses including for Girl Scouts and BrainPop</li></ul><p class="entry-desc"><strong>Institute for the Advancement of Philosophy for Children</strong> — <em>2021–present</em></p><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li>Updated novel design for accessibility and digital access</li></ul>
       </div>
     </div>
 
@@ -324,7 +396,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Classes Taught</div>
       <div class="section-content">
-        <div class="sub-label">Photography</div><table class="cv-table"><thead><tr><th>Dates</th><th>Course</th><th>Title</th></tr></thead><tbody><tr><td>2004–23</td><td>ARPH201</td><td>Digital Photography and Imaging 1</td></tr><tr><td>2005–19</td><td>ARPH211</td><td>Digital Photography and Imaging 2</td></tr><tr><td>2024–25</td><td>ARST215</td><td>Photography for Majors</td></tr></tbody></table><div class="sub-label">Visual Arts</div><table class="cv-table"><thead><tr><th>Dates</th><th>Course</th><th>Title</th></tr></thead><tbody><tr><td>2005–17</td><td>ARST502, 503, 532, 604, 610, 633</td><td>Various MFA Thesis Independent Studies</td></tr><tr><td>2015–17</td><td>ARST600</td><td>MA Thesis Seminar</td></tr><tr><td>2009–27</td><td>ARST650/1</td><td>MFA Thesis Exhibition/Thesis Extension</td></tr><tr><td>2019–24</td><td>ARST406/411</td><td>Integrative Studio III – BA Thesis Exhibition</td></tr></tbody></table><div class="sub-label">Creative Coding and Digital Arts</div><table class="cv-table"><thead><tr><th>Dates</th><th>Course</th><th>Title</th></tr></thead><tbody><tr><td>2019–23</td><td>ARFD106</td><td>Digital Literacy</td></tr><tr><td>2022–25</td><td>VCDS225/ARGS260</td><td>Creative Coding for Graphic Designers/for Artists</td></tr></tbody></table><div class="sub-label">Other Courses</div><table class="cv-table"><thead><tr><th>Dates</th><th>Course</th><th>Title</th></tr></thead><tbody><tr><td>2017–19, 22–23</td><td>ARGS280</td><td>Art Forum</td></tr><tr><td>2021–23</td><td>COED401</td><td>Cooperative Education Mentor</td></tr></tbody></table>
+        <div class="sub-label">Photography</div><table class="cv-table"><thead><tr><th>Dates</th><th>Course</th><th>Title</th></tr></thead><tbody><tr><td>2004–23</td><td>ARPH201</td><td>Digital Photography and Imaging 1</td></tr><tr><td>2005–19</td><td>ARPH211</td><td>Digital Photography and Imaging 2</td></tr><tr><td>2024–25</td><td>ARST215</td><td>Photography for Majors</td></tr></tbody></table><div class="sub-label">Visual Arts</div><table class="cv-table"><thead><tr><th>Dates</th><th>Course</th><th>Title</th></tr></thead><tbody><tr><td>2005–17</td><td>ARST502, 503, 532, 604, 610, 633</td><td>Various MFA Thesis Independent Studies</td></tr><tr><td>2015–17</td><td>ARST600</td><td>MA Thesis Seminar</td></tr><tr><td>2009–27</td><td>ARST650/1</td><td>MFA Thesis Exhibition/Thesis Extension</td></tr><tr><td>2019–24</td><td>ARST406/411</td><td>Integrative Studio III – BA Thesis Exhibition</td></tr></tbody></table><div class="sub-label">Creative Coding and Digital Arts</div><table class="cv-table"><thead><tr><th>Dates</th><th>Course</th><th>Title</th></tr></thead><tbody><tr><td>2019–23</td><td>ARFD106</td><td>Digital Literacy</td></tr><tr><td>2022–25</td><td>VCDS225/ARGS260</td><td>Creative Coding for Graphic Designers/for Artists</td></tr></tbody></table><div class="sub-label">Other Courses</div><table class="cv-table"><thead><tr><th>Dates</th><th>Course</th><th>Title</th></tr></thead><tbody><tr><td>2017–19, '22–23</td><td>ARGS280</td><td>Art Forum</td></tr><tr><td>2021–23</td><td>COED401</td><td>Cooperative Education Mentor</td></tr></tbody></table>
       </div>
     </div>
 
@@ -340,7 +412,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Professional Service</div>
       <div class="section-content">
-        <div class="entry-subtitle">Passaic Public Schools Digital Art CTE Advisory Committee</div><div class="entry-desc">2020–24 — Board Member, helped create partnership between MSU and the Passaic Public School, designing two school courses for equivalency at MSU.</div><div class="entry-subtitle">Conference Organiser</div><ul class="cv-list"><li>2023 — Ocean Memory Project, Remembering/Writing, Friday Harbor Labs, San Juan Island, University of Washington, WA</li><li>2022 — Ocean Memory Project, Sense Submerged Workshop, Puerto Morelos, Mexico</li><li>2009 — Society for Photographic Education, Mid-Atlantic Region Annual conference, Montclair State University, Montclair, NJ</li><li>2008 — Society for Photographic Education, Mid-Atlantic Region Annual conference, Carnegie Mellon University, Pittsburgh, PA</li><li>2007 — Society for Photographic Education, Mid-Atlantic Region Annual conference, Center for Photography at Woodstock, Woodstock, NY</li></ul><div class="entry-subtitle">External Reviewer</div><ul class="cv-list"><li>2012 — Whitecliffe College of Art and Design, Auckland, New Zealand</li></ul><div class="entry-subtitle">Juror</div><ul class="cv-list"><li>2008 — Photography exhibition, New Jersey Printmaking Council, Somerville, NJ</li></ul>
+        <div class="entry-subtitle">Passaic Public Schools Digital Art CTE Advisory Committee</div><div class="entry-desc">2020–24 — Board Member, helped create partnership between MSU and the Passaic Public School, designing two school courses for equivalency at MSU.</div><div class="entry-subtitle">Conference Organiser</div><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2023 —</span> Ocean Memory Project, Remembering/Writing, Friday Harbor Labs, San Juan Island, University of Washington, WA</li><li><span class="item-date">2022 —</span> Ocean Memory Project, Sense Submerged Workshop, Puerto Morelos, Mexico</li><li><span class="item-date">2009 —</span> Society for Photographic Education, Mid-Atlantic Region Annual conference, Montclair State University, Montclair, NJ</li><li><span class="item-date">2008 —</span> Society for Photographic Education, Mid-Atlantic Region Annual conference, Carnegie Mellon University, Pittsburgh, PA</li><li><span class="item-date">2007 —</span> Society for Photographic Education, Mid-Atlantic Region Annual conference, Center for Photography at Woodstock, Woodstock, NY</li></ul><div class="entry-subtitle">External Reviewer</div><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2012 —</span> Whitecliffe College of Art and Design, Auckland, New Zealand</li></ul><div class="entry-subtitle">Juror</div><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2008 —</span> Photography exhibition, New Jersey Printmaking Council, Somerville, NJ</li></ul>
       </div>
     </div>
 
@@ -348,7 +420,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Scholarship, Publications, and Related Activities</div>
       <div class="section-content">
-        <div class="sub-label">Bibliography</div><ul class="cv-list"><li>2025 — Jody W. Deming; <a href="https://doi.org/10.1162/leon_a_02644" target="_blank" rel="noopener external">Ocean Memory: Unimagined Perspectives. <em>Leonardo</em> 2025; 58 (1): 105–110.<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 9V1h4v1H2v7h7V5h1v4H1z"/><path d="M9 1H6l1.1 1.1L4 5.2l.8.8 3.1-3.1L9 4V1z"/></svg></a></li><li>2017 — Zona Imaginaria, Buenos Aires</li><li>2010 — La Voz del Interior, 19th, 20th and 21st of July 2010; Revista Ohlala, August 2010</li><li>2009 — 30 Years of the Sol Mednick Gallery</li><li>2008 — Fotografi Emergenti catalogue</li><li>2007 — Gyeongnam International Art Festival catalogue</li><li>2004 — In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue</li><li>2003 — Gravat.olot, CD-ROM Catalogue, Spain; International Print Biennial catalogue, Bulgaria; Beijing International Print Biennial catalogue</li><li>2002 — 'The history book that never was' review, <em>The Art Book</em>, Sept.; 20:20, 20 artists using photomechanical processes, CD-ROM, Impact Press; Artists' Book Yearbook review, <em>The Art Book</em></li><li>2001 — Artists' Book Yearbook, Ed. Sarah Bodman. Impact Press; <em>Ceramics and Print</em>, Paul Scott, A&C Black; Mutating Image: 12th Tallinn print triennial catalogue; A Tale of Two Cities, Ed. Sarah Bodman. Impact Press</li><li>2000 — Photomechanical Print Survey, Ed. Carinna Parraman, Impact Press; World Etching, Chongqing Print Festival</li><li>1999 — Artists' Newsletter, Sarah Bodman; Artists' Books, Ed. Sarah Bodman. Impact Press</li></ul><div class="sub-label">Writer</div><ul class="cv-list"><li>AfterImage, 2008–2009</li><li>Architect's Newspaper, November 2005–2010</li></ul><div class="sub-label">Curator</div><ul class="cv-list"><li>2008–10 — Emerging Photographers, Palezzetto Eucherio Sanvitale, Parma, Italy (traveled to Philadelphia, 2009; Cordoba, 2010)</li><li>2009 — The End Days of Print: Raffone in Naples, EI institute, Columbia University</li><li>2008 — Co-curator, Italian Sense of Place II: Luigi Ghirri, Franco Guerzoni, and Nancy Goldring, George Segal Gallery, MSU, Montclair</li><li>2008 — Co-curator, Italian Sense of Place I: Giuseppe Morandi, Micio, and Angelo Novi, George Segal Gallery, MSU, Montclair</li><li>2007 — MSU Alumni Show, P.P.O.W Gallery, New York, NY</li></ul>
+        <div class="sub-label">Bibliography</div><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2025 —</span> Jody W. Deming; <a href="https://doi.org/10.1162/leon_a_02644" target="_blank" rel="noopener external">Ocean Memory: Unimagined Perspectives. <em>Leonardo</em> 2025; 58 (1): 105–110.<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 9V1h4v1H2v7h7V5h1v4H1z"/><path d="M9 1H6l1.1 1.1L4 5.2l.8.8 3.1-3.1L9 4V1z"/></svg></a></li><li><span class="item-date">2017 —</span> Zona Imaginaria, Buenos Aires</li><li><span class="item-date">2010 —</span> La Voz del Interior, 19th, 20th and 21st of July 2010; Revista Ohlala, August 2010</li><li><span class="item-date">2009 —</span> 30 Years of the Sol Mednick Gallery</li><li><span class="item-date">2008 —</span> Fotografi Emergenti catalogue</li><li><span class="item-date">2007 —</span> Gyeongnam International Art Festival catalogue</li><li><span class="item-date">2004 —</span> In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue</li><li><span class="item-date">2003 —</span> Gravat.olot, CD-ROM Catalogue, Spain; International Print Biennial catalogue, Bulgaria; Beijing International Print Biennial catalogue</li><li><span class="item-date">2002 —</span> 'The history book that never was' review, <em>The Art Book</em>, Sept.; 20:20, 20 artists using photomechanical processes, CD-ROM, Impact Press; Artists' Book Yearbook review, <em>The Art Book</em></li><li><span class="item-date">2001 —</span> Artists' Book Yearbook, Ed. Sarah Bodman. Impact Press; <em>Ceramics and Print</em>, Paul Scott, A&C Black; Mutating Image: 12th Tallinn print triennial catalogue; A Tale of Two Cities, Ed. Sarah Bodman. Impact Press</li><li><span class="item-date">2000 —</span> Photomechanical Print Survey, Ed. Carinna Parraman, Impact Press; World Etching, Chongqing Print Festival</li><li><span class="item-date">1999 —</span> Artists' Newsletter, Sarah Bodman; Artists' Books, Ed. Sarah Bodman. Impact Press</li></ul><div class="sub-label">Writer</div><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li>AfterImage, 2008–2009</li><li>Architect's Newspaper, November 2005–2010</li></ul><div class="sub-label">Curator</div><ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2008–10 —</span> Emerging Photographers, Palezzetto Eucherio Sanvitale, Parma, Italy (traveled to Philadelphia, 2009; Cordoba, 2010)</li><li><span class="item-date">2009 —</span> The End Days of Print: Raffone in Naples, EI institute, Columbia University</li><li><span class="item-date">2008 —</span> Co-curator, Italian Sense of Place II: Luigi Ghirri, Franco Guerzoni, and Nancy Goldring, George Segal Gallery, MSU, Montclair</li><li><span class="item-date">2008 —</span> Co-curator, Italian Sense of Place I: Giuseppe Morandi, Micio, and Angelo Novi, George Segal Gallery, MSU, Montclair</li><li><span class="item-date">2007 —</span> MSU Alumni Show, P.P.O.W Gallery, New York, NY</li></ul>
       </div>
     </div>
 
@@ -356,7 +428,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Selected Exhibitions</div>
       <div class="section-content">
-        <ul class="cv-list"><li>2022 — <a href="https://vimeo.com/553111781?share=copy#t=424" target="_blank" rel="noopener external">CCRMA, Ocean Memory Concert, Stanford University<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 9V1h4v1H2v7h7V5h1v4H1z"/><path d="M9 1H6l1.1 1.1L4 5.2l.8.8 3.1-3.1L9 4V1z"/></svg></a></li><li>2017 — Last Stop Before Utopia, Sarasota Art Center, Sarasota, FL</li><li>2017 — Zona Imaginaria, Buenos Aires, Argentina</li><li>2015 — Faculty Exhibition, Segal Gallery, Montclair State University, Montclair, NJ</li><li>2014 — Festival de la Luz, Zona Imaginaria, Buenos Aires, Argentina</li><li>2014 — Destination Unknown, MagnanMetz, Chelsea, NY</li><li>2013 — Sideshow Nation, Sideshow Gallery, Brooklyn</li><li>2013 — Howard Gardens Gallery, Cardiff, Wales</li><li>2011 — Zone Imaginaria, Buenos Aires, Argentina</li><li>2011 — Japan Now, Camel Arts, Brooklyn</li><li>2010 — New York Emergentes, UNC Cordoba, Argentina</li><li>2010 — Paper Trails, Whitecliffe College, New Zealand</li><li>2009 — Emerging Photographers, Sol Mednick Gallery, UArts, Philadelphia, PA</li><li>2009 — Global Impact, Bing-Davis Gallery, Upper Iowa University, Iowa</li><li>2008 — Fotografi Emergenti, Palazzo San Vitale, Parma, Italy</li><li>2008 — Not the Westside Highway, PCNJ, Sommerville, NJ</li><li>2007 — Time Sensitive Material, Adamson-Eric Museum, Talinn, Estonia</li><li>2007 — Gyeongnam International Art Festival, Gyeongnam Art Museum, South Korea</li><li>2007 — Poetry Books: Reading Books, Enschede, The Netherlands</li><li>2006 — Book marks I, II, III, Stewart Center Gallery, Purdue University, IN</li><li>2006 — New Pages, UIAH, Helsinki, Finland</li><li>2005 — Faculty Show, MSU, NJ</li><li>2005 — Icon-Data, online invitational show as part of the Polish Print Triennial, Kracow, Poland</li><li>2005 — Dangen Art, Nashville, TN</li><li>2005 — Hand to Mouse, Royal West of England Academy, Bristol, UK</li><li>2005 — Broekhuis Boekhandel, Enschede, The Netherlands</li><li>2005 — Book show at University of Tennessee at Chattanooga</li><li>2005 — Member's Show, CEPA Gallery, Buffalo</li><li>2005 — Boxing Clever, University of the West of England and the Royal West of England Academy, Bristol, UK</li><li>2004 — 13th Print Triennial, Tallinn, Estonia</li><li>2004 — Solo show, Prema Arts Centre, Uley, UK</li><li>2004 — New Directions in Printmaking, Miskolc Gallery of Fine Arts, Hungary</li><li>2004 — Artists' Book show, University of Tennessee</li><li>2004 — Artists' Book show, HouseRoom, Bath, UK</li><li>2004 — Altered Images, Digital Interpretations Inspired by Geo. Cartlidge's Portrait Tiles, The Potteries Museum and Gallery, Stoke-on-Trent, UK</li><li>2004 — Bookmarks Project, UWE, UK</li><li>2003 — International Graphic Art Biennial, Split, Croatia</li><li>2003 — Macedonian Print Triennial, Bitola, Macedonia</li><li>2003 — Gravat.olot, Olot, Spain</li><li>2003 — Gravat, Häsinglands Museum of Hudiksvall, Sweden</li><li>2003 — Portraits, University of Montana</li><li>2003 — International Print Biennial, Varna, Bulgaria</li><li>2003 — Masereel: 10 Years of Prints, Edinburgh Printmakers, Edinburgh, UK</li><li>2003 — International Print Biennial, Beijing, China</li><li>2003 — Featured Artist, Center for Book Arts, New York</li><li>2003 — Curtains, Manhattan Graphics Center, New York</li><li>2003 — The history book that never was, Boston</li><li>2003 — Portfolio show, Boston</li><li>2003 — 25 years of The Frans Masereel Centrum, Belgium</li><li>2003 — Secrets, University of Tennessee at Chattanooga</li><li>2003 — Mainz Minibuchverlagmesse, Mainz, Germany</li><li>2003 — 9th Wexford Artists Book Exhibition, Ireland</li><li>2002 — Artists Book Show, Sherborne, UK</li><li>2002 — 20:20, Hereford College, UK</li><li>2002 — here here there there, University of Dundee and UWE, UK</li><li>2002 — 7è Concurs Internacional de Gravat Premi, Girona, Spain</li><li>2001 — Curtains and first international Miniprint Show, Gittins Gallery, University of Utah, Salt Lake City</li><li>2001 — 7th Wexford Artists Book Exhibition, Ireland</li><li>2001 — Feat of Clay, V&A Museum, London</li><li>2001 — Tallinn Print Triennial, Tallinn, Estonia</li><li>2001 — Photomechanical print survey, CADE, Glasgow School of Art</li><li>2001 — Society of Graphic Art, Hotbath Gallery, Bath</li><li>2001 — SGC Conference, Austin, Texas</li><li>2001 — A Tale of Two Cities, Center for Book Arts, New York and Off-Centre Gallery, Bristol</li><li>2000 — Chongqing Print Festival, Chongqing, China</li><li>2000 — Photomechanical print survey, Create Centre, Bristol</li><li>1999 — Impact print conference, Bristol: Artists' Books 1989–1999, flexography and 'Mind the Gap' shows</li><li>1999 — Indiana University print exchange, Bloomington, IA</li><li>1997 — 10 years of the Miniprint, Bankside gallery, London; Ohio SU; Rhodes uni; S. Africa; Uni of So. Illinois; Kent SU; Cleveland Institute; AKI, Enschede, Holland</li><li>1997 — Booksy, group show, Newcastle-upon-Tyne</li><li>1997 — Imbue, group show, The Old Leadworks, Bristol</li><li>1996–2003 — Miniprint Shows, Bristol</li><li>1997–2003 — Artist's Book Fair, Barbican, London</li><li>1998–2004 — Halifax Book Fair, Dean Clough Gallery</li></ul>
+        <ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2022 —</span> <a href="https://vimeo.com/553111781?share=copy#t=424" target="_blank" rel="noopener external">CCRMA, Ocean Memory Concert, Stanford University<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 9V1h4v1H2v7h7V5h1v4H1z"/><path d="M9 1H6l1.1 1.1L4 5.2l.8.8 3.1-3.1L9 4V1z"/></svg></a></li><li><span class="item-date">2017 —</span> Last Stop Before Utopia, Sarasota Art Center, Sarasota, FL</li><li><span class="item-date">2017 —</span> Zona Imaginaria, Buenos Aires, Argentina</li><li><span class="item-date">2015 —</span> Faculty Exhibition, Segal Gallery, Montclair State University, Montclair, NJ</li><li><span class="item-date">2014 —</span> Festival de la Luz, Zona Imaginaria, Buenos Aires, Argentina</li><li><span class="item-date">2014 —</span> Destination Unknown, MagnanMetz, Chelsea, NY</li><li><span class="item-date">2013 —</span> Sideshow Nation, Sideshow Gallery, Brooklyn</li><li><span class="item-date">2013 —</span> Howard Gardens Gallery, Cardiff, Wales</li><li><span class="item-date">2011 —</span> Zone Imaginaria, Buenos Aires, Argentina</li><li><span class="item-date">2011 —</span> Japan Now, Camel Arts, Brooklyn</li><li><span class="item-date">2010 —</span> New York Emergentes, UNC Cordoba, Argentina</li><li><span class="item-date">2010 —</span> Paper Trails, Whitecliffe College, New Zealand</li><li><span class="item-date">2009 —</span> Emerging Photographers, Sol Mednick Gallery, UArts, Philadelphia, PA</li><li><span class="item-date">2009 —</span> Global Impact, Bing-Davis Gallery, Upper Iowa University, Iowa</li><li><span class="item-date">2008 —</span> Fotografi Emergenti, Palazzo San Vitale, Parma, Italy</li><li><span class="item-date">2008 —</span> Not the Westside Highway, PCNJ, Sommerville, NJ</li><li><span class="item-date">2007 —</span> Time Sensitive Material, Adamson-Eric Museum, Talinn, Estonia</li><li><span class="item-date">2007 —</span> Gyeongnam International Art Festival, Gyeongnam Art Museum, South Korea</li><li><span class="item-date">2007 —</span> Poetry Books: Reading Books, Enschede, The Netherlands</li><li><span class="item-date">2006 —</span> Book marks I, II, III, Stewart Center Gallery, Purdue University, IN</li><li><span class="item-date">2006 —</span> New Pages, UIAH, Helsinki, Finland</li><li><span class="item-date">2005 —</span> Faculty Show, MSU, NJ</li><li><span class="item-date">2005 —</span> Icon-Data, online invitational show as part of the Polish Print Triennial, Kracow, Poland</li><li><span class="item-date">2005 —</span> Dangen Art, Nashville, TN</li><li><span class="item-date">2005 —</span> Hand to Mouse, Royal West of England Academy, Bristol, UK</li><li><span class="item-date">2005 —</span> Broekhuis Boekhandel, Enschede, The Netherlands</li><li><span class="item-date">2005 —</span> Book show at University of Tennessee at Chattanooga</li><li><span class="item-date">2005 —</span> Member's Show, CEPA Gallery, Buffalo</li><li><span class="item-date">2005 —</span> Boxing Clever, University of the West of England and the Royal West of England Academy, Bristol, UK</li><li><span class="item-date">2004 —</span> 13th Print Triennial, Tallinn, Estonia</li><li><span class="item-date">2004 —</span> Solo show, Prema Arts Centre, Uley, UK</li><li><span class="item-date">2004 —</span> New Directions in Printmaking, Miskolc Gallery of Fine Arts, Hungary</li><li><span class="item-date">2004 —</span> Artists' Book show, University of Tennessee</li><li><span class="item-date">2004 —</span> Artists' Book show, HouseRoom, Bath, UK</li><li><span class="item-date">2004 —</span> Altered Images, Digital Interpretations Inspired by Geo. Cartlidge's Portrait Tiles, The Potteries Museum and Gallery, Stoke-on-Trent, UK</li><li><span class="item-date">2004 —</span> Bookmarks Project, UWE, UK</li><li><span class="item-date">2003 —</span> International Graphic Art Biennial, Split, Croatia</li><li><span class="item-date">2003 —</span> Macedonian Print Triennial, Bitola, Macedonia</li><li><span class="item-date">2003 —</span> Gravat.olot, Olot, Spain</li><li><span class="item-date">2003 —</span> Gravat, Häsinglands Museum of Hudiksvall, Sweden</li><li><span class="item-date">2003 —</span> Portraits, University of Montana</li><li><span class="item-date">2003 —</span> International Print Biennial, Varna, Bulgaria</li><li><span class="item-date">2003 —</span> Masereel: 10 Years of Prints, Edinburgh Printmakers, Edinburgh, UK</li><li><span class="item-date">2003 —</span> International Print Biennial, Beijing, China</li><li><span class="item-date">2003 —</span> Featured Artist, Center for Book Arts, New York</li><li><span class="item-date">2003 —</span> Curtains, Manhattan Graphics Center, New York</li><li><span class="item-date">2003 —</span> The history book that never was, Boston</li><li><span class="item-date">2003 —</span> Portfolio show, Boston</li><li><span class="item-date">2003 —</span> 25 years of The Frans Masereel Centrum, Belgium</li><li><span class="item-date">2003 —</span> Secrets, University of Tennessee at Chattanooga</li><li><span class="item-date">2003 —</span> Mainz Minibuchverlagmesse, Mainz, Germany</li><li><span class="item-date">2003 —</span> 9th Wexford Artists Book Exhibition, Ireland</li><li><span class="item-date">2002 —</span> Artists Book Show, Sherborne, UK</li><li><span class="item-date">2002 —</span> 20:20, Hereford College, UK</li><li><span class="item-date">2002 —</span> here here there there, University of Dundee and UWE, UK</li><li><span class="item-date">2002 —</span> 7è Concurs Internacional de Gravat Premi, Girona, Spain</li><li><span class="item-date">2001 —</span> Curtains and first international Miniprint Show, Gittins Gallery, University of Utah, Salt Lake City</li><li><span class="item-date">2001 —</span> 7th Wexford Artists Book Exhibition, Ireland</li><li><span class="item-date">2001 —</span> Feat of Clay, V&A Museum, London</li><li><span class="item-date">2001 —</span> Tallinn Print Triennial, Tallinn, Estonia</li><li><span class="item-date">2001 —</span> Photomechanical print survey, CADE, Glasgow School of Art</li><li><span class="item-date">2001 —</span> Society of Graphic Art, Hotbath Gallery, Bath</li><li><span class="item-date">2001 —</span> SGC Conference, Austin, Texas</li><li><span class="item-date">2001 —</span> A Tale of Two Cities, Center for Book Arts, New York and Off-Centre Gallery, Bristol</li><li><span class="item-date">2000 —</span> Chongqing Print Festival, Chongqing, China</li><li><span class="item-date">2000 —</span> Photomechanical print survey, Create Centre, Bristol</li><li><span class="item-date">1999 —</span> Impact print conference, Bristol: Artists' Books 1989–1999, flexography and 'Mind the Gap' shows</li><li><span class="item-date">1999 —</span> Indiana University print exchange, Bloomington, IA</li><li><span class="item-date">1997 —</span> 10 years of the Miniprint, Bankside gallery, London; Ohio SU; Rhodes uni; S. Africa; Uni of So. Illinois; Kent SU; Cleveland Institute; AKI, Enschede, Holland</li><li><span class="item-date">1997 —</span> Booksy, group show, Newcastle-upon-Tyne</li><li><span class="item-date">1997 —</span> Imbue, group show, The Old Leadworks, Bristol</li><li><span class="item-date">1996–2003 —</span> Miniprint Shows, Bristol</li><li><span class="item-date">1997–2003 —</span> Artist's Book Fair, Barbican, London</li><li><span class="item-date">1998–2004 —</span> Halifax Book Fair, Dean Clough Gallery</li></ul>
       </div>
     </div>
 
@@ -364,7 +436,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Grants</div>
       <div class="section-content">
-        <ul class="cv-list"><li>2025 — Ocean Memory Project, Nuuk Research Trip, $2,000</li><li>2023 — Ocean Memory Project, The Architectural Memory of Sea Ice, $10,000</li><li>2022 — American Philosophical Association, $5,000, Institute for Advancement of Philosophy for Children Book Prototype</li><li>2022 — Ocean Memory Project, Senses Sensing, $9,000</li><li>2008 — Global Education grant, MSU, $4,000 — Emerging Photographers Exhibition</li><li>2007 — Global Education grant, MSU, $2,000 — Developing the Italian Sense of Place Conference</li></ul>
+        <ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2025 —</span> Ocean Memory Project, Nuuk Research Trip, $2,000</li><li><span class="item-date">2023 —</span> Ocean Memory Project, The Architectural Memory of Sea Ice, $10,000</li><li><span class="item-date">2022 —</span> American Philosophical Association, $5,000, Institute for Advancement of Philosophy for Children Book Prototype</li><li><span class="item-date">2022 —</span> Ocean Memory Project, Senses Sensing, $9,000</li><li><span class="item-date">2008 —</span> Global Education grant, MSU, $4,000 — Emerging Photographers Exhibition</li><li><span class="item-date">2007 —</span> Global Education grant, MSU, $2,000 — Developing the Italian Sense of Place Conference</li></ul>
       </div>
     </div>
 
@@ -372,7 +444,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Workshops, Lectures &amp; Presentations</div>
       <div class="section-content">
-        <ul class="cv-list"><li>2022 — Harbor Six, Ocean Memory Project, Online</li><li>2017 — Artist PhD presentation for Volta Art Fair, New York</li><li>2013 — Visiting Critic for BFA Photography, NYU, NY</li><li>2012 — Visiting Lecturer and External Assessor, Whitecliffe College, Auckland, NZ</li><li>2008 — Visiting Critic for BFA Photography, Pratt College of Art, Brooklyn</li><li>2008 — 'Giuseppe Morandi And The Lega Cultura Di Piadena Practicing Contemporary Neo-realism,' Hawaii International Conference on Arts and Humanities, University of Louisville, Honolulu, HI</li><li>2005 — 'Interstitial Languages: photography and printmaking,' Impact 4 Conference, Poznan Museum, Poland</li><li>2004 — Polymergravure demonstration, University of Delaware, Newark</li><li>2004 — Artist's talk, University of Delaware, Newark</li><li>2004 — 'A history of Woodburytypes,' University of Delaware, Newark</li><li>2004 — Artist's talk, Drexel University, Philadelphia</li><li>2004 — 'The development of early photographic reproduction processes,' University of Virginia, Charlottesville</li><li>2003 — Artist's talk, Center for Book Arts, New York</li><li>2003 — 'Investigating the problems of empirical research through the work of Joan Fontcuberta,' paper for CADE 2003, Hull, UK</li><li>2003 — 'Continuous Tone Alternatives to the Halftone Model Through Historical Reflection,' Paper at PICS digital imaging conference, Rochester NY</li><li>2003 — Artist talk, Glasgow School of Art</li><li>2003 — Member of library users group, University of the West of England</li><li>2002 — Regional Ph.D seminar, 'Empirical research and critical practice,' University of the West of England</li><li>2001 — 'Ongoing Ph.D research' at Research Colloquium, Winchester School of Art</li><li>2000 — Fine print research for development of flexography for fine print and tests on new waterwashable inks for relief printing, University of the West of England</li><li>2000 — Member of Faculty research committee, University of the West of England</li><li>1999 — Artists' talk during show on 'Picasso and post-war printmaking in Paris,' Arnolfini Gallery, Bristol</li><li>1999 — 'CAB' urban spaces projects. Collaborative screen printed installation for UWE & Lloyd's Bank</li></ul>
+        <ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2022 —</span> Harbor Six, Ocean Memory Project, Online</li><li><span class="item-date">2017 —</span> Artist PhD presentation for Volta Art Fair, New York</li><li><span class="item-date">2013 —</span> Visiting Critic for BFA Photography, NYU, NY</li><li><span class="item-date">2012 —</span> Visiting Lecturer and External Assessor, Whitecliffe College, Auckland, NZ</li><li><span class="item-date">2008 —</span> Visiting Critic for BFA Photography, Pratt College of Art, Brooklyn</li><li><span class="item-date">2008 —</span> 'Giuseppe Morandi And The Lega Cultura Di Piadena Practicing Contemporary Neo-realism,' Hawaii International Conference on Arts and Humanities, University of Louisville, Honolulu, HI</li><li><span class="item-date">2005 —</span> 'Interstitial Languages: photography and printmaking,' Impact 4 Conference, Poznan Museum, Poland</li><li><span class="item-date">2004 —</span> Polymergravure demonstration, University of Delaware, Newark</li><li><span class="item-date">2004 —</span> Artist's talk, University of Delaware, Newark</li><li><span class="item-date">2004 —</span> 'A history of Woodburytypes,' University of Delaware, Newark</li><li><span class="item-date">2004 —</span> Artist's talk, Drexel University, Philadelphia</li><li><span class="item-date">2004 —</span> 'The development of early photographic reproduction processes,' University of Virginia, Charlottesville</li><li><span class="item-date">2003 —</span> Artist's talk, Center for Book Arts, New York</li><li><span class="item-date">2003 —</span> 'Investigating the problems of empirical research through the work of Joan Fontcuberta,' paper for CADE 2003, Hull, UK</li><li><span class="item-date">2003 —</span> 'Continuous Tone Alternatives to the Halftone Model Through Historical Reflection,' Paper at PICS digital imaging conference, Rochester NY</li><li><span class="item-date">2003 —</span> Artist talk, Glasgow School of Art</li><li><span class="item-date">2003 —</span> Member of library users group, University of the West of England</li><li><span class="item-date">2002 —</span> Regional Ph.D seminar, 'Empirical research and critical practice,' University of the West of England</li><li><span class="item-date">2001 —</span> 'Ongoing Ph.D research' at Research Colloquium, Winchester School of Art</li><li><span class="item-date">2000 —</span> Fine print research for development of flexography for fine print and tests on new waterwashable inks for relief printing, University of the West of England</li><li><span class="item-date">2000 —</span> Member of Faculty research committee, University of the West of England</li><li><span class="item-date">1999 —</span> Artists' talk during show on 'Picasso and post-war printmaking in Paris,' Arnolfini Gallery, Bristol</li><li><span class="item-date">1999 —</span> 'CAB' urban spaces projects. Collaborative screen printed installation for UWE & Lloyd's Bank</li></ul>
       </div>
     </div>
 
@@ -380,7 +452,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Artist Residencies</div>
       <div class="section-content">
-        <ul class="cv-list"><li>2003 — Gravat.olot, Olot, Spain <em>(Awarded gold prize)</em></li><li>2003 — Sally R. Bishop Fellowship and residency, Center for Book Arts, NY</li><li>2003 — Artist in Residence, Glasgow School of Art, UK</li><li>2002 — Residency, Frans Masereel Centrum, Kasterlee, Belgium</li></ul>
+        <ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li><span class="item-date">2003 —</span> Gravat.olot, Olot, Spain <em>(Awarded gold prize)</em></li><li><span class="item-date">2003 —</span> Sally R. Bishop Fellowship and residency, Center for Book Arts, NY</li><li><span class="item-date">2003 —</span> Artist in Residence, Glasgow School of Art, UK</li><li><span class="item-date">2002 —</span> Residency, Frans Masereel Centrum, Kasterlee, Belgium</li></ul>
       </div>
     </div>
 
@@ -388,11 +460,43 @@
       <div class="section-divider"></div>
       <div class="section-label">Collections</div>
       <div class="section-content">
-        <ul class="cv-list"><li>Manchester Metropolitan University Library, UK</li><li>Frans Masereel Centrum, Kasterlee, Belgium</li><li>Museum for Fine Arts, Antwerp, Belgium</li><li>KUMU (The Art Museum of Estonia), Tallinn, Estonia</li><li>Utah Museum of Fine Arts, Salt Lake City, Utah</li><li>Gravat.Olot, Olot, Spain</li><li>Center for Book Arts, New York</li></ul>
+        <ul class="cv-list" style="list-style-type: disc; list-style-position: inside; --marker-color: blue;"><li>Manchester Metropolitan University Library, UK</li><li>Frans Masereel Centrum, Kasterlee, Belgium</li><li>Museum for Fine Arts, Antwerp, Belgium</li><li>KUMU (The Art Museum of Estonia), Tallinn, Estonia</li><li>Utah Museum of Fine Arts, Salt Lake City, Utah</li><li>Gravat.Olot, Olot, Spain</li><li>Center for Book Arts, New York</li></ul>
       </div>
     </div>
   </div>
 
 </div>
+
+<script>
+  (function () {
+    const root   = document.documentElement;
+    const btn    = document.getElementById('theme-toggle');
+    const label  = document.getElementById('toggle-label');
+    const path   = document.getElementById('toggle-path');
+
+    // Sun icon path
+    const SUN  = 'M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-4a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V4a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm9-9h-1a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zM4 12a1 1 0 0 1-1 1H2a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm14.95 5.54-.7-.71a1 1 0 0 1 1.41-1.41l.71.7a1 1 0 0 1-1.41 1.42zm-13.9 0a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7zM18.24 6.46a1 1 0 0 1 0-1.41l.71-.71a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0zm-13.9 0a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 3.63 4.34l.71.71a1 1 0 0 1 0 1.41z';
+    // Moon icon path
+    const MOON = 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z';
+
+    function applyTheme(dark) {
+      root.setAttribute('data-theme', dark ? 'dark' : 'light');
+      path.setAttribute('d', dark ? SUN : MOON);
+      label.textContent = dark ? 'Light' : 'Dark';
+    }
+
+    // Restore saved preference
+    const saved = localStorage.getItem('cv-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(saved ? saved === 'dark' : prefersDark);
+
+    btn.addEventListener('click', function () {
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      applyTheme(!isDark);
+      localStorage.setItem('cv-theme', isDark ? 'light' : 'dark');
+    });
+  })();
+</script>
+
 </body>
 </html>

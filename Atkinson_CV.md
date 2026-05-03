@@ -73,10 +73,10 @@ He has developed creative coding curricula for Vidcode and serves as a consultan
 
 ### Other Courses
 
-| Dates          | Course  | Title                        |
-| -------------- | ------- | ---------------------------- |
-| 2017–19, 22–23 | ARGS280 | Art Forum                    |
-| 2021–23        | COED401 | Cooperative Education Mentor |
+| Dates           | Course  | Title                        |
+| --------------- | ------- | ---------------------------- |
+| 2017–19, '22–23 | ARGS280 | Art Forum                    |
+| 2021–23         | COED401 | Cooperative Education Mentor |
 
 ---
 
