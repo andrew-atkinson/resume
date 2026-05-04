@@ -719,4 +719,16 @@ const indexPath = path.join(scriptDir, "index.html");
 fs.writeFileSync(indexPath, buildIndexHTML(cv, formats, scriptDir), "utf-8");
 console.log(`── Index\n   ✓  ${indexPath}\n`);
 
+// ── PDF + DOCX exports ────────────────────────────────────────────────────────
+
+const exports_ = spawnSync(
+  process.execPath,
+  [path.join(scriptDir, "html-to-exports.js"), formatsPath],
+  { stdio: "inherit" },
+);
+if (exports_.status !== 0) {
+  console.error("html-to-exports.js exited with an error.");
+  process.exit(exports_.status ?? 1);
+}
+
 console.log("Done.\n");
