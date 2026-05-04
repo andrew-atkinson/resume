@@ -1,0 +1,12 @@
+{
+  "name": "resume-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Single-source résumé pipeline — Markdown to HTML, PDF, and DOCX",
+  "scripts": {
+    "build": "node src/md-to-resumes.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^23.0.0"
+  }
+}

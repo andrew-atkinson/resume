@@ -717,12 +717,33 @@ const args        = process.argv.slice(2);
 const scriptDir   = __dirname;                    // …/resumes/src
 const projectRoot = path.join(__dirname, "..");   // …/resumes  (GitHub Pages root)
 
-if (args.length === 0) {
-  console.error("Usage: node src/md-to-resumes.js <source.md> [resumeFormats.md]");
+// ── Resolve CV path ───────────────────────────────────────────────────────────
+//
+// If no argument is given, auto-detect the single .md file in src/ that isn't
+// resumeFormats.md.  This lets `npm run build` work without hardcoding a name.
+
+function autoDetectCV(dir) {
+  const candidates = fs.readdirSync(dir).filter(
+    f => f.endsWith(".md") && f !== "resumeFormats.md",
+  );
+  if (candidates.length === 1) return path.join(dir, candidates[0]);
+  if (candidates.length === 0) return null;
+  // Multiple candidates — can't pick automatically
+  return null;
+}
+
+const cvPath = args[0]
+  ? path.resolve(args[0])
+  : autoDetectCV(scriptDir);
+
+if (!cvPath) {
+  console.error(
+    "Usage: node src/md-to-resumes.js <source.md> [resumeFormats.md]\n" +
+    "(Or place exactly one .md CV file in src/ to skip the argument.)",
+  );
   process.exit(1);
 }
 
-const cvPath      = path.resolve(args[0]);
 const formatsPath = args[1] ? path.resolve(args[1]) : path.join(scriptDir, "resumeFormats.md");
 
 if (!fs.existsSync(cvPath)) {

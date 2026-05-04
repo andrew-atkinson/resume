@@ -1,4 +1,4 @@
-# CV Pipeline
+# Resume Builder
 
 A single-source résumé pipeline. One Markdown CV file and one format specification produce as many tailored HTML résumés as you need, each automatically exported to PDF and DOCX. The root `index.html` is a GitHub Pages–compatible landing page that links to every format.
 
@@ -6,13 +6,14 @@ A single-source résumé pipeline. One Markdown CV file and one format specifica
 
 ## Requirements
 
-| Tool | Purpose | Install |
-| ---- | ------- | ------- |
-| [Node.js](https://nodejs.org/) 16+ | Runs all scripts | `brew install node` |
-| [pandoc](https://pandoc.org/) | Generates DOCX files | `brew install pandoc` |
-| [Google Chrome](https://www.google.com/chrome/) | Generates PDF files | Download from google.com/chrome |
+| Tool                                            | Purpose              | Install                         |
+| ----------------------------------------------- | -------------------- | ------------------------------- |
+| [Node.js](https://nodejs.org/) 16+              | Runs all scripts              | `brew install node`             |
+| [pandoc](https://pandoc.org/)                   | Generates DOCX files          | `brew install pandoc`           |
+| [Google Chrome](https://www.google.com/chrome/) | Generates PDF files           | Download from google.com/chrome |
+| [puppeteer-core](https://pptr.dev/)             | Node API for Chrome PDF export | `npm install` (once, project root) |
 
-No npm packages are required. All scripts use the Node.js standard library only.
+Run `npm install` once from the project root before first use.
 
 ---
 
@@ -88,7 +89,7 @@ After all résumés are written it builds `index.html` at the project root and t
 
 Reads each HTML résumé listed in `resumeFormats.md` and converts it to two formats:
 
-**PDF** — uses Chrome headless (`--print-to-pdf`). The full CSS is preserved so the PDF matches the browser rendering exactly. Page size is A4 with 2 cm top/bottom and 2.5 cm side margins. Headers and footers (date, filename, file path) are suppressed.
+**PDF** — uses Chrome headless (`--print-to-pdf`). The full CSS is preserved so the PDF matches the browser rendering exactly. Page size is A4 with 0.75 in top, 1 in bottom, and 2.5 cm side margins applied on every page. Headers and footers (date, filename, file path) are suppressed.
 
 **DOCX** — uses pandoc. Before conversion, browser-only elements (stylesheets, scripts, theme toggle) are stripped and `div`-based section headings are promoted to semantic `<h2>`/`<h3>` elements so pandoc builds a correctly structured document. The `table-fix.lua` filter sets proportional column widths and left-alignment on all tables so they span the full text column rather than collapsing to minimum width.
 
@@ -158,10 +159,10 @@ Your profile text here as one or more plain paragraphs.
 Markdown tables render as clean, proportionally-sized tables. The first column is displayed in muted grey (suited to years or dates):
 
 ```markdown
-| Dates       | Institution                       | Qualification      |
-| ----------- | --------------------------------- | ------------------ |
-| 2000–2004   | University of the West of England | Ph.D.              |
-| 1993–1996   | University of the West of England | BA (hons) Fine Art |
+| Dates     | Institution                       | Qualification      |
+| --------- | --------------------------------- | ------------------ |
+| 2000–2004 | University of the West of England | Ph.D.              |
+| 1993–1996 | University of the West of England | BA (hons) Fine Art |
 ```
 
 #### Professional experience entries
@@ -195,11 +196,11 @@ Co-authored major rewrites of undergraduate degree programs. Chaired 2018–2022
 
 #### Inline formatting
 
-| Markdown        | Renders as     |
-| --------------- | -------------- |
-| `*italic*`      | *italic*       |
-| `**bold**`      | **bold**       |
-| `[label](url)`  | clickable link |
+| Markdown       | Renders as     |
+| -------------- | -------------- |
+| `*italic*`     | _italic_       |
+| `**bold**`     | **bold**       |
+| `[label](url)` | clickable link |
 
 Bare URLs (e.g. DOI links) are rendered as hyperlinks and shielded from italic/bold processing.
 
@@ -239,10 +240,10 @@ List the sections to include, in the order they should appear. Section names mus
 
 An optional parenthetical after a section name applies a transformation:
 
-| Instruction | Effect |
-| ----------- | ------ |
-| `abbreviated to N words and …` | Truncates the section prose to approximately N words, breaking at a sentence boundary |
-| `integrate X into the flow of Y` | Merges section X into section Y in reverse chronological order by date |
+| Instruction                      | Effect                                                                                |
+| -------------------------------- | ------------------------------------------------------------------------------------- |
+| `abbreviated to N words and …`   | Truncates the section prose to approximately N words, breaking at a sentence boundary |
+| `integrate X into the flow of Y` | Merges section X into section Y in reverse chronological order by date                |
 
 ```markdown
 - Profile (abbreviated to 100 words and emphasize artistic contributions)

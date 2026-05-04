@@ -1,14 +1,19 @@
 #!/usr/bin/env node
 /**
  * html-to-exports.js
- * Converts each generated resume HTML file to PDF (→ /pdf) and DOCX (→ /docx)
- * using pandoc + xelatex.
+ * Converts each generated resume HTML file to PDF (→ /pdf) and DOCX (→ /docx).
+ *
+ * PDF  — puppeteer-core driving the system Chrome install.
+ *        displayHeaderFooter: false guarantees no date/URL overlays regardless
+ *        of Chrome version.
+ * DOCX — pandoc with a Lua filter for table column widths.
  *
  * Usage:
  *   node html-to-exports.js [resumeFormats.md]
  *   Defaults to resumeFormats.md in the same directory.
  *
- * Requirements: pandoc and xelatex must be on PATH.
+ * Requirements: pandoc on PATH, Google Chrome installed, puppeteer-core
+ *   (npm install puppeteer-core  — run once from the project root).
  */
 
 "use strict";
@@ -17,6 +22,7 @@ const fs            = require("fs");
 const os            = require("os");
 const path          = require("path");
 const { spawnSync } = require("child_process");
+const puppeteer     = require("puppeteer-core");
 
 const scriptDir   = __dirname;                    // …/resumes/src
 const projectRoot = path.join(__dirname, "..");   // …/resumes  (GitHub Pages root)
@@ -25,10 +31,7 @@ const formatsPath = args[0]
   ? path.resolve(args[0])
   : path.join(scriptDir, "resumeFormats.md");     // resumeFormats.md lives in src/
 
-// ── Locate Chrome (for PDF generation) ───────────────────────────────────────
-//
-// We use Chrome / Chromium headless to print PDFs so the output looks exactly
-// like the browser version — proper fonts, CSS layout, no TeX required.
+// ── Locate Chrome ─────────────────────────────────────────────────────────────
 const CHROME_CANDIDATES = [
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "/Applications/Chromium.app/Contents/MacOS/Chromium",
@@ -61,9 +64,6 @@ if (!chromePath) {
 }
 
 // ── Parse format output paths from resumeFormats.md ──────────────────────────
-//
-// Reads every top-level heading and extracts the (output to '…') annotation,
-// giving us the relative path to each generated HTML file.
 
 function parseOutputPaths(md) {
   const results = [];
@@ -74,8 +74,8 @@ function parseOutputPaths(md) {
     const nameMatch = trim.match(/^#\s+(.+?)(?:\s+\(output|$)/);
     if (pathMatch && nameMatch) {
       results.push({
-        htmlRel:  pathMatch[1],                                       // e.g. "/artist/index.html"
-        label:    nameMatch[1].replace(/\s*\(output to [^)]+\)/, "").trim(), // e.g. "Artist Resume"
+        htmlRel: pathMatch[1],
+        label:   nameMatch[1].replace(/\s*\(output to [^)]+\)/, "").trim(),
       });
     }
   }
@@ -83,27 +83,10 @@ function parseOutputPaths(md) {
 }
 
 // ── Lua filter path ───────────────────────────────────────────────────────────
-//
-// table-fix.lua intercepts every Table node in the pandoc AST and sets:
-//   • AlignLeft on every column
-//   • proportional relative widths (so the last column wraps instead of
-//     bleeding off the page in PDF, and tables span full width in DOCX)
-//
-// Must be an absolute path so pandoc can find it regardless of the cwd it
-// is invoked from.
 const luaFilter = path.join(scriptDir, "table-fix.lua");
 
 // ── Table preprocessing ───────────────────────────────────────────────────────
-//
-// Pandoc strips all CSS before converting.  The Lua filter (above) is the
-// primary fix for column widths and alignment.  We also add plain HTML
-// attributes here as a belt-and-suspenders measure for DOCX renderers that
-// honour them directly.
 
-/**
- * Rewrite every <table> to carry align="left" width="100%".
- * Column-width proportions are handled by the Lua filter instead.
- */
 function fixTables(html) {
   return html.replace(/<table([^>]*)>/gi, (_, attrs) => {
     const cleanAttrs = attrs
@@ -113,73 +96,44 @@ function fixTables(html) {
   });
 }
 
-// ── HTML preprocessing ────────────────────────────────────────────────────────
-//
-// Strips browser-only noise (style sheets, scripts, theme toggle), promotes
-// our custom div-based section structure into semantic HTML headings so pandoc
-// builds a properly hierarchical document, and fixes table attributes.
+// ── HTML preprocessing (DOCX path) ───────────────────────────────────────────
 
 function preprocessHTML(html) {
   const cleaned = html
-    // ── Strip browser-only blocks ──
     .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/<button[\s\S]*?<\/button>/gi, "")
-
-    // ── Strip SVG images ──
-    // Inline <svg>…</svg> blocks and <img src="*.svg"> references are
-    // decorative icons that pandoc cannot convert without rsvg-convert.
-    // Remove them entirely so the document content comes through cleanly.
     .replace(/<svg[\s\S]*?<\/svg>/gi, "")
     .replace(/<img[^>]*src="[^"]*\.svgz?"[^>]*>/gi, "")
-
-    // ── Force light mode (white background) ──
     .replace(/data-theme="dark"/gi, 'data-theme="light"')
-
-    // ── Promote custom div roles → semantic HTML elements ──
-    // section-label divs  → <h2>  (section headings: Profile, Education …)
     .replace(
       /<div[^>]*class="section-label"[^>]*>([\s\S]*?)<\/div>/gi,
       "<h2>$1</h2>",
     )
-    // sub-label divs → <h3>  (sub-section headings: Photography, Bibliography …)
     .replace(
       /<div[^>]*class="sub-label"[^>]*>([\s\S]*?)<\/div>/gi,
       "<h3>$1</h3>",
     )
-    // section-divider empty divs → remove
     .replace(/<div[^>]*class="section-divider"[^>]*>\s*<\/div>/gi, "");
 
-  // ── Add align/width HTML attributes on tables ──
-  // (Lua filter handles the deep column-spec fix; this is supplementary.)
   return fixTables(cleaned);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/** Extract the person's name from the HTML <title> tag. */
 function extractName(html) {
   const m = html.match(/<title>([^<]+)<\/title>/i);
   if (!m) return "";
-  return m[1].replace(/\s*[—–-].*$/, "").trim();   // "Andrew Atkinson — CV" → "Andrew Atkinson"
+  return m[1].replace(/\s*[—–-].*$/, "").trim();
 }
 
-/**
- * Build the output file stem.
- * e.g.  name="Andrew Atkinson", label="Artist Resume"  →  "Atkinson_Artist"
- */
 function buildStem(name, label) {
   const lastName  = name.split(/\s+/).pop() || "Resume";
-  const firstWord = label.split(/\s+/)[0];           // "Artist" from "Artist Resume"
+  const firstWord = label.split(/\s+/)[0];
   return `${lastName}_${firstWord}`;
 }
 
-/**
- * Run pandoc, feeding it a temporary HTML file.
- * Returns the spawnSync result object.
- */
 function runPandoc(pandocArgs, htmlContent) {
-  // Write to a temp file — more reliable than piping complex HTML through stdin
   const tmpFile = path.join(os.tmpdir(), `resume-export-${process.pid}-${Date.now()}.html`);
   try {
     fs.writeFileSync(tmpFile, htmlContent, "utf-8");
@@ -188,58 +142,63 @@ function runPandoc(pandocArgs, htmlContent) {
       maxBuffer: 20 * 1024 * 1024,
     });
   } finally {
-    try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore cleanup errors */ }
+    try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore */ }
   }
 }
 
 // ── PDF preparation ───────────────────────────────────────────────────────────
 //
-// For Chrome we keep the full HTML (including CSS) so the PDF matches the
-// browser exactly.  We only need to force light mode and inject A4 page
-// geometry + print overrides.
+// Inject print-specific CSS.  Margins are passed directly to puppeteer's
+// page.pdf() so @page rules here only need to set the page size.
 
 function prepareHTMLForPDF(html) {
-  // Setting @page margin to 0 leaves Chrome no space to render its automatic
-  // header (date / filename) and footer (file path / page number) — they are
-  // painted in the margin area, so zero margin suppresses them completely.
-  // This is more reliable than --print-to-pdf-no-header alone on Chrome 112+.
-  // Content margins are provided by the .resume container padding instead.
   const printStyles = [
-    "@page { size: A4; margin: 0; }",
-    "body { padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }",
-    ".resume { padding: 2cm 2.5cm !important; max-width: 100% !important; box-sizing: border-box !important; }",
+    "@page { size: A4; }",
+    "body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }",
+    ".resume { max-width: 100% !important; }",
   ].join(" ");
 
   return html
-    // Force light mode regardless of system preference
     .replace(/data-theme="dark"/gi, 'data-theme="light"')
-    // Inject print styles just before </head>
     .replace(/<\/head>/i, `<style>${printStyles}</style></head>`);
 }
 
-// ── PDF generation (Chrome headless) ─────────────────────────────────────────
+// ── PDF generation (puppeteer-core) ──────────────────────────────────────────
+//
+// puppeteer exposes the CDP Page.printToPDF call directly, which accepts
+// displayHeaderFooter: false — guaranteed to suppress Chrome's date/URL
+// overlays regardless of Chrome version or headless mode.
 
-function generatePDF(rawHTML, outPath) {
+async function generatePDF(rawHTML, outPath) {
   const printHTML = prepareHTMLForPDF(rawHTML);
-  const tmpFile = path.join(
-    os.tmpdir(),
-    `resume-pdf-${process.pid}-${Date.now()}.html`,
-  );
+  const tmpFile = path.join(os.tmpdir(), `resume-pdf-${process.pid}-${Date.now()}.html`);
+
   try {
     fs.writeFileSync(tmpFile, printHTML, "utf-8");
-    return spawnSync(
-      chromePath,
-      [
-        "--headless",
-        "--disable-gpu",
-        "--no-sandbox",
-        "--run-all-compositor-stages-before-draw",
-        "--print-to-pdf-no-header",
-        `--print-to-pdf=${outPath}`,
-        `file://${tmpFile}`,
-      ],
-      { encoding: "utf-8", maxBuffer: 20 * 1024 * 1024 },
-    );
+
+    const browser = await puppeteer.launch({
+      executablePath: chromePath,
+      args: ["--no-sandbox", "--disable-gpu"],
+    });
+
+    try {
+      const page = await browser.newPage();
+      await page.goto(`file://${tmpFile}`, { waitUntil: "networkidle0" });
+      await page.pdf({
+        path:                 outPath,
+        format:               "A4",
+        displayHeaderFooter:  false,   // no date / URL / page-number overlays
+        printBackground:      true,    // preserve background colours
+        margin: {
+          top:    "0.75in",
+          right:  "2.5cm",
+          bottom: "1in",
+          left:   "2.5cm",
+        },
+      });
+    } finally {
+      await browser.close();
+    }
   } finally {
     try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore */ }
   }
@@ -270,7 +229,6 @@ if (entries.length === 0) {
   process.exit(1);
 }
 
-// Create output directories at the project root (not inside src/)
 const pdfDir  = path.join(projectRoot, "pdf");
 const docxDir = path.join(projectRoot, "docx");
 fs.mkdirSync(pdfDir,  { recursive: true });
@@ -278,48 +236,50 @@ fs.mkdirSync(docxDir, { recursive: true });
 
 console.log(`\nExporting ${entries.length} resume(s) to PDF + DOCX:\n`);
 
-let allOk = true;
+(async () => {
+  let allOk = true;
 
-for (const { htmlRel, label } of entries) {
-  const htmlAbs = path.join(projectRoot, htmlRel);  // HTML files live at project root
+  for (const { htmlRel, label } of entries) {
+    const htmlAbs = path.join(projectRoot, htmlRel);
 
-  if (!fs.existsSync(htmlAbs)) {
-    console.warn(`  ⚠  HTML not found: ${htmlAbs} — skipping`);
-    allOk = false;
-    continue;
+    if (!fs.existsSync(htmlAbs)) {
+      console.warn(`  ⚠  HTML not found: ${htmlAbs} — skipping`);
+      allOk = false;
+      continue;
+    }
+
+    const rawHTML   = fs.readFileSync(htmlAbs, "utf-8");
+    const cleanHTML = preprocessHTML(rawHTML);
+    const name      = extractName(rawHTML);
+    const stem      = buildStem(name, label);
+    const title     = `${name} — ${label}`;
+
+    console.log(`── ${label}  (${stem})`);
+
+    // ── PDF ────────────────────────────────────────────────────────────────
+    const pdfPath = path.join(pdfDir, `${stem}.pdf`);
+    try {
+      await generatePDF(rawHTML, pdfPath);
+      if (!fs.existsSync(pdfPath)) throw new Error("PDF file was not created");
+      console.log(`   ✓  ${pdfPath}`);
+    } catch (err) {
+      console.error(`   ✗  PDF failed: ${err.message}`);
+      allOk = false;
+    }
+
+    // ── DOCX ───────────────────────────────────────────────────────────────
+    const docxPath = path.join(docxDir, `${stem}.docx`);
+    const docxRes  = generateDOCX(cleanHTML, docxPath, title);
+    if (docxRes.status !== 0) {
+      console.error(`   ✗  DOCX failed:\n${docxRes.stderr}`);
+      allOk = false;
+    } else {
+      console.log(`   ✓  ${docxPath}`);
+    }
+
+    console.log();
   }
 
-  const rawHTML   = fs.readFileSync(htmlAbs, "utf-8");
-  const cleanHTML = preprocessHTML(rawHTML);           // for DOCX
-  const name      = extractName(rawHTML);
-  const stem      = buildStem(name, label);           // e.g. "Atkinson_Artist"
-  const title     = `${name} — ${label}`;             // DOCX metadata title
-
-  console.log(`── ${label}  (${stem})`);
-
-  // ── PDF (Chrome headless — renders full CSS) ──────────────────────────────
-  const pdfPath = path.join(pdfDir, `${stem}.pdf`);
-  const pdfRes  = generatePDF(rawHTML, pdfPath);
-  // Chrome exits 0 even on partial errors; check the output file was written.
-  if (pdfRes.status !== 0 || !fs.existsSync(pdfPath)) {
-    console.error(`   ✗  PDF failed:\n${pdfRes.stderr || pdfRes.stdout}`);
-    allOk = false;
-  } else {
-    console.log(`   ✓  ${pdfPath}`);
-  }
-
-  // ── DOCX ─────────────────────────────────────────────────────────────────
-  const docxPath = path.join(docxDir, `${stem}.docx`);
-  const docxRes  = generateDOCX(cleanHTML, docxPath, title);
-  if (docxRes.status !== 0) {
-    console.error(`   ✗  DOCX failed:\n${docxRes.stderr}`);
-    allOk = false;
-  } else {
-    console.log(`   ✓  ${docxPath}`);
-  }
-
-  console.log();
-}
-
-console.log(allOk ? "Done.\n" : "Done (with errors).\n");
-if (!allOk) process.exit(1);
+  console.log(allOk ? "Done.\n" : "Done (with errors).\n");
+  if (!allOk) process.exit(1);
+})();
