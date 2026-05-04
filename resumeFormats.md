@@ -27,9 +27,7 @@
 
 # Professional Resume (output to '/professional/index.html')
 
-- Profile (but make it 100 words and emphasize professional contributions)
 - Education
 - Professional Experience
-  - University Service (fold abbreviated university service into professional experience)
-  - Professional Service (integrate professional service into professional experience)
+  - Professional Service (integrate professional service into the flow of professional experience)
 - Scholarship, Publications, and Related Activities

@@ -744,43 +744,49 @@ const MIRROR_DIRS = [
   path.join(os.homedir(), "Desktop/Job Applications/CVs/resumé updater"), // ~/Desktop/.../resumé updater/
 ];
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+// ── Module exports (for use as a helper by md-to-resumes.js) ─────────────────
 
-const args = process.argv.slice(2);
+module.exports = { parseMarkdown, buildHTML, renderInline, escapeHtml };
 
-if (args.length === 0) {
-  console.error("Usage: node md-to-resume.js <input.md> [output.html]");
-  process.exit(1);
-}
+// ── Main (only runs when called directly as a CLI tool) ───────────────────────
 
-const inputPath = path.resolve(args[0]);
-const outputName = args[1]
-  ? path.basename(args[1])
-  : path.basename(inputPath).replace(/\.md$/i, ".html");
+if (require.main === module) {
+  const args = process.argv.slice(2);
 
-if (!fs.existsSync(inputPath)) {
-  console.error(`Error: file not found — ${inputPath}`);
-  process.exit(1);
-}
-
-const markdown = fs.readFileSync(inputPath, "utf-8");
-const cv = parseMarkdown(markdown);
-const html = buildHTML(cv);
-
-// Write to every mirror directory that exists
-let written = 0;
-for (const dir of MIRROR_DIRS) {
-  if (!fs.existsSync(dir)) {
-    console.warn(`⚠  Skipping missing directory: ${dir}`);
-    continue;
+  if (args.length === 0) {
+    console.error("Usage: node md-to-resume.js <input.md> [output.html]");
+    process.exit(1);
   }
-  const dest = path.join(dir, outputName);
-  fs.writeFileSync(dest, html, "utf-8");
-  console.log(`✓  ${dest}`);
-  written++;
-}
 
-if (written === 0) {
-  console.error("Error: no output directories were available.");
-  process.exit(1);
+  const inputPath = path.resolve(args[0]);
+  const outputName = args[1]
+    ? path.basename(args[1])
+    : path.basename(inputPath).replace(/\.md$/i, ".html");
+
+  if (!fs.existsSync(inputPath)) {
+    console.error(`Error: file not found — ${inputPath}`);
+    process.exit(1);
+  }
+
+  const markdown = fs.readFileSync(inputPath, "utf-8");
+  const cv = parseMarkdown(markdown);
+  const html = buildHTML(cv);
+
+  // Write to every mirror directory that exists
+  let written = 0;
+  for (const dir of MIRROR_DIRS) {
+    if (!fs.existsSync(dir)) {
+      console.warn(`⚠  Skipping missing directory: ${dir}`);
+      continue;
+    }
+    const dest = path.join(dir, outputName);
+    fs.writeFileSync(dest, html, "utf-8");
+    console.log(`✓  ${dest}`);
+    written++;
+  }
+
+  if (written === 0) {
+    console.error("Error: no output directories were available.");
+    process.exit(1);
+  }
 }
