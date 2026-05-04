@@ -650,10 +650,17 @@ function buildIndexHTML(cv, formats, baseDir) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
+const { spawnSync } = require("child_process");
+
 const args        = process.argv.slice(2);
 const scriptDir   = __dirname;
 
-const cvPath      = args[0] ? path.resolve(args[0]) : path.join(scriptDir, "Atkinson_CV.md");
+if (args.length === 0) {
+  console.error("Usage: node md-to-resumes.js <source.md> [resumeFormats.md]");
+  process.exit(1);
+}
+
+const cvPath      = path.resolve(args[0]);
 const formatsPath = args[1] ? path.resolve(args[1]) : path.join(scriptDir, "resumeFormats.md");
 
 if (!fs.existsSync(cvPath)) {
@@ -668,10 +675,28 @@ if (!fs.existsSync(formatsPath)) {
 console.log(`\nCV:      ${cvPath}`);
 console.log(`Formats: ${formatsPath}\n`);
 
+// ── Full resume via md-to-resume.js ──────────────────────────────────────────
+// Pass the same source .md to the single-resume script so the canonical full
+// resume is always regenerated alongside the formatted variants.
+
+console.log(`── Full resume (md-to-resume.js)`);
+const single = spawnSync(
+  process.execPath,                              // same node binary
+  [path.join(scriptDir, "md-to-resume.js"), cvPath],
+  { stdio: "inherit" }
+);
+if (single.status !== 0) {
+  console.error("md-to-resume.js exited with an error — aborting.");
+  process.exit(single.status ?? 1);
+}
+console.log();
+
+// ── Formatted variants ────────────────────────────────────────────────────────
+
 const cv      = parseMarkdown(fs.readFileSync(cvPath, "utf-8"));
 const formats = parseResumeFormats(fs.readFileSync(formatsPath, "utf-8"));
 
-console.log(`Generating ${formats.length} resume(s):\n`);
+console.log(`Generating ${formats.length} formatted resume(s):\n`);
 
 for (const format of formats) {
   console.log(`── ${format.name}`);
@@ -679,22 +704,19 @@ for (const format of formats) {
   const filteredCV = buildFilteredCV(cv, format);
   const html       = buildHTML(filteredCV);
 
-  // Resolve output path relative to the script directory
   const outRelPath = format.outputPath
     || `/${format.name.toLowerCase().replace(/\s+/g, "-")}/index.html`;
   const outAbsPath = path.join(scriptDir, outRelPath);
-  const outDir     = path.dirname(outAbsPath);
 
-  fs.mkdirSync(outDir, { recursive: true });
+  fs.mkdirSync(path.dirname(outAbsPath), { recursive: true });
   fs.writeFileSync(outAbsPath, html, "utf-8");
   console.log(`   ✓  ${outAbsPath}\n`);
 }
 
-// ── Write root index ──────────────────────────────────────────────────────────
+// ── Root index ────────────────────────────────────────────────────────────────
 
 const indexPath = path.join(scriptDir, "index.html");
-const indexHTML = buildIndexHTML(cv, formats, scriptDir);
-fs.writeFileSync(indexPath, indexHTML, "utf-8");
+fs.writeFileSync(indexPath, buildIndexHTML(cv, formats, scriptDir), "utf-8");
 console.log(`── Index\n   ✓  ${indexPath}\n`);
 
 console.log("Done.\n");
