@@ -57,7 +57,7 @@ function renderInline(text) {
   text = text.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
   text = text.replace(
     /\*\*([^*]+)\*\*/g,
-    "<span style='color:var(--ink-1)'><strong>$1</strong></span>",
+    "<span class='entry-subtitle'>$1</span>",
   );
   text = text.replace(/\*([^*\n]+)\*/g, "<em>--$1</em>");
   text = text.replace(/_([^_\n]+)_/g, "<em>$1</em>");
@@ -210,19 +210,13 @@ function renderSectionContent(lines) {
     // Entry: **Title** — *date* (professional experience style)
     const entryMatch = trim.match(/^\*\*(.+?)\*\*\s*[—–-]+\s*\*(.*?)\*/);
     if (entryMatch) {
-      html += `<div class="entry">`;
-      html += `<div class="entry-header">`;
-      html += `<span class="entry-title entry-title--org">${renderInline(entryMatch[1])}</span>`;
-      html += `<span class="entry-date">${renderInline(entryMatch[2])}</span>`;
-      html += `</div>`;
+      html += `<div class="entry-subtitle">${renderInline(entryMatch[1])} <span class="entry-date">${renderInline(entryMatch[2])}</span></div>`;
       i++;
-      // Indented bullets under the entry
       while (i < lines.length && lines[i].trim().startsWith("- ")) {
         const bullet = lines[i].trim().replace(/^-\s+/, "");
-        html += `<div class="entry-desc entry-desc--bullet">${renderInline(bullet)}</div>`;
+        html += `<div class="entry-desc">${renderInline(bullet)}</div>`;
         i++;
       }
-      html += `</div>`;
       continue;
     }
 
@@ -520,9 +514,11 @@ function buildHTML(cv) {
       font-size: 12px;
       color: var(--ink-3);
       line-height: 1.6;
-      margin: 3px 0 0 0;
+      margin: 9px 0 0 0;
       font-style: bold;
     }
+
+    .entry-desc:first-child { margin-top: 0; }
 
     .entry-desc--bullet {
       padding-left: 1.25rem;
@@ -535,6 +531,8 @@ function buildHTML(cv) {
       color: var(--ink-1);
       margin: 0.9rem 0 2px 0;
     }
+
+    .entry-subtitle:first-child { margin-top: 0; }
 
     /* ── Sub-labels (### headings) ── */
     .sub-label {
