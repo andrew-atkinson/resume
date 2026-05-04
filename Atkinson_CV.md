@@ -47,11 +47,12 @@ He has developed creative coding curricula for Vidcode and serves as a consultan
 
 ### Photography
 
-| Dates   | Course  | Title                             |
-| ------- | ------- | --------------------------------- |
-| 2004–23 | ARPH201 | Digital Photography and Imaging 1 |
-| 2005–19 | ARPH211 | Digital Photography and Imaging 2 |
-| 2024–25 | ARST215 | Photography for Majors            |
+| Dates   | Course  | Title                                                 |
+| ------- | ------- | ----------------------------------------------------- |
+| 2004–23 | ARPH201 | Digital Photography and Imaging 1                     |
+| 2005–19 | ARPH211 | Digital Photography and Imaging 2                     |
+| 2024–25 | ARST215 | Photography for Majors                                |
+| 2021    | ARGS260 | Documentary Photography: Capturing the History of Now |
 
 ### Visual Arts
 
