@@ -430,6 +430,224 @@ function buildFilteredCV(cv, format) {
   };
 }
 
+// ── Index page builder ───────────────────────────────────────────────────────
+
+/**
+ * Build a root index.html that links to every generated resume.
+ * Inherits the same design tokens and fonts as the individual resumes.
+ *
+ * @param {object}   cv       – parsed CV object (used for the person's name)
+ * @param {object[]} formats  – array of format objects from parseResumeFormats
+ * @param {string}   baseDir  – absolute path of the directory containing index.html
+ */
+function buildIndexHTML(cv, formats, baseDir) {
+  const { escapeHtml } = require("./md-to-resume.js");
+
+  // Build one card per resume format
+  const cards = formats.map(fmt => {
+    // Compute the href relative to baseDir
+    const outRel = fmt.outputPath
+      || `/${fmt.name.toLowerCase().replace(/\s+/g, "-")}/index.html`;
+    // Resolve to an absolute path, then make relative to baseDir
+    const outAbs  = path.join(baseDir, outRel);
+    const relHref = path.relative(baseDir, outAbs);
+
+    // Strip trailing "/index.html" label for display; show just the folder slug
+    const slug = relHref.replace(/\/index\.html$/, "").replace(/\\/g, "/");
+
+    return `
+    <a class="resume-card" href="${escapeHtml(relHref)}">
+      <span class="card-name">${escapeHtml(fmt.name)}</span>
+      <span class="card-arrow">→</span>
+    </a>`;
+  }).join("\n");
+
+  return `<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(cv.name)} — Résumés</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap');
+
+    :root {
+      --bg:     #ffffff;
+      --ink-1:  #1a1a1a;
+      --ink-2:  #444444;
+      --ink-3:  #555555;
+      --ink-4:  #999999;
+      --rule-1: #cccccc;
+      --rule-2: #e8e8e8;
+    }
+
+    [data-theme="dark"] {
+      --bg:     #161616;
+      --ink-1:  #e2e2e2;
+      --ink-2:  #b2b2b2;
+      --ink-3:  #909090;
+      --ink-4:  #5e5e5e;
+      --rule-1: #383838;
+      --rule-2: #2c2c2c;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      background: var(--bg);
+      color: var(--ink-1);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg);
+      border: 0.5px solid var(--rule-1);
+      border-radius: 4px;
+      color: var(--ink-4);
+      cursor: pointer;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      z-index: 100;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .theme-toggle:hover { color: var(--ink-2); border-color: var(--ink-4); }
+    .theme-toggle svg   { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
+
+    /* ── Page content ── */
+    .page {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .page-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      margin: 0 0 6px 0;
+      line-height: 1.1;
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      margin: 0 0 2.5rem 0;
+    }
+
+    /* ── Resume cards ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-top: 0.5px solid var(--rule-1);
+    }
+
+    .resume-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 0;
+      border-bottom: 0.5px solid var(--rule-1);
+      text-decoration: none;
+      color: var(--ink-1);
+      transition: color 0.15s;
+    }
+
+    .resume-card:hover { color: var(--ink-4); }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+    }
+
+    .card-arrow {
+      font-size: 16px;
+      color: var(--ink-4);
+      transition: transform 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .resume-card:hover .card-arrow {
+      transform: translateX(4px);
+      color: var(--ink-2);
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 480px) {
+      body { padding: 2rem 1.25rem; }
+      .page-name { font-size: 30px; }
+    }
+
+    /* ── Print ── */
+    @media print { .theme-toggle { display: none; } }
+  </style>
+</head>
+<body>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+  <svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path id="toggle-path" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+  </svg>
+  <span id="toggle-label">Dark</span>
+</button>
+
+<div class="page">
+  <h1 class="page-name">${escapeHtml(cv.name)}</h1>
+  <p class="page-subtitle">Select a résumé</p>
+  <nav class="cards">
+    ${cards}
+  </nav>
+</div>
+
+<script>
+  (function () {
+    const root  = document.documentElement;
+    const btn   = document.getElementById('theme-toggle');
+    const label = document.getElementById('toggle-label');
+    const path  = document.getElementById('toggle-path');
+    const SUN   = 'M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-4a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V4a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm9-9h-1a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zM4 12a1 1 0 0 1-1 1H2a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm14.95 5.54-.7-.71a1 1 0 0 1 1.41-1.41l.71.7a1 1 0 0 1-1.41 1.42zm-13.9 0a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7zM18.24 6.46a1 1 0 0 1 0-1.41l.71-.71a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0zm-13.9 0a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 3.63 4.34l.71.71a1 1 0 0 1 0 1.41z';
+    const MOON  = 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z';
+    function applyTheme(dark) {
+      root.setAttribute('data-theme', dark ? 'dark' : 'light');
+      path.setAttribute('d', dark ? SUN : MOON);
+      label.textContent = dark ? 'Light' : 'Dark';
+    }
+    const saved = localStorage.getItem('cv-theme');
+    applyTheme(saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches);
+    btn.addEventListener('click', function () {
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      applyTheme(!isDark);
+      localStorage.setItem('cv-theme', isDark ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+</body>
+</html>`;
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 const args        = process.argv.slice(2);
@@ -471,5 +689,12 @@ for (const format of formats) {
   fs.writeFileSync(outAbsPath, html, "utf-8");
   console.log(`   ✓  ${outAbsPath}\n`);
 }
+
+// ── Write root index ──────────────────────────────────────────────────────────
+
+const indexPath = path.join(scriptDir, "index.html");
+const indexHTML = buildIndexHTML(cv, formats, scriptDir);
+fs.writeFileSync(indexPath, indexHTML, "utf-8");
+console.log(`── Index\n   ✓  ${indexPath}\n`);
 
 console.log("Done.\n");
