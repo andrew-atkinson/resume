@@ -443,23 +443,41 @@ function buildFilteredCV(cv, format) {
 function buildIndexHTML(cv, formats, baseDir) {
   const { escapeHtml } = require("./md-to-resume.js");
 
-  // Build one card per resume format
+  // Stem used by html-to-exports.js: lastName_FirstWord  e.g. "Atkinson_Artist"
+  const lastName = cv.name.split(/\s+/).pop() || "Resume";
+
+  // Shared SVG: document page with folded corner — coloured by currentColor
+  const FILE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 15" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1H2.5A1.5 1.5 0 0 0 1 2.5v10A1.5 1.5 0 0 0 2.5 14h7A1.5 1.5 0 0 0 11 12.5V5L7 1z"/><path d="M7 1v4h4"/></svg>`;
+
+  // Build one row per resume format
   const cards = formats.map(fmt => {
-    // Compute the href relative to baseDir
-    const outRel = fmt.outputPath
+    // HTML resume href
+    const outRel  = fmt.outputPath
       || `/${fmt.name.toLowerCase().replace(/\s+/g, "-")}/index.html`;
-    // Resolve to an absolute path, then make relative to baseDir
     const outAbs  = path.join(baseDir, outRel);
     const relHref = path.relative(baseDir, outAbs);
 
-    // Strip trailing "/index.html" label for display; show just the folder slug
-    const slug = relHref.replace(/\/index\.html$/, "").replace(/\\/g, "/");
+    // Export file stem and hrefs
+    const firstWord = fmt.name.split(/\s+/)[0];
+    const stem      = `${lastName}_${firstWord}`;
+    const pdfHref   = `pdf/${stem}.pdf`;
+    const docxHref  = `docx/${stem}.docx`;
 
     return `
-    <a class="resume-card" href="${escapeHtml(relHref)}">
-      <span class="card-name">${escapeHtml(fmt.name)}</span>
-      <span class="card-arrow">→</span>
-    </a>`;
+    <div class="card-row">
+      <a class="resume-card" href="${escapeHtml(relHref)}">
+        <span class="card-name">${escapeHtml(fmt.name)}</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <div class="card-exports">
+        <a class="export-link" href="${escapeHtml(pdfHref)}" download title="Download PDF">
+          ${FILE_ICON}<span class="export-label">PDF</span>
+        </a>
+        <a class="export-link" href="${escapeHtml(docxHref)}" download title="Download DOCX">
+          ${FILE_ICON}<span class="export-label">DOC</span>
+        </a>
+      </div>
+    </div>`;
   }).join("\n");
 
   return `<!DOCTYPE html>
@@ -563,15 +581,22 @@ function buildIndexHTML(cv, formats, baseDir) {
       border-top: 0.5px solid var(--rule-1);
     }
 
+    .card-row {
+      display: flex;
+      align-items: center;
+      border-bottom: 0.5px solid var(--rule-1);
+    }
+
     .resume-card {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 1.1rem 0;
-      border-bottom: 0.5px solid var(--rule-1);
       text-decoration: none;
       color: var(--ink-1);
       transition: color 0.15s;
+      min-width: 0;
     }
 
     .resume-card:hover { color: var(--ink-4); }
@@ -587,11 +612,47 @@ function buildIndexHTML(cv, formats, baseDir) {
       color: var(--ink-4);
       transition: transform 0.15s, color 0.15s;
       flex-shrink: 0;
+      margin-right: 1.25rem;
     }
 
     .resume-card:hover .card-arrow {
       transform: translateX(4px);
       color: var(--ink-2);
+    }
+
+    /* ── Export icon links ── */
+    .card-exports {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .export-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--ink-4);
+      text-decoration: none;
+      border: none;
+      transition: color 0.15s;
+      padding: 0.4rem 0;
+    }
+
+    .export-link:hover { color: var(--ink-2); border: none; }
+
+    .export-link svg {
+      width: 13px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .export-label {
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1;
     }
 
     /* ── Mobile ── */

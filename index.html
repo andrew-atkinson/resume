@@ -99,15 +99,22 @@
       border-top: 0.5px solid var(--rule-1);
     }
 
+    .card-row {
+      display: flex;
+      align-items: center;
+      border-bottom: 0.5px solid var(--rule-1);
+    }
+
     .resume-card {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 1.1rem 0;
-      border-bottom: 0.5px solid var(--rule-1);
       text-decoration: none;
       color: var(--ink-1);
       transition: color 0.15s;
+      min-width: 0;
     }
 
     .resume-card:hover { color: var(--ink-4); }
@@ -123,11 +130,47 @@
       color: var(--ink-4);
       transition: transform 0.15s, color 0.15s;
       flex-shrink: 0;
+      margin-right: 1.25rem;
     }
 
     .resume-card:hover .card-arrow {
       transform: translateX(4px);
       color: var(--ink-2);
+    }
+
+    /* ── Export icon links ── */
+    .card-exports {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .export-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--ink-4);
+      text-decoration: none;
+      border: none;
+      transition: color 0.15s;
+      padding: 0.4rem 0;
+    }
+
+    .export-link:hover { color: var(--ink-2); border: none; }
+
+    .export-link svg {
+      width: 13px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .export-label {
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1;
     }
 
     /* ── Mobile ── */
@@ -154,20 +197,50 @@
   <p class="page-subtitle">Select a résumé</p>
   <nav class="cards">
     
-    <a class="resume-card" href="artist/index.html">
-      <span class="card-name">Artist Resume</span>
-      <span class="card-arrow">→</span>
-    </a>
+    <div class="card-row">
+      <a class="resume-card" href="artist/index.html">
+        <span class="card-name">Artist Resume</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <div class="card-exports">
+        <a class="export-link" href="pdf/Atkinson_Artist.pdf" download title="Download PDF">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 15" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1H2.5A1.5 1.5 0 0 0 1 2.5v10A1.5 1.5 0 0 0 2.5 14h7A1.5 1.5 0 0 0 11 12.5V5L7 1z"/><path d="M7 1v4h4"/></svg><span class="export-label">PDF</span>
+        </a>
+        <a class="export-link" href="docx/Atkinson_Artist.docx" download title="Download DOCX">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 15" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1H2.5A1.5 1.5 0 0 0 1 2.5v10A1.5 1.5 0 0 0 2.5 14h7A1.5 1.5 0 0 0 11 12.5V5L7 1z"/><path d="M7 1v4h4"/></svg><span class="export-label">DOC</span>
+        </a>
+      </div>
+    </div>
 
-    <a class="resume-card" href="academic/index.html">
-      <span class="card-name">Academic Resume</span>
-      <span class="card-arrow">→</span>
-    </a>
+    <div class="card-row">
+      <a class="resume-card" href="academic/index.html">
+        <span class="card-name">Academic Resume</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <div class="card-exports">
+        <a class="export-link" href="pdf/Atkinson_Academic.pdf" download title="Download PDF">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 15" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1H2.5A1.5 1.5 0 0 0 1 2.5v10A1.5 1.5 0 0 0 2.5 14h7A1.5 1.5 0 0 0 11 12.5V5L7 1z"/><path d="M7 1v4h4"/></svg><span class="export-label">PDF</span>
+        </a>
+        <a class="export-link" href="docx/Atkinson_Academic.docx" download title="Download DOCX">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 15" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1H2.5A1.5 1.5 0 0 0 1 2.5v10A1.5 1.5 0 0 0 2.5 14h7A1.5 1.5 0 0 0 11 12.5V5L7 1z"/><path d="M7 1v4h4"/></svg><span class="export-label">DOC</span>
+        </a>
+      </div>
+    </div>
 
-    <a class="resume-card" href="professional/index.html">
-      <span class="card-name">Professional Resume</span>
-      <span class="card-arrow">→</span>
-    </a>
+    <div class="card-row">
+      <a class="resume-card" href="professional/index.html">
+        <span class="card-name">Professional Resume</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <div class="card-exports">
+        <a class="export-link" href="pdf/Atkinson_Professional.pdf" download title="Download PDF">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 15" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1H2.5A1.5 1.5 0 0 0 1 2.5v10A1.5 1.5 0 0 0 2.5 14h7A1.5 1.5 0 0 0 11 12.5V5L7 1z"/><path d="M7 1v4h4"/></svg><span class="export-label">PDF</span>
+        </a>
+        <a class="export-link" href="docx/Atkinson_Professional.docx" download title="Download DOCX">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 15" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1H2.5A1.5 1.5 0 0 0 1 2.5v10A1.5 1.5 0 0 0 2.5 14h7A1.5 1.5 0 0 0 11 12.5V5L7 1z"/><path d="M7 1v4h4"/></svg><span class="export-label">DOC</span>
+        </a>
+      </div>
+    </div>
   </nav>
 </div>
 

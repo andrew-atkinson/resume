@@ -275,9 +275,12 @@ function renderContactItem(raw) {
   // Markdown link [label](url)
   const linkMatch = raw.match(/^\[(.+?)\]\((.+?)\)$/);
   if (linkMatch) {
-    const label = escapeHtml(linkMatch[1]);
-    const url = escapeHtml(linkMatch[2]);
-    const liIcon = linkMatch[2].includes("linkedin.com") ? LINKEDIN_LOGO : "";
+    const isLinkedIn = linkMatch[2].includes("linkedin.com");
+    // Use "LinkedIn" as the visible label for LinkedIn URLs so the link is
+    // self-descriptive in both HTML (icon + text) and DOCX (text only).
+    const label    = escapeHtml(isLinkedIn ? "LinkedIn" : linkMatch[1]);
+    const url      = escapeHtml(linkMatch[2]);
+    const liIcon   = isLinkedIn ? LINKEDIN_LOGO : "";
     const { attrs, icon } = externalAttrs(linkMatch[2]);
     return `<a href="${url}"${attrs}>${liIcon}${label}${icon}</a>`;
   }
