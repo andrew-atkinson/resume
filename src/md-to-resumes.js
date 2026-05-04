@@ -653,10 +653,11 @@ function buildIndexHTML(cv, formats, baseDir) {
 const { spawnSync } = require("child_process");
 
 const args        = process.argv.slice(2);
-const scriptDir   = __dirname;
+const scriptDir   = __dirname;                    // …/resumes/src
+const projectRoot = path.join(__dirname, "..");   // …/resumes  (GitHub Pages root)
 
 if (args.length === 0) {
-  console.error("Usage: node md-to-resumes.js <source.md> [resumeFormats.md]");
+  console.error("Usage: node src/md-to-resumes.js <source.md> [resumeFormats.md]");
   process.exit(1);
 }
 
@@ -675,22 +676,6 @@ if (!fs.existsSync(formatsPath)) {
 console.log(`\nCV:      ${cvPath}`);
 console.log(`Formats: ${formatsPath}\n`);
 
-// ── Full resume via md-to-resume.js ──────────────────────────────────────────
-// Pass the same source .md to the single-resume script so the canonical full
-// resume is always regenerated alongside the formatted variants.
-
-console.log(`── Full resume (md-to-resume.js)`);
-const single = spawnSync(
-  process.execPath,                              // same node binary
-  [path.join(scriptDir, "md-to-resume.js"), cvPath],
-  { stdio: "inherit" }
-);
-if (single.status !== 0) {
-  console.error("md-to-resume.js exited with an error — aborting.");
-  process.exit(single.status ?? 1);
-}
-console.log();
-
 // ── Formatted variants ────────────────────────────────────────────────────────
 
 const cv      = parseMarkdown(fs.readFileSync(cvPath, "utf-8"));
@@ -706,7 +691,7 @@ for (const format of formats) {
 
   const outRelPath = format.outputPath
     || `/${format.name.toLowerCase().replace(/\s+/g, "-")}/index.html`;
-  const outAbsPath = path.join(scriptDir, outRelPath);
+  const outAbsPath = path.join(projectRoot, outRelPath);  // output at project root
 
   fs.mkdirSync(path.dirname(outAbsPath), { recursive: true });
   fs.writeFileSync(outAbsPath, html, "utf-8");
@@ -715,15 +700,15 @@ for (const format of formats) {
 
 // ── Root index ────────────────────────────────────────────────────────────────
 
-const indexPath = path.join(scriptDir, "index.html");
-fs.writeFileSync(indexPath, buildIndexHTML(cv, formats, scriptDir), "utf-8");
+const indexPath = path.join(projectRoot, "index.html");  // root, not src/
+fs.writeFileSync(indexPath, buildIndexHTML(cv, formats, projectRoot), "utf-8");
 console.log(`── Index\n   ✓  ${indexPath}\n`);
 
 // ── PDF + DOCX exports ────────────────────────────────────────────────────────
 
 const exports_ = spawnSync(
   process.execPath,
-  [path.join(scriptDir, "html-to-exports.js"), formatsPath],
+  [path.join(scriptDir, "html-to-exports.js"), formatsPath],  // script in src/
   { stdio: "inherit" },
 );
 if (exports_.status !== 0) {

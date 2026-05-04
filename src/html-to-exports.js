@@ -18,11 +18,12 @@ const os            = require("os");
 const path          = require("path");
 const { spawnSync } = require("child_process");
 
-const scriptDir   = __dirname;
+const scriptDir   = __dirname;                    // …/resumes/src
+const projectRoot = path.join(__dirname, "..");   // …/resumes  (GitHub Pages root)
 const args        = process.argv.slice(2);
 const formatsPath = args[0]
   ? path.resolve(args[0])
-  : path.join(scriptDir, "resumeFormats.md");
+  : path.join(scriptDir, "resumeFormats.md");     // resumeFormats.md lives in src/
 
 // ── Locate Chrome (for PDF generation) ───────────────────────────────────────
 //
@@ -263,9 +264,9 @@ if (entries.length === 0) {
   process.exit(1);
 }
 
-// Create output directories
-const pdfDir  = path.join(scriptDir, "pdf");
-const docxDir = path.join(scriptDir, "docx");
+// Create output directories at the project root (not inside src/)
+const pdfDir  = path.join(projectRoot, "pdf");
+const docxDir = path.join(projectRoot, "docx");
 fs.mkdirSync(pdfDir,  { recursive: true });
 fs.mkdirSync(docxDir, { recursive: true });
 
@@ -274,7 +275,7 @@ console.log(`\nExporting ${entries.length} resume(s) to PDF + DOCX:\n`);
 let allOk = true;
 
 for (const { htmlRel, label } of entries) {
-  const htmlAbs = path.join(scriptDir, htmlRel);
+  const htmlAbs = path.join(projectRoot, htmlRel);  // HTML files live at project root
 
   if (!fs.existsSync(htmlAbs)) {
     console.warn(`  ⚠  HTML not found: ${htmlAbs} — skipping`);

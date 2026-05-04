@@ -740,7 +740,7 @@ function buildHTML(cv) {
 // the primary output path. Add or remove paths to suit your setup.
 
 const MIRROR_DIRS = [
-  path.join(__dirname), // ~/resumes/
+  path.join(__dirname, ".."), // project root (resumes/) — src/ is one level down
   path.join(os.homedir(), "Desktop/Job Applications/CVs/resumé updater"), // ~/Desktop/.../resumé updater/
 ];
 
