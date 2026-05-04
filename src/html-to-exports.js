@@ -199,9 +199,15 @@ function runPandoc(pandocArgs, htmlContent) {
 // geometry + print overrides.
 
 function prepareHTMLForPDF(html) {
+  // Setting @page margin to 0 leaves Chrome no space to render its automatic
+  // header (date / filename) and footer (file path / page number) — they are
+  // painted in the margin area, so zero margin suppresses them completely.
+  // This is more reliable than --print-to-pdf-no-header alone on Chrome 112+.
+  // Content margins are provided by the .resume container padding instead.
   const printStyles = [
-    "@page { size: A4; margin: 2cm 2.5cm; }",
-    "body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }",
+    "@page { size: A4; margin: 0; }",
+    "body { padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }",
+    ".resume { padding: 2cm 2.5cm !important; max-width: 100% !important; box-sizing: border-box !important; }",
   ].join(" ");
 
   return html
