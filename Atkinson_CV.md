@@ -5,15 +5,13 @@ Tel: [646 243 5179](tel:6462435179)
 Website: [andrewatkinson.net](http://www.andrewatkinson.net)  
 LinkedIn: [andrewpeteratkinson](https://www.linkedin.com/in/andrewpeteratkinson/)
 
----
+## Profile
 
 Andrew Atkinson is an artist and educator whose practice explores non-place, absurdity, and the immaterial through photography and digital media. His work investigates the empirical limits of photographic processes and the modeling potential of digital tools. He has exhibited internationally, including in the Argentinian photo biennial and at MagnanMetz in Chelsea, New York. He has curated exhibitions in the US, Italy, Argentina, and the UK and written for publications such as Architect's Newspaper and Afterimage. He holds a PhD from the University of the West of England on the digital recreation of the 19th-century Woodburytype photographic process.
 
 He was Director of the MFA in Studio Arts at Montclair State University from 2009–2017 and Assistant Professor in the department of Art and Design where he teaches visual arts and creative coding. Administratively, he has served as deputy chair and summer chair for the last decade, and has served as chair on many of the university's key committees.
 
 He has developed creative coding curricula for Vidcode and serves as a consultant to the Institute for the Advancement of Philosophy for Children. He has organized academic conferences for the Society for Photographic Education, and now organizes workshops and seminars for the art-science interdisciplinary organization Ocean Memory Project, and held artist residencies at the Glasgow School of Art, the Center for Book Arts in New York, and the Frans Masereel Centrum in Belgium.
-
----
 
 ## Education
 
