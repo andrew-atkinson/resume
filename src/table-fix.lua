@@ -2,14 +2,14 @@
 -- Pandoc Lua filter — compatible with both the old (≤ 2.10) and new (2.11+)
 -- Table AST.
 --
--- For every table in the document:
+-- Table handler:
 --   • Sets all column alignments to AlignLeft.
---   • Sets proportional column widths so the table spans the full text
---     column and long cells wrap rather than overflowing the margin.
+--   • Sets proportional column widths (fractions of text width, sum ≤ 1)
+--     so the table spans the full page column without overflow.
 --
--- The widths are relative fractions of the text width (must sum to ≤ 1).
--- They are chosen to mirror the CSS column proportions used in the HTML
--- resume layout (dates narrow, content wide).
+-- BulletList handler:
+--   • Converts every bullet-list item to a plain paragraph (no bullet
+--     character, no indent).  Mirrors the HTML which uses list-style:none.
 
 local function column_widths(n)
   if n <= 0 then return {} end
@@ -50,4 +50,20 @@ function Table(el)
   end
 
   return el
+end
+
+-- ── BulletList → plain paragraphs ────────────────────────────────────────────
+--
+-- The HTML résumé uses list-style:none — visually there are no bullet markers.
+-- This filter reproduces that for DOCX by flattening every BulletList into the
+-- sequence of Para blocks that its items contain.
+
+function BulletList(el)
+  local blocks = {}
+  for _, item in ipairs(el.content) do
+    for _, block in ipairs(item) do
+      table.insert(blocks, block)
+    end
+  end
+  return blocks
 end

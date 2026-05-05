@@ -86,26 +86,107 @@ function parseOutputPaths(md) {
 const luaFilter = path.join(scriptDir, "table-fix.lua");
 
 // ── Table preprocessing ───────────────────────────────────────────────────────
+//
+// Forces every <table> to 100% width so the Lua filter's proportional column
+// specs span the full text column.  style="width:100%" and width="100%" both
+// specified so pandoc honours it regardless of which attribute it reads.
 
 function fixTables(html) {
-  return html.replace(/<table([^>]*)>/gi, (_, attrs) => {
-    const cleanAttrs = attrs
+  // Strip any pixel-based width or style from table cells and col elements
+  // so the Lua filter's proportional widths are the only sizing in play.
+  const stripCellWidths = (s) => s
+    .replace(/(<(?:th|td|col|colgroup)[^>]*?)\s+style="[^"]*"([^>]*?>)/gi, "$1$2")
+    .replace(/(<(?:th|td|col|colgroup)[^>]*?)\s+width="[^"]*"([^>]*?>)/gi, "$1$2");
+
+  return stripCellWidths(html).replace(/<table([^>]*)>/gi, (_, attrs) => {
+    const clean = attrs
       .replace(/\balign\s*=\s*["'][^"']*["']/gi, "")
-      .replace(/\bwidth\s*=\s*["'][^"']*["']/gi, "");
-    return `<table${cleanAttrs} align="left" width="100%">`;
+      .replace(/\bwidth\s*=\s*["'][^"']*["']/gi, "")
+      .replace(/\bstyle\s*=\s*["'][^"']*["']/gi, "");
+    return `<table${clean} align="left" width="100%" style="width:100%">`;
   });
 }
 
+// ── Contact restructuring (DOCX only) ────────────────────────────────────────
+//
+// In HTML the contact row is a flex div — all items inline.  For DOCX we put
+// each item on its own paragraph with an inferred label ("Email:", "Tel:", …).
+
+function contactLinesForDocx(html) {
+  return html.replace(
+    /<div[^>]*class="resume-contact"[^>]*>([\s\S]*?)<\/div>/gi,
+    (_, inner) => {
+      const lines = [];
+      const re = /<(a|span)([^>]*)>([\s\S]*?)<\/\1>/gi;
+      let m;
+      while ((m = re.exec(inner)) !== null) {
+        const tag     = m[1];
+        const attrs   = m[2];
+        const content = m[3].trim();
+        if (!content) continue;
+
+        // Derive a label from the href type
+        const hrefM = attrs.match(/href="([^"]*)"/i);
+        let label = "";
+        if (hrefM) {
+          const href = hrefM[1];
+          if (href.startsWith("mailto:"))       label = "Email";
+          else if (href.startsWith("tel:"))     label = "Tel";
+          else if (href.includes("linkedin"))   label = "LinkedIn";
+          else                                  label = "Web";
+        }
+        const prefix = label ? `${label}: ` : "";
+        lines.push(`<p>${prefix}<${tag}${attrs}>${content}</${tag}></p>`);
+      }
+      return lines.join("\n");
+    },
+  );
+}
+
 // ── HTML preprocessing (DOCX path) ───────────────────────────────────────────
+//
+// Strips browser-only noise, restructures the contact block, promotes div-based
+// section structure into semantic HTML headings, applies DOCX-friendly colour
+// hints for dated list items and entry subtitles, and fixes table attributes.
 
 function preprocessHTML(html) {
   const cleaned = html
+    // ── Strip browser-only blocks ──
     .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/<button[\s\S]*?<\/button>/gi, "")
+
+    // ── Strip decorative SVGs ──
     .replace(/<svg[\s\S]*?<\/svg>/gi, "")
     .replace(/<img[^>]*src="[^"]*\.svgz?"[^>]*>/gi, "")
+
+    // ── Force light mode ──
     .replace(/data-theme="dark"/gi, 'data-theme="light"')
+
+    // ── Issue 6: year prefix in list items → warm grey in DOCX ──
+    // pandoc honours inline style="color:…" and maps it to OOXML w:color.
+    .replace(
+      /<span[^>]*class="item-date"[^>]*>([\s\S]*?)<\/span>/gi,
+      '<span style="color: #999999">$1</span>',
+    )
+
+    // ── Entry date → <em> with muted colour (must run before entry-subtitle) ──
+    .replace(
+      /<span[^>]*class="entry-date"[^>]*>([\s\S]*?)<\/span>/gi,
+      '<em style="color: #999999">$1</em>',
+    )
+
+    // ── Table header cells → warm mid-tone ──
+    // pandoc converts inline style="color:…" on <span> to w:color in OOXML.
+    // The span is inside the <td> content, so fixTables won't strip it.
+    // IMPORTANT: use (?!ead) to avoid matching <thead> (which also starts with <th).
+    // #7a6a5a = warm taupe mid-tone (readable against white, warm not grey).
+    .replace(
+      /<th(?!ead)([^>]*)>([\s\S]*?)<\/th>/gi,
+      '<th$1><span style="color: #7a6a5a; font-size: 9pt">$2</span></th>',
+    )
+
+    // ── Promote custom div roles → semantic HTML headings ──
     .replace(
       /<div[^>]*class="section-label"[^>]*>([\s\S]*?)<\/div>/gi,
       "<h2>$1</h2>",
@@ -116,7 +197,65 @@ function preprocessHTML(html) {
     )
     .replace(/<div[^>]*class="section-divider"[^>]*>\s*<\/div>/gi, "");
 
-  return fixTables(cleaned);
+  // ── Entry subtitles → <strong> org text (+ muted <em> date where present) ──
+  //
+  // Two distinct subtitle structures exist in the HTML:
+  //
+  //   (A) Service / committee sections use div elements:
+  //       <div class="entry-subtitle">TEXT</div>
+  //       → <p><strong>TEXT</strong></p>
+  //
+  //   (B) Dated experience entries use a span inside a paragraph:
+  //       <p class="entry-desc"><span class='entry-subtitle'>ORG</span> — <em>DATE</em></p>
+  //       → <p><strong>ORG</strong> — <em style="color:#999999">DATE</em></p>
+  //
+  // Run A first so B doesn't see leftover div content.
+
+  // (A) div-based subtitles — University Service, Professional Service, etc.
+  const withDivSubtitles = cleaned.replace(
+    /<div[^>]*class="entry-subtitle"[^>]*>([\s\S]*?)<\/div>/gi,
+    (_, content) => {
+      const dateEl = content.match(/<em[^>]*>[\s\S]*?<\/em>/i);
+      if (dateEl) {
+        const orgText = content.replace(/<em[^>]*>[\s\S]*?<\/em>/i, "").trim();
+        return `<p><strong>${orgText}</strong> ${dateEl[0]}</p>`;
+      }
+      return `<p><strong>${content.trim()}</strong></p>`;
+    },
+  );
+
+  // Also promote div-based entry-desc to plain <p> so pandoc treats them as paragraphs
+  const withDivDescs = withDivSubtitles.replace(
+    /<div[^>]*class="entry-desc[^"]*"[^>]*>([\s\S]*?)<\/div>/gi,
+    "<p>$1</p>",
+  );
+
+  // (B) p/span-based subtitles — Professional Experience, etc.
+  const withSubtitles = withDivDescs.replace(
+    /<p[^>]*class="entry-desc[^"]*"[^>]*>([\s\S]*?)<\/p>/gi,
+    (_, content) => {
+      const subtitleMatch = content.match(
+        /<span[^>]*class=['"]entry-subtitle['"][^>]*>([\s\S]*?)<\/span>/i,
+      );
+      if (!subtitleMatch) return `<p>${content}</p>`;
+
+      const orgText = subtitleMatch[1].trim();
+      // Everything after the subtitle span (typically " — <em>date</em>")
+      const after   = content
+        .slice(content.indexOf(subtitleMatch[0]) + subtitleMatch[0].length)
+        .trim()
+        // Mute any bare <em> (dates written as *…* in Markdown) that follow
+        .replace(/<em(?![^>]*style)[^>]*>/gi, '<em style="color: #999999">');
+
+      return `<p><strong>${orgText}</strong> ${after}</p>`;
+    },
+  );
+
+  // ── Contact div → one paragraph per item ──
+  const withContact = contactLinesForDocx(withSubtitles);
+
+  // ── Issue 5: table width ──
+  return fixTables(withContact);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -204,16 +343,52 @@ async function generatePDF(rawHTML, outPath) {
   }
 }
 
+// ── Reference doc ─────────────────────────────────────────────────────────────
+//
+// reference.docx is generated once by make-reference-doc.py and controls all
+// DOCX typography — fonts, colours, spacing, bullet style, no page-break-before
+// on headings.  We regenerate it automatically if it is missing.
+
+const referenceDoc    = path.join(scriptDir, "reference.docx");
+const makeReferenceScript = path.join(scriptDir, "make-reference-doc.py");
+
+function ensureReferenceDoc() {
+  // Always regenerate — ensures style changes in make-reference-doc.py are
+  // applied on every build without needing to manually delete reference.docx.
+  console.log("  Generating reference.docx …");
+  const r = spawnSync("python3", [makeReferenceScript], { encoding: "utf-8" });
+  if (r.status !== 0) {
+    console.error("  ✗  make-reference-doc.py failed:\n" + (r.stderr || r.stdout));
+    process.exit(1);
+  }
+  console.log("  " + r.stdout.trim());
+}
+
 // ── DOCX generation ──────────────────────────────────────────────────────────
 
-function generateDOCX(cleanHTML, outPath, title) {
-  return runPandoc([
+const fixTableHeadersScript = path.join(scriptDir, "fix-table-headers.py");
+
+function generateDOCX(cleanHTML, outPath) {
+  ensureReferenceDoc();
+
+  const res = runPandoc([
     "--from=html",
     "--to=docx",
-    "--lua-filter", luaFilter,
-    "--metadata", `title=${title}`,
-    "--output", outPath,
+    "--lua-filter",    luaFilter,
+    "--reference-doc", referenceDoc,
+    "--output",        outPath,
   ], cleanHTML);
+
+  if (res.status !== 0) return res;
+
+  // Post-process: add bottom border to table header rows.
+  // pandoc does not translate CSS borders, so we inject the OOXML directly.
+  const fix = spawnSync("python3", [fixTableHeadersScript, outPath], { encoding: "utf-8" });
+  if (fix.status !== 0) {
+    console.warn("  ⚠  fix-table-headers.py failed:\n" + (fix.stderr || fix.stdout));
+  }
+
+  return res;
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -269,7 +444,7 @@ console.log(`\nExporting ${entries.length} resume(s) to PDF + DOCX:\n`);
 
     // ── DOCX ───────────────────────────────────────────────────────────────
     const docxPath = path.join(docxDir, `${stem}.docx`);
-    const docxRes  = generateDOCX(cleanHTML, docxPath, title);
+    const docxRes  = generateDOCX(cleanHTML, docxPath);
     if (docxRes.status !== 0) {
       console.error(`   ✗  DOCX failed:\n${docxRes.stderr}`);
       allOk = false;
