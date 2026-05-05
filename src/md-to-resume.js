@@ -278,14 +278,36 @@ function renderContactItem(raw) {
     const isLinkedIn = linkMatch[2].includes("linkedin.com");
     // Use "LinkedIn" as the visible label for LinkedIn URLs so the link is
     // self-descriptive in both HTML (icon + text) and DOCX (text only).
-    const label    = escapeHtml(isLinkedIn ? "LinkedIn" : linkMatch[1]);
-    const url      = escapeHtml(linkMatch[2]);
-    const liIcon   = isLinkedIn ? LINKEDIN_LOGO : "";
+    const label = escapeHtml(isLinkedIn ? "LinkedIn" : linkMatch[1]);
+    const url = escapeHtml(linkMatch[2]);
+    const liIcon = isLinkedIn ? LINKEDIN_LOGO : "";
     const { attrs, icon } = externalAttrs(linkMatch[2]);
     return `<a href="${url}"${attrs}>${liIcon}${label}${icon}</a>`;
   }
   // Plain text
   return `<span>${escapeHtml(raw)}</span>`;
+}
+
+// ── Build date ────────────────────────────────────────────────────────────────
+
+/** Returns today's date as "DD Mon YYYY", e.g. "15 May 2026". */
+function buildDateString() {
+  const MONTHS = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const d = new Date();
+  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 // ── HTML builder ──────────────────────────────────────────────────────────────
@@ -670,6 +692,16 @@ function buildHTML(cv) {
       .theme-toggle { top: 0.6rem; right: 0.6rem; }
     }
 
+    /* ── Updated line ── */
+    .resume-updated {
+      margin-top: 2rem;
+      padding-top: 0.75rem;
+      border-top: 0.5px solid var(--rule-1);
+      font-size: 10px;
+      color: var(--ink-4);
+      text-align: right;
+    }
+
     /* ── Print ── */
     @media print {
       body { padding: 0; }
@@ -700,6 +732,8 @@ function buildHTML(cv) {
     ${profileSection}
     ${sectionsHTML}
   </div>
+
+  <div class="resume-updated">updated: ${buildDateString()}</div>
 
 </div>
 
