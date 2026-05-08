@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 /**
  * md-to-resumes.js
- * Reads a Markdown CV and a resumeFormats.md spec, then generates one styled
- * HTML resume per top-level heading in the spec, each in its own sub-folder.
+ * Accepts a Markdown CV, generates the JSON via resume-to-json.js, then
+ * produces one styled HTML resume per format defined in resumeFormats.md.
  *
  * Usage:
- *   node md-to-resumes.js [cv.md] [resumeFormats.md]
- *   Defaults: Atkinson_CV.md and resumeFormats.md in the same directory.
+ *   node src/md-to-resumes.js [cv.md] [resumeFormats.md]
+ *   Defaults: the single .md file in src/ and resumeFormats.md beside it.
  *
- * Relies on md-to-resume.js for parseMarkdown() and buildHTML().
+ * Pipeline:
+ *   1. Parse CV .md → { name, contact, sections[] }  (resume-to-json.js)
+ *   2. Write .json file beside the .md
+ *   3. For each format in resumeFormats.md:
+ *        filter / transform sections from the JSON → buildHTMLFromJSON → write HTML
+ *   4. Write root index.html
+ *   5. Run html-to-exports.js (PDF + DOCX)
  */
 
 "use strict";
@@ -16,63 +22,50 @@
 const fs   = require("fs");
 const path = require("path");
 
-// ── Import helpers from single-resume script ──────────────────────────────────
-
-const { parseMarkdown, buildHTML } = require("./md-to-resume.js");
+const { parseCV }          = require("./resume-to-json.js");
+const { buildHTMLFromJSON, escapeHtml } = require("./md-to-resume.js");
 
 // ── Parse resumeFormats.md ────────────────────────────────────────────────────
 //
-// Format file structure:
-//
 //   # Resume Name (output to '/folder/index.html')
-//
 //   - Section Name
-//   - Section Name (instruction text)
+//   - Section Name (instruction)
 //   - Parent Section
 //     - Child Section (fold/integrate instruction)
-//
-// Each # heading = one resume.
-// Top-level "- " items = sections to include (in order).
-// Indented "  - " items = sections to fold into the preceding parent section.
 
 function parseResumeFormats(md) {
-  const lines = md.split("\n");
+  const lines   = md.split("\n");
   const formats = [];
-  let current = null;
+  let current   = null;
 
   for (const line of lines) {
     const trim = line.trim();
 
-    // ── Top-level heading → start a new resume format ──
     if (trim.startsWith("# ")) {
       if (current) formats.push(current);
       const headingText = trim.replace(/^#\s+/, "");
-      // Extract (output to '…') annotation
-      const outMatch = headingText.match(/\(output to ['"]([^'"]+)['"]\)/);
+      const outMatch    = headingText.match(/\(output to ['"]([^'"]+)['"]\)/);
       current = {
-        name: headingText.replace(/\s*\(output to [^)]+\)/, "").trim(),
+        name:       headingText.replace(/\s*\(output to [^)]+\)/, "").trim(),
         outputPath: outMatch ? outMatch[1] : null,
-        sections: [],
+        sections:   [],
       };
 
-    // ── Top-level list item → section spec ──
     } else if (current && /^- /.test(line) && !/^\s{2,}/.test(line)) {
       const entry = line.replace(/^-\s+/, "").trim();
-      // Split "Section Name (instruction)" — parenthetical is optional
-      const m = entry.match(/^(.+?)(?:\s+\((.+)\))?$/);
+      const m     = entry.match(/^(.+?)(?:\s+\((.+)\))?$/);
       current.sections.push({
-        name: (m ? m[1] : entry).trim(),
+        name:        (m ? m[1] : entry).trim(),
         instruction: m && m[2] ? m[2].trim() : null,
-        folds: [],           // sections to fold into this one
+        folds:       [],
       });
 
-    // ── Indented list item → fold/integrate sub-instruction ──
     } else if (current && /^\s{2,}-\s/.test(line)) {
       const entry = line.replace(/^\s+-\s+/, "").trim();
-      const m = entry.match(/^(.+?)(?:\s+\((.+)\))?$/);
+      const m     = entry.match(/^(.+?)(?:\s+\((.+)\))?$/);
       if (current.sections.length > 0) {
         current.sections[current.sections.length - 1].folds.push({
-          name: (m ? m[1] : entry).trim(),
+          name:        (m ? m[1] : entry).trim(),
           instruction: m && m[2] ? m[2].trim() : null,
         });
       }
@@ -83,53 +76,31 @@ function parseResumeFormats(md) {
   return formats;
 }
 
-// ── Section lookup helpers ────────────────────────────────────────────────────
+// ── Section lookup ────────────────────────────────────────────────────────────
 
 /**
- * Find a top-level ## section by name (case-insensitive).
- * Returns the section object or null.
+ * Find a section by name from the JSON sections array.
+ * Checks top-level section names first, then subsection titles.
+ * Returns a copy of the section object or null.
+ *
+ * @param {object[]} sections  – the sections array from parseCV()
+ * @param {string}   name
+ * @returns {{ section: string, entries?: object[], subsections?: object[] } | null}
  */
-function findTopLevelSection(cv, name) {
-  const key = name.toLowerCase();
-  return cv.sections.find(s => s.name.toLowerCase() === key) || null;
-}
+function getSection(sections, name) {
+  const key = name.toLowerCase().trim();
 
-/**
- * Extract a ### sub-section's content lines from a parent section's content.
- * Returns just the lines belonging to that sub-section (heading line excluded),
- * or an empty array if the sub-section isn't found.
- */
-function extractSubsection(contentLines, subName) {
-  const key = subName.toLowerCase();
-  const result = [];
-  let inside = false;
-
-  for (const line of contentLines) {
-    const trim = line.trim();
-    if (trim.startsWith("### ")) {
-      inside = trim.replace(/^###\s+/, "").toLowerCase() === key;
-      continue; // omit the ### heading itself
-    }
-    if (inside) result.push(line);
-  }
-  return result;
-}
-
-/**
- * Look up a section (or subsection) by name from the full CV.
- * Checks top-level ## sections first, then ### sub-sections within any section.
- * Returns { name, content } or null.
- */
-function getSection(cv, name) {
   // 1. Direct top-level match
-  const direct = findTopLevelSection(cv, name);
-  if (direct) return direct;
+  const direct = sections.find(s => s.section.toLowerCase() === key);
+  if (direct) return JSON.parse(JSON.stringify(direct));   // deep clone
 
-  // 2. Sub-section match (e.g. "Bibliography" or "Curator" inside "Scholarship…")
-  for (const section of cv.sections) {
-    const subContent = extractSubsection(section.content, name);
-    if (subContent.length > 0) {
-      return { name, content: subContent };
+  // 2. Sub-section title match (e.g. "Curator" inside "Scholarship…")
+  for (const sec of sections) {
+    if (!sec.subsections) continue;
+    const sub = sec.subsections.find(s => s.title.toLowerCase() === key);
+    if (sub) {
+      // Return as a synthetic flat section
+      return { section: sub.title, entries: JSON.parse(JSON.stringify(sub.entries)) };
     }
   }
 
@@ -139,254 +110,85 @@ function getSection(cv, name) {
 // ── Content transformation helpers ───────────────────────────────────────────
 
 /**
- * Truncate a section's prose content to approximately maxWords words,
- * breaking cleanly at a sentence boundary where possible.
+ * Truncate a Profile section to approximately maxWords words,
+ * breaking at a sentence boundary where possible.
  */
 function abbreviateSectionToWords(section, maxWords) {
-  const fullText = section.content
-    .filter(l => l.trim() !== "")
-    .join(" ");
-  const words = fullText.split(/\s+/);
+  const entries = section.entries || [];
+  if (!entries.length) return section;
 
+  const fullText = entries.map(e => e.content || "").join(" ");
+  const words    = fullText.split(/\s+/);
   if (words.length <= maxWords) return section;
 
-  let truncated = words.slice(0, maxWords).join(" ");
-  const lastDot = truncated.lastIndexOf(". ");
+  let truncated  = words.slice(0, maxWords).join(" ");
+  const lastDot  = truncated.lastIndexOf(". ");
   if (lastDot > truncated.length * 0.65) {
     truncated = truncated.slice(0, lastDot + 1);
   } else {
     truncated = truncated.trimEnd() + "…";
   }
 
-  return { ...section, content: [truncated] };
+  return { section: section.section, entries: [{ content: truncated }] };
 }
 
-/**
- * Produce an abbreviated version of a service section by retaining only the
- * bold heading lines (**Like This**) as a flat bullet list.
- */
-function abbreviateToHeadings(section) {
-  const headings = section.content
-    .map(l => l.trim())
-    .filter(l => /^\*\*[^*]+\*\*$/.test(l))
-    .map(l => l.replace(/^\*\*|\*\*$/g, ""));
+// ── Sort helpers (for chronological merge) ────────────────────────────────────
 
-  if (headings.length === 0) return section;
-  return { ...section, content: headings.map(h => `- ${h}`) };
+/** Sort key: present roles sort highest (9999), then by yearEnd, then year. */
+function sortYear(entry) {
+  if (entry.present)  return 9999;
+  if (entry.yearEnd)  return entry.yearEnd;
+  return entry.year || 0;
 }
 
-// ── Date utilities (for reverse-chronological merge) ─────────────────────────
-
-/**
- * Extract all calendar years from a text string, resolving short-year suffixes.
- * e.g. "2020–24" → [2020, 2024],  "2007–2023" → [2007, 2023]
- */
-function extractYears(text) {
-  const years = [];
-  const re = /((?:19|20)\d{2})(?:[–\-](\d{2,4}|present))?/gi;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    const start = parseInt(m[1]);
-    years.push(start);
-    if (m[2] && !/present/i.test(m[2])) {
-      const n = parseInt(m[2]);
-      // Short year suffix (e.g. "24" in "2020–24") → resolve to full year
-      years.push(n < 100 ? Math.floor(start / 100) * 100 + n : n);
-    }
-  }
-  return years;
-}
-
-/** Latest year in a date string; "present" → 9999. */
-function getSortYear(dateStr) {
-  if (!dateStr) return 0;
-  if (/present/i.test(dateStr)) return 9999;
-  const ys = extractYears(dateStr);
-  return ys.length ? Math.max(...ys) : 0;
-}
-
-/** Earliest year in a date string (used as tiebreaker for "present" roles). */
-function getStartYear(dateStr) {
-  if (!dateStr) return 0;
-  const ys = extractYears(dateStr);
-  return ys.length ? Math.min(...ys) : 0;
+function startYear(entry) {
+  return entry.year || 0;
 }
 
 // ── Professional Experience + Service merge ───────────────────────────────────
 
 /**
- * Parse Professional Experience content into structured entry objects.
- * Each entry has the form: **Title** — _date_  followed by bullet lines.
- */
-function parseProfExperienceEntries(contentLines) {
-  const entries = [];
-  let i = 0;
-
-  while (i < contentLines.length) {
-    const trim = contentLines[i].trim();
-    if (!trim || trim === "---") { i++; continue; }
-
-    // Match: **Title** — _date_  or  **Title** — *date*
-    const m = trim.match(/^\*\*(.+?)\*\*\s*[—–\-]+\s*[_*](.+?)[_*]/);
-    if (m) {
-      const dateStr = m[2];
-      const entry = {
-        kind:        "experience",
-        headerLine:  trim,
-        dateStr,
-        sortYear:    getSortYear(dateStr),
-        startYear:   getStartYear(dateStr),
-        bulletLines: [],
-      };
-      i++;
-      while (i < contentLines.length) {
-        const t = contentLines[i].trim();
-        if (t === "---") { i++; break; }
-        // Next entry header → stop (don't consume the line)
-        if (t && /^\*\*(.+?)\*\*\s*[—–\-]+/.test(t)) break;
-        if (t.startsWith("- ")) entry.bulletLines.push(t);
-        i++;
-      }
-      entries.push(entry);
-    } else {
-      i++;
-    }
-  }
-
-  return entries;
-}
-
-/**
- * Parse Professional Service content into entry objects.
- * Scans sub-items for year references to build a date range, and collects
- * all detail lines (plain text and bullets) to include in the merged output.
- */
-function parseProfServiceEntries(contentLines) {
-  const entries = [];
-  let i = 0;
-
-  while (i < contentLines.length) {
-    const trim = contentLines[i].trim();
-    if (!trim || trim === "---") { i++; continue; }
-
-    const boldM = trim.match(/^\*\*([^*]+)\*\*$/);
-    if (boldM) {
-      const heading = boldM[1].trim();
-      const years = [];
-      const detailLines = [];
-      i++;
-
-      // Collect detail lines and extract year references until the next bold heading
-      while (i < contentLines.length) {
-        const t = contentLines[i].trim();
-        if (/^\*\*[^*]+\*\*$/.test(t)) break; // next heading — stop, don't consume
-        extractYears(t).forEach(y => years.push(y));
-        if (t) detailLines.push(contentLines[i]); // keep non-empty lines
-        i++;
-      }
-
-      let dateStr   = "";
-      let sortYear  = 0;
-      let startYear = 0;
-
-      if (years.length) {
-        sortYear  = Math.max(...years);
-        startYear = Math.min(...years);
-        if (sortYear === startYear) {
-          dateStr = String(sortYear);
-        } else {
-          // Use short 2-digit suffix only for close ranges (≤9 year span, same decade).
-          // Wider spans (e.g. 2007–2023) use the full end year for clarity.
-          const span = sortYear - startYear;
-          const endStr = span <= 9 && Math.floor(sortYear / 10) === Math.floor(startYear / 10)
-            ? String(sortYear).slice(-2)
-            : String(sortYear);
-          dateStr = `${startYear}–${endStr}`;
-        }
-      }
-
-      entries.push({
-        kind:        "service",
-        headerLine:  dateStr ? `**${heading}** — _${dateStr}_` : `**${heading}**`,
-        dateStr,
-        sortYear,
-        startYear,
-        bulletLines: detailLines,
-      });
-    } else {
-      i++;
-    }
-  }
-
-  return entries;
-}
-
-/**
  * Merge a Professional Experience section and a Professional Service section
- * into one reverse-chronological content block.
- * Service entries use headings + date only (no detail bullets).
+ * into one reverse-chronological entries array.
  */
 function mergeExperienceWithService(expSection, svcSection) {
-  const expEntries = parseProfExperienceEntries(expSection.content);
-  const svcEntries = parseProfServiceEntries(svcSection.content);
+  const expEntries = (expSection.entries || []);
+  const svcEntries = (svcSection.entries || []);
 
-  const all = [...expEntries, ...svcEntries];
+  const merged = [...expEntries, ...svcEntries].sort((a, b) => {
+    const sy = sortYear(b) - sortYear(a);
+    if (sy !== 0) return sy;
+    return startYear(b) - startYear(a);
+  });
 
-  // Primary sort: highest sortYear first.
-  // Tiebreaker for two "present" roles: most recently started comes first.
-  all.sort((a, b) =>
-    b.sortYear !== a.sortYear
-      ? b.sortYear - a.sortYear
-      : b.startYear - a.startYear
-  );
-
-  // Reconstruct content lines in the format renderSectionContent understands
-  const lines = [];
-  for (const e of all) {
-    lines.push(e.headerLine);
-    for (const b of e.bulletLines) lines.push(b);
-    lines.push("");
-  }
-
-  return { name: expSection.name, content: lines };
+  return { section: expSection.section, entries: merged };
 }
 
-// ── Build a filtered CV object for one resume format ─────────────────────────
+// ── Build filtered CV object for one resume format ────────────────────────────
 
+/**
+ * Assemble a { name, contact, sections[] } object containing only the sections
+ * specified by the format, with any abbreviations and folds applied.
+ */
 function buildFilteredCV(cv, format) {
   const filteredSections = [];
 
   for (const spec of format.sections) {
-    const nameKey = spec.name.toLowerCase();
-    const inst    = (spec.instruction || "").toLowerCase();
+    const inst = (spec.instruction || "").toLowerCase();
 
-    // ── Profile ──────────────────────────────────────────────────────────────
-    if (nameKey === "profile") {
-      let section = getSection(cv, "Profile");
-      if (!section) { console.warn("  ⚠  Section not found: Profile — skipping"); continue; }
-
-      if (inst.includes("abbreviat")) {
-        const wordMatch = inst.match(/\b(\d+)\s+words?\b/);
-        section = abbreviateSectionToWords(section, wordMatch ? parseInt(wordMatch[1]) : 100);
-      }
-
-      filteredSections.push(section);
-      continue;
-    }
-
-    // ── All other sections ────────────────────────────────────────────────────
-    let section = getSection(cv, spec.name);
+    let section = getSection(cv.sections, spec.name);
     if (!section) {
       console.warn(`  ⚠  Section not found: "${spec.name}" — skipping`);
       continue;
     }
-    section = { name: section.name, content: [...section.content] };
 
-    // Split folds into two passes:
-    //   1. "integrate" folds — merge reverse-chronologically into section.content
-    //   2. "append" folds   — appended as ### sub-sections afterwards
-    // This order ensures appended blocks (e.g. University Service) always follow
-    // the sorted dated entries, not intermingle with them.
+    // ── Profile abbreviation ──────────────────────────────────────────────────
+    if (section.section === "Profile" && inst.includes("abbreviat")) {
+      const wordMatch = inst.match(/\b(\d+)\s+words?\b/);
+      section = abbreviateSectionToWords(section, wordMatch ? parseInt(wordMatch[1]) : 100);
+    }
+
+    // ── Folds ─────────────────────────────────────────────────────────────────
     const integrateFolds = spec.folds.filter(f =>
       (f.instruction || "").toLowerCase().includes("integrate")
     );
@@ -394,9 +196,9 @@ function buildFilteredCV(cv, format) {
       !(f.instruction || "").toLowerCase().includes("integrate")
     );
 
-    // Pass 1 — integrate (reverse-chronological merge)
+    // Pass 1 — integrate: reverse-chronological merge
     for (const fold of integrateFolds) {
-      const foldSection = getSection(cv, fold.name);
+      const foldSection = getSection(cv.sections, fold.name);
       if (!foldSection) {
         console.warn(`  ⚠  Fold section not found: "${fold.name}" — skipping`);
         continue;
@@ -404,60 +206,38 @@ function buildFilteredCV(cv, format) {
       section = mergeExperienceWithService(section, foldSection);
     }
 
-    // Pass 2 — append (abbreviated headings or full content)
+    // Pass 2 — append: add as a subsection block
     for (const fold of appendFolds) {
-      const foldSection = getSection(cv, fold.name);
+      const foldSection = getSection(cv.sections, fold.name);
       if (!foldSection) {
         console.warn(`  ⚠  Fold section not found: "${fold.name}" — skipping`);
         continue;
       }
-      const foldInst = (fold.instruction || "").toLowerCase();
-      let foldContent = [...foldSection.content];
-      if (foldInst.includes("abbreviat")) {
-        foldContent = abbreviateToHeadings({ name: fold.name, content: foldContent }).content;
-      }
-      section.content.push("", `### ${fold.name}`, ...foldContent);
+      if (!section.subsections) section.subsections = [];
+      section.subsections.push({
+        title:   fold.name,
+        entries: foldSection.entries || [],
+      });
     }
 
     filteredSections.push(section);
   }
 
-  return {
-    name:     cv.name,
-    contact:  cv.contact,
-    bio:      cv.bio,
-    sections: filteredSections,
-  };
+  return { name: cv.name, contact: cv.contact, sections: filteredSections };
 }
 
-// ── Index page builder ───────────────────────────────────────────────────────
+// ── Index page builder ────────────────────────────────────────────────────────
 
-/**
- * Build a root index.html that links to every generated resume.
- * Inherits the same design tokens and fonts as the individual resumes.
- *
- * @param {object}   cv       – parsed CV object (used for the person's name)
- * @param {object[]} formats  – array of format objects from parseResumeFormats
- * @param {string}   baseDir  – absolute path of the directory containing index.html
- */
 function buildIndexHTML(cv, formats, baseDir) {
-  const { escapeHtml } = require("./md-to-resume.js");
-
-  // Stem used by html-to-exports.js: lastName_FirstWord  e.g. "Atkinson_Artist"
-  const lastName = cv.name.split(/\s+/).pop() || "Resume";
-
-  // Shared SVG: document page with folded corner — coloured by currentColor
+  const lastName  = cv.name.split(/\s+/).pop() || "Resume";
   const FILE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 15" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1H2.5A1.5 1.5 0 0 0 1 2.5v10A1.5 1.5 0 0 0 2.5 14h7A1.5 1.5 0 0 0 11 12.5V5L7 1z"/><path d="M7 1v4h4"/></svg>`;
 
-  // Build one row per resume format
   const cards = formats.map(fmt => {
-    // HTML resume href
     const outRel  = fmt.outputPath
       || `/${fmt.name.toLowerCase().replace(/\s+/g, "-")}/index.html`;
     const outAbs  = path.join(baseDir, outRel);
     const relHref = path.relative(baseDir, outAbs);
 
-    // Export file stem and hrefs
     const firstWord = fmt.name.split(/\s+/)[0];
     const stem      = `${lastName}_${firstWord}`;
     const pdfHref   = `pdf/${stem}.pdf`;
@@ -490,178 +270,79 @@ function buildIndexHTML(cv, formats, baseDir) {
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap');
 
     :root {
-      --bg:     #ffffff;
-      --ink-1:  #1a1a1a;
-      --ink-2:  #444444;
-      --ink-3:  #555555;
-      --ink-4:  #999999;
-      --rule-1: #cccccc;
-      --rule-2: #e8e8e8;
+      --bg: #ffffff; --ink-1: #1a1a1a; --ink-2: #444444;
+      --ink-3: #555555; --ink-4: #999999; --rule-1: #cccccc; --rule-2: #e8e8e8;
     }
-
     [data-theme="dark"] {
-      --bg:     #161616;
-      --ink-1:  #e2e2e2;
-      --ink-2:  #b2b2b2;
-      --ink-3:  #909090;
-      --ink-4:  #5e5e5e;
-      --rule-1: #383838;
-      --rule-2: #2c2c2c;
+      --bg: #161616; --ink-1: #e2e2e2; --ink-2: #b2b2b2;
+      --ink-3: #909090; --ink-4: #5e5e5e; --rule-1: #383838; --rule-2: #2c2c2c;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 2rem;
-      background: var(--bg);
-      color: var(--ink-1);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 3rem 2rem;
+      background: var(--bg); color: var(--ink-1);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
       transition: background 0.2s, color 0.2s;
     }
 
-    /* ── Theme toggle ── */
     .theme-toggle {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: var(--bg);
-      border: 0.5px solid var(--rule-1);
-      border-radius: 4px;
-      color: var(--ink-4);
-      cursor: pointer;
-      padding: 5px 9px;
-      font-size: 11px;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      letter-spacing: 0.04em;
-      z-index: 100;
+      position: fixed; top: 1rem; right: 1rem; display: flex; align-items: center;
+      gap: 5px; background: var(--bg); border: 0.5px solid var(--rule-1);
+      border-radius: 4px; color: var(--ink-4); cursor: pointer; padding: 5px 9px;
+      font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 300;
+      letter-spacing: 0.04em; z-index: 100;
       transition: color 0.2s, border-color 0.2s, background 0.2s;
     }
     .theme-toggle:hover { color: var(--ink-2); border-color: var(--ink-4); }
     .theme-toggle svg   { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
 
-    /* ── Page content ── */
-    .page {
-      width: 100%;
-      max-width: 480px;
-    }
+    .page { width: 100%; max-width: 480px; }
 
     .page-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 38px;
-      font-weight: 400;
-      letter-spacing: 0.02em;
-      margin: 0 0 6px 0;
-      line-height: 1.1;
+      font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400;
+      letter-spacing: 0.02em; margin: 0 0 6px 0; line-height: 1.1;
     }
 
     .page-subtitle {
-      font-size: 12px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-4);
-      margin: 0 0 2.5rem 0;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-4); margin: 0 0 2.5rem 0;
     }
 
-    /* ── Resume cards ── */
-    .cards {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      border-top: 0.5px solid var(--rule-1);
-    }
+    .cards { display: flex; flex-direction: column; gap: 0; border-top: 0.5px solid var(--rule-1); }
 
-    .card-row {
-      display: flex;
-      align-items: center;
-      border-bottom: 0.5px solid var(--rule-1);
-    }
+    .card-row { display: flex; align-items: center; border-bottom: 0.5px solid var(--rule-1); }
 
     .resume-card {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.1rem 0;
-      text-decoration: none;
-      color: var(--ink-1);
-      transition: color 0.15s;
-      min-width: 0;
+      flex: 1; display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 0; text-decoration: none; color: var(--ink-1);
+      transition: color 0.15s; min-width: 0;
     }
-
     .resume-card:hover { color: var(--ink-4); }
 
-    .card-name {
-      font-size: 14px;
-      font-weight: 300;
-      letter-spacing: 0.01em;
-    }
+    .card-name { font-size: 14px; font-weight: 300; letter-spacing: 0.01em; }
 
     .card-arrow {
-      font-size: 16px;
-      color: var(--ink-4);
-      transition: transform 0.15s, color 0.15s;
-      flex-shrink: 0;
-      margin-right: 1.25rem;
+      font-size: 16px; color: var(--ink-4); transition: transform 0.15s, color 0.15s;
+      flex-shrink: 0; margin-right: 1.25rem;
     }
+    .resume-card:hover .card-arrow { transform: translateX(4px); color: var(--ink-2); }
 
-    .resume-card:hover .card-arrow {
-      transform: translateX(4px);
-      color: var(--ink-2);
-    }
-
-    /* ── Export icon links ── */
-    .card-exports {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-shrink: 0;
-    }
+    .card-exports { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
 
     .export-link {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      color: var(--ink-4);
-      text-decoration: none;
-      border: none;
-      transition: color 0.15s;
-      padding: 0.4rem 0;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      color: var(--ink-4); text-decoration: none; border: none;
+      transition: color 0.15s; padding: 0.4rem 0;
     }
-
     .export-link:hover { color: var(--ink-2); border: none; }
+    .export-link svg   { width: 13px; height: 16px; flex-shrink: 0; }
 
-    .export-link svg {
-      width: 13px;
-      height: 16px;
-      flex-shrink: 0;
-    }
+    .export-label { font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1; }
 
-    .export-label {
-      font-size: 8px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      line-height: 1;
-    }
-
-    /* ── Mobile ── */
-    @media (max-width: 480px) {
-      body { padding: 2rem 1.25rem; }
-      .page-name { font-size: 30px; }
-    }
-
-    /* ── Print ── */
+    @media (max-width: 480px) { body { padding: 2rem 1.25rem; } .page-name { font-size: 30px; } }
     @media print { .theme-toggle { display: none; } }
   </style>
 </head>
@@ -714,37 +395,30 @@ function buildIndexHTML(cv, formats, baseDir) {
 const { spawnSync } = require("child_process");
 
 const args        = process.argv.slice(2);
-const scriptDir   = __dirname;                    // …/resumes/src
-const projectRoot = path.join(__dirname, "..");   // …/resumes  (GitHub Pages root)
+const scriptDir   = __dirname;
+const projectRoot = path.join(__dirname, "..");
 
-// ── Resolve CV path ───────────────────────────────────────────────────────────
-//
-// If no argument is given, auto-detect the single .md file in src/ that isn't
-// resumeFormats.md.  This lets `npm run build` work without hardcoding a name.
-
+// Auto-detect the single .md CV file in src/ when no argument is given
 function autoDetectCV(dir) {
   const candidates = fs.readdirSync(dir).filter(
-    f => f.endsWith(".md") && f !== "resumeFormats.md",
+    f => f.endsWith(".md") && f !== "resumeFormats.md"
   );
-  if (candidates.length === 1) return path.join(dir, candidates[0]);
-  if (candidates.length === 0) return null;
-  // Multiple candidates — can't pick automatically
-  return null;
+  return candidates.length === 1 ? path.join(dir, candidates[0]) : null;
 }
 
-const cvPath = args[0]
-  ? path.resolve(args[0])
-  : autoDetectCV(scriptDir);
+const cvPath = args[0] ? path.resolve(args[0]) : autoDetectCV(scriptDir);
 
 if (!cvPath) {
   console.error(
     "Usage: node src/md-to-resumes.js <source.md> [resumeFormats.md]\n" +
-    "(Or place exactly one .md CV file in src/ to skip the argument.)",
+    "(Or place exactly one .md CV file in src/ to skip the argument.)"
   );
   process.exit(1);
 }
 
-const formatsPath = args[1] ? path.resolve(args[1]) : path.join(scriptDir, "resumeFormats.md");
+const formatsPath = args[1]
+  ? path.resolve(args[1])
+  : path.join(scriptDir, "resumeFormats.md");
 
 if (!fs.existsSync(cvPath)) {
   console.error(`Error: CV file not found — ${cvPath}`);
@@ -758,40 +432,49 @@ if (!fs.existsSync(formatsPath)) {
 console.log(`\nCV:      ${cvPath}`);
 console.log(`Formats: ${formatsPath}\n`);
 
-// ── Formatted variants ────────────────────────────────────────────────────────
+// ── 1. Parse CV to JSON ───────────────────────────────────────────────────────
 
-const cv      = parseMarkdown(fs.readFileSync(cvPath, "utf-8"));
+const md      = fs.readFileSync(cvPath, "utf-8");
+const cv      = parseCV(md);
+
+const jsonOut = path.join(scriptDir, path.basename(cvPath).replace(/\.md$/i, ".json"));
+fs.writeFileSync(jsonOut, JSON.stringify(cv, null, 2), "utf-8");
+console.log(`JSON written → ${jsonOut}\n`);
+
+// ── 2. Parse resume formats ───────────────────────────────────────────────────
+
 const formats = parseResumeFormats(fs.readFileSync(formatsPath, "utf-8"));
-
 console.log(`Generating ${formats.length} formatted resume(s):\n`);
+
+// ── 3. Generate one HTML resume per format ────────────────────────────────────
 
 for (const format of formats) {
   console.log(`── ${format.name}`);
 
   const filteredCV = buildFilteredCV(cv, format);
-  const html       = buildHTML(filteredCV);
+  const html       = buildHTMLFromJSON(filteredCV);
 
   const outRelPath = format.outputPath
     || `/${format.name.toLowerCase().replace(/\s+/g, "-")}/index.html`;
-  const outAbsPath = path.join(projectRoot, outRelPath);  // output at project root
+  const outAbsPath = path.join(projectRoot, outRelPath);
 
   fs.mkdirSync(path.dirname(outAbsPath), { recursive: true });
   fs.writeFileSync(outAbsPath, html, "utf-8");
   console.log(`   ✓  ${outAbsPath}\n`);
 }
 
-// ── Root index ────────────────────────────────────────────────────────────────
+// ── 4. Root index ─────────────────────────────────────────────────────────────
 
-const indexPath = path.join(projectRoot, "index.html");  // root, not src/
+const indexPath = path.join(projectRoot, "index.html");
 fs.writeFileSync(indexPath, buildIndexHTML(cv, formats, projectRoot), "utf-8");
 console.log(`── Index\n   ✓  ${indexPath}\n`);
 
-// ── PDF + DOCX exports ────────────────────────────────────────────────────────
+// ── 5. PDF + DOCX exports ─────────────────────────────────────────────────────
 
 const exports_ = spawnSync(
   process.execPath,
-  [path.join(scriptDir, "html-to-exports.js"), formatsPath],  // script in src/
-  { stdio: "inherit" },
+  [path.join(scriptDir, "html-to-exports.js"), formatsPath],
+  { stdio: "inherit" }
 );
 if (exports_.status !== 0) {
   console.error("html-to-exports.js exited with an error.");

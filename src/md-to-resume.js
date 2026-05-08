@@ -1,20 +1,26 @@
 #!/usr/bin/env node
 /**
  * md-to-resume.js
- * Converts a Markdown CV file to a styled HTML resume.
+ * Accepts a Markdown CV, generates the structured JSON via resume-to-json.js,
+ * then renders a single styled HTML resume from that JSON.
  *
- * Usage:
- *   node md-to-resume.js input.md              → writes input.html
- *   node md-to-resume.js input.md output.html  → writes output.html
+ * Usage (CLI):
+ *   node src/md-to-resume.js input.md              → writes input.html
+ *   node src/md-to-resume.js input.md output.html  → writes output.html
  *
- * No dependencies — pure Node.js.
+ * Exports (for md-to-resumes.js):
+ *   buildHTMLFromJSON(cv)   – cv = { name, contact, sections }
+ *   escapeHtml(str)
+ *   renderInline(str)
  */
 
 "use strict";
 
-const fs = require("fs");
+const fs   = require("fs");
 const path = require("path");
-const os = require("os");
+const os   = require("os");
+
+const { parseCV } = require("./resume-to-json.js");
 
 // ── Inline markdown renderer ──────────────────────────────────────────────────
 
@@ -26,10 +32,9 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
-// SVG icon appended after external links
+// SVG appended after external links
 const EXT_ICON = `<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 9V1h4v1H2v7h7V5h1v4H1z"/><path d="M9 1H6l1.1 1.1L4 5.2l.8.8 3.1-3.1L9 4V1z"/></svg>`;
 
-// Returns target/rel attrs + icon for http(s) URLs; empty string for mailto/tel
 function externalAttrs(url) {
   return /^https?:\/\//i.test(url)
     ? { attrs: ' target="_blank" rel="noopener external"', icon: EXT_ICON }
@@ -37,41 +42,30 @@ function externalAttrs(url) {
 }
 
 function renderInline(text) {
-  const urls = []; // \x00Un\x00
-  const links = []; // \x01Ln\x01
+  const urls = [];
+  const links = [];
 
-  // 1. Stash ALL https?:// URLs so underscores inside them are never touched
   text = text.replace(/(https?:\/\/[^\s)]+)/g, (url) => {
     urls.push(url);
     return `\x00U${urls.length - 1}\x00`;
   });
 
-  // 2. Stash whole markdown links [label](url-or-stash) so the label and href
-  //    are both shielded while italic/bold rules run in step 3
   text = text.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_, label, ref) => {
     links.push({ label, ref });
     return `\x01L${links.length - 1}\x01`;
   });
 
-  // 3. Bold / italic on plain text only — no URLs or links present any more
   text = text.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
-  text = text.replace(
-    /\*\*([^*]+)\*\*/g,
-    "<span class='entry-subtitle'>$1</span>",
-  );
+  text = text.replace(/\*\*([^*]+)\*\*/g, "<span class='entry-subtitle'>$1</span>");
   text = text.replace(/\*([^*\n]+)\*/g, "<em>--$1</em>");
   text = text.replace(/_([^_\n]+)_/g, "<em>$1</em>");
 
-  // 4. Restore markdown links — apply italic to label, resolve URL stash
   text = text.replace(/\x01L(\d+)\x01/g, (_, i) => {
     const { label, ref } = links[parseInt(i)];
-
-    // Resolve URL stash reference inside parens if present
     const uMatch = ref.match(/^\x00U(\d+)\x00$/);
     const url = uMatch ? urls[parseInt(uMatch[1])] : ref;
-    if (uMatch) urls[parseInt(uMatch[1])] = null; // mark consumed
+    if (uMatch) urls[parseInt(uMatch[1])] = null;
 
-    // Apply italic/bold to label text
     let l = escapeHtml(label);
     l = l.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
     l = l.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
@@ -82,7 +76,6 @@ function renderInline(text) {
     return `<a href="${escapeHtml(url)}"${attrs}>${l}${icon}</a>`;
   });
 
-  // 5. Restore remaining URL stashes (bare URLs not consumed by a markdown link)
   text = text.replace(/\x00U(\d+)\x00/g, (_, i) => {
     const url = urls[parseInt(i)];
     if (!url) return "";
@@ -93,176 +86,164 @@ function renderInline(text) {
   return text;
 }
 
-// ── Markdown parser ───────────────────────────────────────────────────────────
+// ── Helpers shared with md-to-resumes.js ─────────────────────────────────────
 
-function parseMarkdown(md) {
-  const lines = md.split("\n");
-  const cv = { name: "", contact: [], bio: [], sections: [] };
-  let i = 0;
-
-  // H1 → name
-  while (i < lines.length && !lines[i].startsWith("# ")) i++;
-  if (i < lines.length) {
-    cv.name = lines[i].replace(/^#\s+/, "").trim();
-    i++;
-  }
-
-  // Contact lines + bio paragraphs (until first ## or ---)
-  while (i < lines.length) {
-    const line = lines[i];
-    const trim = line.trim();
-    if (trim.startsWith("## ") || trim === "---") break;
-
-    const contactMatch = trim.match(
-      /^(Email|Tel|LinkedIn|Phone|Web|Website):\s*(.+)/i,
-    );
-    if (contactMatch) {
-      cv.contact.push(contactMatch[2].trim());
-    } else if (trim.length > 0 && !trim.startsWith("#")) {
-      cv.bio.push(trim);
-    }
-    i++;
-  }
-
-  // Skip dividers
-  while (i < lines.length && lines[i].trim() === "---") i++;
-
-  // ## Sections
-  while (i < lines.length) {
-    const trim = lines[i].trim();
-    if (trim.startsWith("## ")) {
-      const sectionName = trim.replace(/^##\s+/, "");
-      const contentLines = [];
-      i++;
-      while (i < lines.length && !lines[i].trim().startsWith("## ")) {
-        contentLines.push(lines[i]);
-        i++;
-      }
-      cv.sections.push({ name: sectionName, content: contentLines });
-    } else {
-      i++;
-    }
-  }
-
-  return cv;
+/** Strip markdown link and emphasis markup, return plain text. */
+function stripInline(text) {
+  return String(text)
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[_*`]/g, "")
+    .trim();
 }
 
-// ── Section content renderer ──────────────────────────────────────────────────
+/**
+ * Format a year-range from a JSON entry's year/yearEnd/present fields.
+ * Returns e.g. "2004–present", "2000–04", "2019–24", "2022".
+ */
+function formatDateRange(entry) {
+  if (!entry || !entry.year) return "";
+  const s = String(entry.year);
+  if (entry.present) return `${s}–present`;
+  if (!entry.yearEnd) return s;
+  const span       = entry.yearEnd - entry.year;
+  const sameDecade = Math.floor(entry.yearEnd / 10) === Math.floor(entry.year / 10);
+  const eStr       = span <= 9 && sameDecade
+    ? String(entry.yearEnd).slice(-2)
+    : String(entry.yearEnd);
+  return `${s}–${eStr}`;
+}
 
-function renderTable(tableLines) {
-  const rows = tableLines
-    .filter((l) => l.trim().startsWith("|"))
-    .map((l) =>
-      l
-        .trim()
-        .split("|")
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    );
+// ── JSON section renderers ────────────────────────────────────────────────────
 
-  if (rows.length < 2) return "";
-
-  const headers = rows[0];
-  const body = rows.slice(2); // skip separator row
+/** Render a table from typed JSON entries. */
+function renderTableEntries(entries, type) {
+  if (!entries || !entries.length) return "";
+  let headers, rowFn;
+  if (type === "education") {
+    headers = ["Dates", "Institution", "Qualification"];
+    rowFn   = e => [formatDateRange(e), e.title || "", e.content || ""];
+  } else {
+    // Classes Taught: content = course code, title = course name
+    headers = ["Dates", "Code", "Course"];
+    rowFn   = e => [formatDateRange(e), e.content || "", e.title || ""];
+  }
 
   let html = '<table class="cv-table"><thead><tr>';
-  html += headers.map((h) => `<th>${renderInline(h)}</th>`).join("");
+  html += headers.map(h => `<th>${escapeHtml(h)}</th>`).join("");
   html += "</tr></thead><tbody>";
-  body.forEach((row) => {
-    html +=
-      "<tr>" +
-      row.map((cell) => `<td>${renderInline(cell)}</td>`).join("") +
-      "</tr>";
-  });
+  for (const e of entries) {
+    const cells = rowFn(e);
+    html += "<tr>" + cells.map(c => `<td>${renderInline(c)}</td>`).join("") + "</tr>";
+  }
   html += "</tbody></table>";
   return html;
 }
 
-function renderSectionContent(lines) {
-  let html = "";
-  let i = 0;
+/** Render a Professional Experience or merged experience+service entry. */
+function renderExperienceEntry(e) {
+  const titleFull = [e.title, e.place].filter(Boolean).join(", ");
+  const datePart  = formatDateRange(e);
 
-  while (i < lines.length) {
-    const line = lines[i];
-    const trim = line.trim();
+  let html = `<div class="entry-subtitle">${escapeHtml(titleFull)}`;
+  if (datePart) html += ` <span class="entry-date">${escapeHtml(datePart)}</span>`;
+  html += "</div>";
 
-    if (trim === "" || trim === "---") {
-      i++;
-      continue;
+  if (e.content) {
+    const bullets = e.content.split("\n").filter(Boolean);
+    for (const b of bullets) {
+      html += `<div class="entry-desc">${renderInline(b)}</div>`;
     }
+  }
+  return html;
+}
 
-    // ### Sub-heading
-    if (trim.startsWith("### ")) {
-      html += `<div class="sub-label">${escapeHtml(trim.replace(/^###\s+/, ""))}</div>`;
-      i++;
-      continue;
+/** Render a University Service or Professional Service entry. */
+function renderServiceEntry(e) {
+  const datePart = formatDateRange(e);
+  let html = `<div class="entry-subtitle">${escapeHtml(e.title || "")}`;
+  if (datePart) html += ` <span class="entry-date">${escapeHtml(datePart)}</span>`;
+  html += "</div>";
+
+  if (e.content) {
+    for (const p of e.content.split("\n").filter(Boolean)) {
+      html += `<div class="entry-desc">${renderInline(p)}</div>`;
     }
+  }
+  return html;
+}
 
-    // Table block
-    if (trim.startsWith("|")) {
-      const block = [];
-      while (i < lines.length && lines[i].trim().startsWith("|"))
-        block.push(lines[i++]);
-      html += renderTable(block);
-      continue;
+/**
+ * Render a dated list entry (exhibitions, grants, workshops, residencies,
+ * bibliography, etc.).  Handles optional link.
+ */
+function renderListEntry(e) {
+  const datePart   = formatDateRange(e);
+  const displayText = [e.title, e.place].filter(Boolean).join(", ") || e.content || "";
+
+  let innerHtml;
+  if (e.link) {
+    const { attrs, icon } = externalAttrs(e.link.url);
+    const url             = escapeHtml(e.link.url);
+    const linkedLabel     = stripInline(e.link.linkTitle);
+
+    if (displayText.includes(linkedLabel)) {
+      const idx  = displayText.indexOf(linkedLabel);
+      const pre  = escapeHtml(displayText.slice(0, idx));
+      const post = escapeHtml(displayText.slice(idx + linkedLabel.length));
+      innerHtml  = `${pre}<a href="${url}"${attrs}>${escapeHtml(linkedLabel)}${icon}</a>${post}`;
+    } else {
+      innerHtml = `<a href="${url}"${attrs}>${escapeHtml(displayText)}${icon}</a>`;
     }
-
-    // Entry: **Title** — *date* (professional experience style)
-    const entryMatch = trim.match(/^\*\*(.+?)\*\*\s*[—–-]+\s*\*(.*?)\*/);
-    if (entryMatch) {
-      html += `<div class="entry-subtitle">${renderInline(entryMatch[1])} <span class="entry-date">${renderInline(entryMatch[2])}</span></div>`;
-      i++;
-      while (i < lines.length && lines[i].trim().startsWith("- ")) {
-        const bullet = lines[i].trim().replace(/^-\s+/, "");
-        html += `<div class="entry-desc">${renderInline(bullet)}</div>`;
-        i++;
-      }
-      continue;
-    }
-
-    // Bullet list
-    if (trim.startsWith("- ")) {
-      html += `<ul class="cv-list">`;
-      while (i < lines.length && lines[i].trim().startsWith("- ")) {
-        const item = lines[i].trim().replace(/^-\s+/, "");
-        // Wrap leading year (e.g. "2022 —" or "2022–23 —") in .item-date span
-        const dated = item.replace(
-          /^(\d{4}(?:[–\-]\d{2,4})?)\s*(—|–|-)\s*/,
-          (_, yr, dash) => `<span class="item-date">${yr} ${dash}</span> `,
-        );
-        html += `<li>${renderInline(dated)}</li>`;
-        i++;
-      }
-      html += "</ul>";
-      continue;
-    }
-
-    // Bold-only line → sub-entry heading (e.g. **Curriculum Committee**)
-    const boldHeading = trim.match(/^\*\*(.+?)\*\*$/);
-    if (boldHeading) {
-      html += `<div class="entry-subtitle">${escapeHtml(boldHeading[1])}</div>`;
-      i++;
-      // Collect following prose lines
-      while (
-        i < lines.length &&
-        lines[i].trim() !== "" &&
-        !lines[i].trim().startsWith("**") &&
-        !lines[i].trim().startsWith("-") &&
-        !lines[i].trim().startsWith("|") &&
-        !lines[i].trim().startsWith("#")
-      ) {
-        html += `<div class="entry-desc">${renderInline(lines[i].trim())}</div>`;
-        i++;
-      }
-      continue;
-    }
-
-    // Plain paragraph
-    html += `<p class="entry-desc">${renderInline(trim)}</p>`;
-    i++;
+  } else {
+    innerHtml = renderInline(displayText);
   }
 
-  return html;
+  const dateHtml = datePart
+    ? `<span class="item-date">${escapeHtml(datePart)} —</span> `
+    : "";
+  return `<li>${dateHtml}${innerHtml}</li>`;
+}
+
+/**
+ * Dispatch section rendering based on section name and structure.
+ * Handles both { section, entries[] } and { section, subsections[] } shapes.
+ */
+function renderSectionFromJSON(sec) {
+  const name = sec.section;
+
+  // ── Sections that use ### sub-headings ──────────────────────────────────────
+  if (sec.subsections) {
+    const isClasses = name === "Classes Taught";
+    return sec.subsections.map(sub => {
+      const innerHtml = isClasses
+        ? renderTableEntries(sub.entries, "classes")
+        : `<ul class="cv-list">${sub.entries.map(renderListEntry).join("")}</ul>`;
+      return `<div class="sub-label">${escapeHtml(sub.title)}</div>${innerHtml}`;
+    }).join("\n");
+  }
+
+  const entries = sec.entries || [];
+
+  switch (name) {
+    case "Education":
+      return renderTableEntries(entries, "education");
+
+    case "Professional Experience":
+      return entries.map(renderExperienceEntry).join("\n");
+
+    case "University Service":
+    case "Professional Service":
+      return entries.map(renderServiceEntry).join("\n");
+
+    case "Profile":
+      return entries
+        .map(e => `<p class="summary">${renderInline(e.content || "")}</p>`)
+        .join("\n");
+
+    default:
+      // Dated bullet lists: Exhibitions, Grants, Workshops, Residencies, Collections
+      return `<ul class="cv-list">${entries.map(renderListEntry).join("")}</ul>`;
+  }
 }
 
 // ── Contact item renderer ─────────────────────────────────────────────────────
@@ -272,78 +253,58 @@ const LINKEDIN_LOGO = `<svg class="contact-icon" xmlns="http://www.w3.org/2000/s
 </svg>`;
 
 function renderContactItem(raw) {
-  // Markdown link [label](url)
   const linkMatch = raw.match(/^\[(.+?)\]\((.+?)\)$/);
   if (linkMatch) {
     const isLinkedIn = linkMatch[2].includes("linkedin.com");
-    // Use "LinkedIn" as the visible label for LinkedIn URLs so the link is
-    // self-descriptive in both HTML (icon + text) and DOCX (text only).
-    const label = escapeHtml(isLinkedIn ? "LinkedIn" : linkMatch[1]);
-    const url = escapeHtml(linkMatch[2]);
-    const liIcon = isLinkedIn ? LINKEDIN_LOGO : "";
+    const label      = escapeHtml(isLinkedIn ? "LinkedIn" : linkMatch[1]);
+    const url        = escapeHtml(linkMatch[2]);
+    const liIcon     = isLinkedIn ? LINKEDIN_LOGO : "";
     const { attrs, icon } = externalAttrs(linkMatch[2]);
     return `<a href="${url}"${attrs}>${liIcon}${label}${icon}</a>`;
   }
-  // Plain text
   return `<span>${escapeHtml(raw)}</span>`;
 }
 
 // ── Build date ────────────────────────────────────────────────────────────────
 
-/** Returns today's date as "DD Mon YYYY", e.g. "15 May 2026". */
 function buildDateString() {
-  const MONTHS = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const d = new Date();
   return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 // ── HTML builder ──────────────────────────────────────────────────────────────
 
-function buildHTML(cv) {
+/**
+ * Render a complete HTML resume page from a parsed CV object.
+ * @param {object} cv  { name: string, contact: string[], sections: object[] }
+ *                     sections is the same array produced by resume-to-json.js,
+ *                     optionally filtered/transformed by md-to-resumes.js.
+ */
+function buildHTMLFromJSON(cv) {
   const contactHTML = cv.contact.map(renderContactItem).join("\n      ");
 
-  const bioHTML = cv.bio
-    .filter((l) => l.trim().length > 0)
-    .map((l) => `<p class="summary">${renderInline(l)}</p>`)
-    .join("\n        ");
+  // Profile section (if present) renders above the grid body
+  const profileSec  = cv.sections.find(s => s.section === "Profile");
+  const bodySections = cv.sections.filter(s => s.section !== "Profile");
 
-  const profileSection =
-    cv.bio.filter((l) => l.trim()).length > 0
-      ? `
+  const profileHTML = profileSec ? `
     <div class="section">
       <div class="section-divider"></div>
       <div class="section-label">Profile</div>
       <div class="section-content">
-        ${bioHTML}
+        ${renderSectionFromJSON(profileSec)}
       </div>
-    </div>`
-      : "";
+    </div>` : "";
 
-  const sectionsHTML = cv.sections
-    .map(
-      (s) => `
+  const sectionsHTML = bodySections.map(s => `
     <div class="section">
       <div class="section-divider"></div>
-      <div class="section-label">${escapeHtml(s.name)}</div>
+      <div class="section-label">${escapeHtml(s.section)}</div>
       <div class="section-content">
-        ${renderSectionContent(s.content)}
+        ${renderSectionFromJSON(s)}
       </div>
-    </div>`,
-    )
-    .join("\n");
+    </div>`).join("\n");
 
   return `<!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -419,22 +380,11 @@ function buildHTML(cv) {
       z-index: 100;
       transition: color 0.2s, border-color 0.2s, background 0.2s;
     }
-    .theme-toggle:hover {
-      color: var(--ink-2);
-      border-color: var(--ink-4);
-    }
-    .theme-toggle svg {
-      width: 12px;
-      height: 12px;
-      fill: currentColor;
-      flex-shrink: 0;
-    }
+    .theme-toggle:hover { color: var(--ink-2); border-color: var(--ink-4); }
+    .theme-toggle svg   { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
 
     /* ── Header ── */
-    .resume-header {
-      padding-bottom: 1.25rem;
-      margin-bottom: 0.75rem;
-    }
+    .resume-header { padding-bottom: 1.25rem; margin-bottom: 0.75rem; }
 
     .resume-name {
       font-family: 'Cormorant Garamond', serif;
@@ -460,18 +410,11 @@ function buildHTML(cv) {
     }
 
     /* ── Body grid ── */
-    .resume-body {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 0;
-    }
+    .resume-body { display: grid; grid-template-columns: 200px 1fr; gap: 0; }
 
     .section { display: contents; }
 
-    .section-divider {
-      grid-column: 1 / -1;
-      border-top: 0.5px solid var(--rule-1);
-    }
+    .section-divider { grid-column: 1 / -1; border-top: 0.5px solid var(--rule-1); }
 
     .section-label {
       font-size: 10px;
@@ -482,9 +425,7 @@ function buildHTML(cv) {
       line-height: 1.4;
     }
 
-    .section-content {
-      padding: 1.25rem 0;
-    }
+    .section-content { padding: 1.25rem 0; }
 
     /* ── Profile ── */
     .summary {
@@ -506,11 +447,7 @@ function buildHTML(cv) {
       gap: 8px;
     }
 
-    .entry-title {
-      font-weight: 400;
-      color: var(--ink-1);
-      font-size: 13px;
-    }
+    .entry-title { font-weight: 400; color: var(--ink-1); font-size: 13px; }
 
     .entry-title--org {
       font-family: 'Cormorant Garamond', serif;
@@ -520,12 +457,7 @@ function buildHTML(cv) {
       color: var(--ink-1);
     }
 
-    .entry-date {
-      font-size: 11px;
-      color: var(--ink-4);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+    .entry-date { font-size: 11px; color: var(--ink-4); white-space: nowrap; flex-shrink: 0; }
 
     .entry-org {
       font-family: 'Cormorant Garamond', serif;
@@ -542,13 +474,9 @@ function buildHTML(cv) {
       margin: 9px 0 0 0;
       font-style: bold;
     }
-
     .entry-desc:first-child { margin-top: 0; }
 
-    .entry-desc--bullet {
-      padding-left: 1.25rem;
-      text-indent: -1.25rem;
-    }
+    .entry-desc--bullet { padding-left: 1.25rem; text-indent: -1.25rem; }
 
     .entry-subtitle {
       font-weight: 400;
@@ -556,7 +484,6 @@ function buildHTML(cv) {
       color: var(--ink-1);
       margin: 0.9rem 0 2px 0;
     }
-
     .entry-subtitle:first-child { margin-top: 0; }
 
     /* ── Sub-labels (### headings) ── */
@@ -569,10 +496,7 @@ function buildHTML(cv) {
     }
 
     /* ── Lists ── */
-    .cv-list {
-      margin: 0;
-      padding: 0;
-    }
+    .cv-list { margin: 0; padding: 0; }
 
     .cv-list li {
       font-size: 12px;
@@ -583,11 +507,8 @@ function buildHTML(cv) {
 
     .cv-list li::before { content: none; }
 
-
-    /* ── Inline date spans (year prefix in list items) ── */
-    .item-date {
-      color: var(--ink-4);
-    }
+    /* ── Inline date spans ── */
+    .item-date { color: var(--ink-4); }
 
     /* ── Tables ── */
     .cv-table {
@@ -598,8 +519,7 @@ function buildHTML(cv) {
       margin-bottom: 0.75rem;
     }
 
-    .cv-table th,
-    .cv-table td {
+    .cv-table th, .cv-table td {
       overflow-wrap: break-word;
       word-break: break-word;
       vertical-align: top;
@@ -622,55 +542,33 @@ function buildHTML(cv) {
       border-bottom: 0.5px solid var(--rule-3);
     }
 
-    /* col 1 — dates */
-    .cv-table th:first-child,
-    .cv-table td:first-child {
-      width: 72px;
-      color: var(--ink-4);
-      font-size: 11px;
-    }
-
-    /* col 2 — course codes / institutions */
-    .cv-table th:nth-child(2),
-    .cv-table td:nth-child(2) {
-      width: 155px;
-    }
-
-    /* col 3 — titles / qualifications — fills remaining space, wraps freely */
+    .cv-table th:first-child, .cv-table td:first-child { width: 72px; color: var(--ink-4); font-size: 11px; }
+    .cv-table th:nth-child(2), .cv-table td:nth-child(2) { width: 155px; }
 
     /* ── Links ── */
-    a {
-      color: inherit;
-      text-decoration: none;
-      border-bottom: 0.5px solid var(--rule-1);
-    }
-
+    a { color: inherit; text-decoration: none; border-bottom: 0.5px solid var(--rule-1); }
     a:hover { border-bottom-color: var(--ink-4); }
 
     /* ── External link icon ── */
     .ext-icon {
       display: inline-block;
-      width: 9px;
-      height: 9px;
+      width: 9px; height: 9px;
       fill: currentColor;
       opacity: 0.45;
       vertical-align: middle;
       margin-left: 3px;
-      position: relative;
-      top: -1px;
+      position: relative; top: -1px;
       flex-shrink: 0;
     }
 
     /* ── Contact icons ── */
     .contact-icon {
       display: inline-block;
-      width: 11px;
-      height: 11px;
+      width: 11px; height: 11px;
       fill: currentColor;
       vertical-align: middle;
       margin-right: 4px;
-      position: relative;
-      top: -1px;
+      position: relative; top: -1px;
     }
 
     /* ── Mobile ── */
@@ -703,11 +601,7 @@ function buildHTML(cv) {
     }
 
     /* ── Print ── */
-    @media print {
-      body { padding: 0; }
-      .resume { max-width: 100%; }
-      .theme-toggle { display: none; }
-    }
+    @media print { body { padding: 0; } .resume { max-width: 100%; } .theme-toggle { display: none; } }
   </style>
 </head>
 <body>
@@ -729,7 +623,7 @@ function buildHTML(cv) {
   </div>
 
   <div class="resume-body">
-    ${profileSection}
+    ${profileHTML}
     ${sectionsHTML}
   </div>
 
@@ -739,15 +633,12 @@ function buildHTML(cv) {
 
 <script>
   (function () {
-    const root   = document.documentElement;
-    const btn    = document.getElementById('theme-toggle');
-    const label  = document.getElementById('toggle-label');
-    const path   = document.getElementById('toggle-path');
-
-    // Sun icon path
-    const SUN  = 'M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-4a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V4a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm9-9h-1a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zM4 12a1 1 0 0 1-1 1H2a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm14.95 5.54-.7-.71a1 1 0 0 1 1.41-1.41l.71.7a1 1 0 0 1-1.41 1.42zm-13.9 0a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7zM18.24 6.46a1 1 0 0 1 0-1.41l.71-.71a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0zm-13.9 0a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 3.63 4.34l.71.71a1 1 0 0 1 0 1.41z';
-    // Moon icon path
-    const MOON = 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z';
+    const root  = document.documentElement;
+    const btn   = document.getElementById('theme-toggle');
+    const label = document.getElementById('toggle-label');
+    const path  = document.getElementById('toggle-path');
+    const SUN   = 'M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-4a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V4a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm9-9h-1a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zM4 12a1 1 0 0 1-1 1H2a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm14.95 5.54-.7-.71a1 1 0 0 1 1.41-1.41l.71.7a1 1 0 0 1-1.41 1.42zm-13.9 0a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7zM18.24 6.46a1 1 0 0 1 0-1.41l.71-.71a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0zm-13.9 0a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 3.63 4.34l.71.71a1 1 0 0 1 0 1.41z';
+    const MOON  = 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z';
 
     function applyTheme(dark) {
       root.setAttribute('data-theme', dark ? 'dark' : 'light');
@@ -755,11 +646,8 @@ function buildHTML(cv) {
       label.textContent = dark ? 'Light' : 'Dark';
     }
 
-    // Restore saved preference
     const saved = localStorage.getItem('cv-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(saved ? saved === 'dark' : prefersDark);
-
+    applyTheme(saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches);
     btn.addEventListener('click', function () {
       const isDark = root.getAttribute('data-theme') === 'dark';
       applyTheme(!isDark);
@@ -773,29 +661,26 @@ function buildHTML(cv) {
 }
 
 // ── Output directories ────────────────────────────────────────────────────────
-// The generated HTML is written to every folder listed here, in addition to
-// the primary output path. Add or remove paths to suit your setup.
 
 const MIRROR_DIRS = [
-  path.join(__dirname, ".."), // project root (resumes/) — src/ is one level down
-  path.join(os.homedir(), "Desktop/Job Applications/CVs/resumé updater"), // ~/Desktop/.../resumé updater/
+  path.join(__dirname, ".."),
+  path.join(os.homedir(), "Desktop/Job Applications/CVs/resumé updater"),
 ];
 
-// ── Module exports (for use as a helper by md-to-resumes.js) ─────────────────
+// ── Module exports ────────────────────────────────────────────────────────────
 
-module.exports = { parseMarkdown, buildHTML, renderInline, escapeHtml };
+module.exports = { buildHTMLFromJSON, renderInline, escapeHtml, formatDateRange, stripInline };
 
-// ── Main (only runs when called directly as a CLI tool) ───────────────────────
+// ── CLI entry point ───────────────────────────────────────────────────────────
 
 if (require.main === module) {
   const args = process.argv.slice(2);
-
   if (args.length === 0) {
-    console.error("Usage: node md-to-resume.js <input.md> [output.html]");
+    console.error("Usage: node src/md-to-resume.js <input.md> [output.html]");
     process.exit(1);
   }
 
-  const inputPath = path.resolve(args[0]);
+  const inputPath  = path.resolve(args[0]);
   const outputName = args[1]
     ? path.basename(args[1])
     : path.basename(inputPath).replace(/\.md$/i, ".html");
@@ -805,11 +690,17 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  const markdown = fs.readFileSync(inputPath, "utf-8");
-  const cv = parseMarkdown(markdown);
-  const html = buildHTML(cv);
+  const md = fs.readFileSync(inputPath, "utf-8");
 
-  // Write to every mirror directory that exists
+  // 1. Parse to JSON and write the .json file alongside the .md
+  const cv      = parseCV(md);
+  const jsonOut = path.join(path.dirname(inputPath), path.basename(inputPath).replace(/\.md$/i, ".json"));
+  fs.writeFileSync(jsonOut, JSON.stringify(cv, null, 2), "utf-8");
+  console.log(`✓  JSON → ${jsonOut}`);
+
+  // 2. Render HTML from JSON
+  const html = buildHTMLFromJSON(cv);
+
   let written = 0;
   for (const dir of MIRROR_DIRS) {
     if (!fs.existsSync(dir)) {
@@ -818,7 +709,7 @@ if (require.main === module) {
     }
     const dest = path.join(dir, outputName);
     fs.writeFileSync(dest, html, "utf-8");
-    console.log(`✓  ${dest}`);
+    console.log(`✓  HTML → ${dest}`);
     written++;
   }
 
