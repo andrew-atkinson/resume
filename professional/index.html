@@ -72,22 +72,11 @@
       z-index: 100;
       transition: color 0.2s, border-color 0.2s, background 0.2s;
     }
-    .theme-toggle:hover {
-      color: var(--ink-2);
-      border-color: var(--ink-4);
-    }
-    .theme-toggle svg {
-      width: 12px;
-      height: 12px;
-      fill: currentColor;
-      flex-shrink: 0;
-    }
+    .theme-toggle:hover { color: var(--ink-2); border-color: var(--ink-4); }
+    .theme-toggle svg   { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
 
     /* ── Header ── */
-    .resume-header {
-      padding-bottom: 1.25rem;
-      margin-bottom: 0.75rem;
-    }
+    .resume-header { padding-bottom: 1.25rem; margin-bottom: 0.75rem; }
 
     .resume-name {
       font-family: 'Cormorant Garamond', serif;
@@ -113,18 +102,11 @@
     }
 
     /* ── Body grid ── */
-    .resume-body {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 0;
-    }
+    .resume-body { display: grid; grid-template-columns: 200px 1fr; gap: 0; }
 
     .section { display: contents; }
 
-    .section-divider {
-      grid-column: 1 / -1;
-      border-top: 0.5px solid var(--rule-1);
-    }
+    .section-divider { grid-column: 1 / -1; border-top: 0.5px solid var(--rule-1); }
 
     .section-label {
       font-size: 10px;
@@ -135,9 +117,7 @@
       line-height: 1.4;
     }
 
-    .section-content {
-      padding: 1.25rem 0;
-    }
+    .section-content { padding: 1.25rem 0; }
 
     /* ── Profile ── */
     .summary {
@@ -159,11 +139,7 @@
       gap: 8px;
     }
 
-    .entry-title {
-      font-weight: 400;
-      color: var(--ink-1);
-      font-size: 13px;
-    }
+    .entry-title { font-weight: 400; color: var(--ink-1); font-size: 13px; }
 
     .entry-title--org {
       font-family: 'Cormorant Garamond', serif;
@@ -173,12 +149,7 @@
       color: var(--ink-1);
     }
 
-    .entry-date {
-      font-size: 11px;
-      color: var(--ink-4);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+    .entry-date { font-size: 11px; color: var(--ink-4); white-space: nowrap; flex-shrink: 0; }
 
     .entry-org {
       font-family: 'Cormorant Garamond', serif;
@@ -195,13 +166,9 @@
       margin: 9px 0 0 0;
       font-style: bold;
     }
-
     .entry-desc:first-child { margin-top: 0; }
 
-    .entry-desc--bullet {
-      padding-left: 1.25rem;
-      text-indent: -1.25rem;
-    }
+    .entry-desc--bullet { padding-left: 1.25rem; text-indent: -1.25rem; }
 
     .entry-subtitle {
       font-weight: 400;
@@ -209,7 +176,6 @@
       color: var(--ink-1);
       margin: 0.9rem 0 2px 0;
     }
-
     .entry-subtitle:first-child { margin-top: 0; }
 
     /* ── Sub-labels (### headings) ── */
@@ -222,10 +188,7 @@
     }
 
     /* ── Lists ── */
-    .cv-list {
-      margin: 0;
-      padding: 0;
-    }
+    .cv-list { margin: 0; padding: 0; }
 
     .cv-list li {
       font-size: 12px;
@@ -236,11 +199,8 @@
 
     .cv-list li::before { content: none; }
 
-
-    /* ── Inline date spans (year prefix in list items) ── */
-    .item-date {
-      color: var(--ink-4);
-    }
+    /* ── Inline date spans ── */
+    .item-date { color: var(--ink-4); }
 
     /* ── Tables ── */
     .cv-table {
@@ -251,8 +211,7 @@
       margin-bottom: 0.75rem;
     }
 
-    .cv-table th,
-    .cv-table td {
+    .cv-table th, .cv-table td {
       overflow-wrap: break-word;
       word-break: break-word;
       vertical-align: top;
@@ -275,55 +234,33 @@
       border-bottom: 0.5px solid var(--rule-3);
     }
 
-    /* col 1 — dates */
-    .cv-table th:first-child,
-    .cv-table td:first-child {
-      width: 72px;
-      color: var(--ink-4);
-      font-size: 11px;
-    }
-
-    /* col 2 — course codes / institutions */
-    .cv-table th:nth-child(2),
-    .cv-table td:nth-child(2) {
-      width: 155px;
-    }
-
-    /* col 3 — titles / qualifications — fills remaining space, wraps freely */
+    .cv-table th:first-child, .cv-table td:first-child { width: 72px; color: var(--ink-4); font-size: 11px; }
+    .cv-table th:nth-child(2), .cv-table td:nth-child(2) { width: 155px; }
 
     /* ── Links ── */
-    a {
-      color: inherit;
-      text-decoration: none;
-      border-bottom: 0.5px solid var(--rule-1);
-    }
-
+    a { color: inherit; text-decoration: none; border-bottom: 0.5px solid var(--rule-1); }
     a:hover { border-bottom-color: var(--ink-4); }
 
     /* ── External link icon ── */
     .ext-icon {
       display: inline-block;
-      width: 9px;
-      height: 9px;
+      width: 9px; height: 9px;
       fill: currentColor;
       opacity: 0.45;
       vertical-align: middle;
       margin-left: 3px;
-      position: relative;
-      top: -1px;
+      position: relative; top: -1px;
       flex-shrink: 0;
     }
 
     /* ── Contact icons ── */
     .contact-icon {
       display: inline-block;
-      width: 11px;
-      height: 11px;
+      width: 11px; height: 11px;
       fill: currentColor;
       vertical-align: middle;
       margin-right: 4px;
-      position: relative;
-      top: -1px;
+      position: relative; top: -1px;
     }
 
     /* ── Mobile ── */
@@ -356,11 +293,7 @@
     }
 
     /* ── Print ── */
-    @media print {
-      body { padding: 0; }
-      .resume { max-width: 100%; }
-      .theme-toggle { display: none; }
-    }
+    @media print { body { padding: 0; } .resume { max-width: 100%; } .theme-toggle { display: none; } }
   </style>
 </head>
 <body>
@@ -393,7 +326,7 @@
       <div class="section-divider"></div>
       <div class="section-label">Education</div>
       <div class="section-content">
-        <table class="cv-table"><thead><tr><th>Dates</th><th>Institution</th><th>Qualification</th></tr></thead><tbody><tr><td>Spring – Summer 2017</td><td>Fullstack Academy, New York</td><td></td></tr><tr><td>Oct 2000 – May 2004</td><td>University of the West of England, Bristol</td><td>Ph.D. — <em>"The creation of digital fine art print through the Woodburytype model"</em></td></tr><tr><td>Sept 1999 – June 2000</td><td>University of the Arts, Philadelphia</td><td>Postgraduate studies</td></tr><tr><td>Oct 1993 – July 1996</td><td>University of the West of England, Bristol</td><td>BA (hons) Fine Art</td></tr></tbody></table>
+        <table class="cv-table"><thead><tr><th>Dates</th><th>Institution</th><th>Qualification</th></tr></thead><tbody><tr><td>2017</td><td>Fullstack Academy, New York</td><td></td></tr><tr><td>2000–04</td><td>University of the West of England, Bristol</td><td>Ph.D. — "The creation of digital fine art print through the Woodburytype model"</td></tr><tr><td>1999–2000</td><td>University of the Arts, Philadelphia</td><td>Postgraduate studies</td></tr><tr><td>1993–96</td><td>University of the West of England, Bristol</td><td>BA (hons) Fine Art</td></tr></tbody></table>
       </div>
     </div>
 
@@ -401,7 +334,13 @@
       <div class="section-divider"></div>
       <div class="section-label">Professional Experience</div>
       <div class="section-content">
-        <p class="entry-desc"><span class='entry-subtitle'>Institute for the Advancement of Philosophy for Children</span> — <em>2021–present</em></p><ul class="cv-list"><li>Updated novel design for accessibility and digital access</li></ul><p class="entry-desc"><span class='entry-subtitle'>Montclair State University, Montclair, NJ</span> — <em>2004–present</em></p><ul class="cv-list"><li>Deputy Chair, Dept. of Art and Design, September 2019 – May 2023</li><li>Assistant Professor of Digital Photography, September 2004 – Present</li><li>Department of Art and Design Summer Chair, Summers 2014–17, 2019–24</li><li>Director of the MFA in Studio Arts, Sept 2009 – Jan 2017</li></ul><p class="entry-desc"><span class='entry-subtitle'>Passaic Public Schools Digital Art CTE Advisory Committee</span> — <em>2020–24</em></p><p class="entry-desc">2020–24 — Board Member, helped create partnership between MSU and the Passaic Public School, designing two school courses for equivalency at MSU.</p><p class="entry-desc"><span class='entry-subtitle'>Conference Organiser</span> — <em>2007–2023</em></p><ul class="cv-list"><li><span class="item-date">2023 —</span> Ocean Memory Project, Remembering/Writing, Friday Harbor Labs, San Juan Island, University of Washington, WA</li><li><span class="item-date">2022 —</span> Ocean Memory Project, Sense Submerged Workshop, Puerto Morelos, Mexico</li><li><span class="item-date">2009 —</span> Society for Photographic Education, Mid-Atlantic Region Annual conference, Montclair State University, Montclair, NJ</li><li><span class="item-date">2008 —</span> Society for Photographic Education, Mid-Atlantic Region Annual conference, Carnegie Mellon University, Pittsburgh, PA</li><li><span class="item-date">2007 —</span> Society for Photographic Education, Mid-Atlantic Region Annual conference, Center for Photography at Woodstock, Woodstock, NY</li></ul><p class="entry-desc"><span class='entry-subtitle'>Vidcode — Curriculum Developer</span> — <em>2017–2019</em></p><ul class="cv-list"><li>Developed curriculum for introductory creative coding courses including for Girl Scouts and BrainPop</li></ul><p class="entry-desc"><span class='entry-subtitle'>External Reviewer</span> — <em>2012</em></p><ul class="cv-list"><li><span class="item-date">2012 —</span> Whitecliffe College of Art and Design, Auckland, New Zealand</li></ul><p class="entry-desc"><span class='entry-subtitle'>Juror</span> — <em>2008</em></p><ul class="cv-list"><li><span class="item-date">2008 —</span> Photography exhibition, New Jersey Printmaking Council, Somerville, NJ</li></ul>
+        <div class="entry-subtitle">Institute for the Advancement of Philosophy for Children <span class="entry-date">2021–present</span></div><div class="entry-desc">Updated novel design for accessibility and digital access</div>
+<div class="entry-subtitle">Montclair State University, Montclair, NJ <span class="entry-date">2004–present</span></div><div class="entry-desc">Deputy Chair, Dept. of Art and Design, September 2019 – May 2023</div><div class="entry-desc">Assistant Professor of Digital Photography, September 2004 – Present</div><div class="entry-desc">Department of Art and Design Summer Chair, Summers 2014–17, 2019–24</div><div class="entry-desc">Director of the MFA in Studio Arts, Sept 2009 – Jan 2017</div>
+<div class="entry-subtitle">Passaic Public Schools Digital Art CTE Advisory Committee <span class="entry-date">2020–24</span></div><div class="entry-desc">2020–24 — Board Member, helped create partnership between MSU and the Passaic Public School, designing two school courses for equivalency at MSU.</div>
+<div class="entry-subtitle">Vidcode — Curriculum Developer <span class="entry-date">2017–19</span></div><div class="entry-desc">Developed curriculum for introductory creative coding courses including for Girl Scouts and BrainPop</div>
+<div class="entry-subtitle">Conference Organiser</div><div class="entry-desc">2023 — Ocean Memory Project, Remembering/Writing, Friday Harbor Labs, San Juan Island, University of Washington, WA</div><div class="entry-desc">2022 — Ocean Memory Project, Sense Submerged Workshop, Puerto Morelos, Mexico</div><div class="entry-desc">2009 — Society for Photographic Education, Mid-Atlantic Region Annual conference, Montclair State University, Montclair, NJ</div><div class="entry-desc">2008 — Society for Photographic Education, Mid-Atlantic Region Annual conference, Carnegie Mellon University, Pittsburgh, PA</div><div class="entry-desc">2007 — Society for Photographic Education, Mid-Atlantic Region Annual conference, Center for Photography at Woodstock, Woodstock, NY</div>
+<div class="entry-subtitle">External Reviewer</div><div class="entry-desc">2012 — Whitecliffe College of Art and Design, Auckland, New Zealand</div>
+<div class="entry-subtitle">Juror</div><div class="entry-desc">2008 — Photography exhibition, New Jersey Printmaking Council, Somerville, NJ</div>
       </div>
     </div>
 
@@ -409,26 +348,25 @@
       <div class="section-divider"></div>
       <div class="section-label">Scholarship, Publications, and Related Activities</div>
       <div class="section-content">
-        <div class="sub-label">Bibliography</div><ul class="cv-list"><li><span class="item-date">2025 —</span> Jody W. Deming; <a href="https://doi.org/10.1162/leon_a_02644" target="_blank" rel="noopener external">Ocean Memory: Unimagined Perspectives. <em>Leonardo</em> 2025; 58 (1): 105–110.<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 9V1h4v1H2v7h7V5h1v4H1z"/><path d="M9 1H6l1.1 1.1L4 5.2l.8.8 3.1-3.1L9 4V1z"/></svg></a></li><li><span class="item-date">2017 —</span> Zona Imaginaria, Buenos Aires</li><li><span class="item-date">2010 —</span> La Voz del Interior, 19th, 20th and 21st of July 2010; Revista Ohlala, August 2010</li><li><span class="item-date">2009 —</span> 30 Years of the Sol Mednick Gallery</li><li><span class="item-date">2008 —</span> Fotografi Emergenti catalogue</li><li><span class="item-date">2007 —</span> Gyeongnam International Art Festival catalogue</li><li><span class="item-date">2004 —</span> In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue</li><li><span class="item-date">2003 —</span> Gravat.olot, CD-ROM Catalogue, Spain; International Print Biennial catalogue, Bulgaria; Beijing International Print Biennial catalogue</li><li><span class="item-date">2002 —</span> 'The history book that never was' review, <em>The Art Book</em>, Sept.; 20:20, 20 artists using photomechanical processes, CD-ROM, Impact Press; Artists' Book Yearbook review, <em>The Art Book</em></li><li><span class="item-date">2001 —</span> Artists' Book Yearbook, Ed. Sarah Bodman. Impact Press; <em>Ceramics and Print</em>, Paul Scott, A&C Black; Mutating Image: 12th Tallinn print triennial catalogue; A Tale of Two Cities, Ed. Sarah Bodman. Impact Press</li><li><span class="item-date">2000 —</span> Photomechanical Print Survey, Ed. Carinna Parraman, Impact Press; World Etching, Chongqing Print Festival</li><li><span class="item-date">1999 —</span> Artists' Newsletter, Sarah Bodman; Artists' Books, Ed. Sarah Bodman. Impact Press</li></ul><div class="sub-label">Writer</div><ul class="cv-list"><li>AfterImage, 2008–2009</li><li>Architect's Newspaper, November 2005–2010</li></ul><div class="sub-label">Curator</div><ul class="cv-list"><li><span class="item-date">2008–10 —</span> Emerging Photographers, Palezzetto Eucherio Sanvitale, Parma, Italy (traveled to Philadelphia, 2009; Cordoba, 2010)</li><li><span class="item-date">2009 —</span> The End Days of Print: Raffone in Naples, EI institute, Columbia University</li><li><span class="item-date">2008 —</span> Co-curator, Italian Sense of Place II: Luigi Ghirri, Franco Guerzoni, and Nancy Goldring, George Segal Gallery, MSU, Montclair</li><li><span class="item-date">2008 —</span> Co-curator, Italian Sense of Place I: Giuseppe Morandi, Micio, and Angelo Novi, George Segal Gallery, MSU, Montclair</li><li><span class="item-date">2007 —</span> MSU Alumni Show, P.P.O.W Gallery, New York, NY</li></ul>
+        <div class="sub-label">Bibliography</div><ul class="cv-list"><li><span class="item-date">2025 —</span> Jody W. Deming; <a href="https://doi.org/10.1162/leon_a_02644" target="_blank" rel="noopener external">Ocean Memory: Unimagined Perspectives. Leonardo 2025; 58 (1): 105–110.<svg class="ext-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 9V1h4v1H2v7h7V5h1v4H1z"/><path d="M9 1H6l1.1 1.1L4 5.2l.8.8 3.1-3.1L9 4V1z"/></svg></a></li><li><span class="item-date">2017 —</span> Zona Imaginaria, Buenos Aires</li><li><span class="item-date">2010 —</span> La Voz del Interior, 19th, 20th and 21st of July 2010; Revista Ohlala, August 2010</li><li><span class="item-date">2009 —</span> 30 Years of the Sol Mednick Gallery</li><li><span class="item-date">2008 —</span> Fotografi Emergenti catalogue</li><li><span class="item-date">2007 —</span> Gyeongnam International Art Festival catalogue</li><li><span class="item-date">2004 —</span> In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue</li><li><span class="item-date">2003 —</span> Gravat.olot, CD-ROM Catalogue, Spain; International Print Biennial catalogue, Bulgaria; Beijing International Print Biennial catalogue</li><li><span class="item-date">2002 —</span> 'The history book that never was' review, <em>The Art Book</em>, Sept.; 20:20, 20 artists using photomechanical processes, CD-ROM, Impact Press; Artists' Book Yearbook review, <em>The Art Book</em></li><li><span class="item-date">2001 —</span> Artists' Book Yearbook, Ed. Sarah Bodman. Impact Press; <em>Ceramics and Print</em>, Paul Scott, A&C Black; Mutating Image: 12th Tallinn print triennial catalogue; A Tale of Two Cities, Ed. Sarah Bodman. Impact Press</li><li><span class="item-date">2000 —</span> Photomechanical Print Survey, Ed. Carinna Parraman, Impact Press; World Etching, Chongqing Print Festival</li><li><span class="item-date">1999 —</span> Artists' Newsletter, Sarah Bodman; Artists' Books, Ed. Sarah Bodman. Impact Press</li></ul>
+<div class="sub-label">Writer</div><ul class="cv-list"><li>AfterImage, 2008–2009</li><li>Architect's Newspaper, November 2005–2010</li></ul>
+<div class="sub-label">Curator</div><ul class="cv-list"><li><span class="item-date">2008–2010 —</span> Emerging Photographers, Palezzetto Eucherio Sanvitale, Parma, Italy (traveled to Philadelphia, 2009; Cordoba, 2010)</li><li><span class="item-date">2009 —</span> The End Days of Print: Raffone in Naples, EI institute, Columbia University</li><li><span class="item-date">2008 —</span> Co-curator, Italian Sense of Place II: Luigi Ghirri, Franco Guerzoni, and Nancy Goldring, George Segal Gallery, MSU, Montclair</li><li><span class="item-date">2008 —</span> Co-curator, Italian Sense of Place I: Giuseppe Morandi, Micio, and Angelo Novi, George Segal Gallery, MSU, Montclair</li><li><span class="item-date">2007 —</span> MSU Alumni Show, P.P.O.W Gallery, New York, NY</li></ul>
       </div>
     </div>
   </div>
 
-  <div class="resume-updated">updated: 5 May 2026</div>
+  <div class="resume-updated">updated: 8 May 2026</div>
 
 </div>
 
 <script>
   (function () {
-    const root   = document.documentElement;
-    const btn    = document.getElementById('theme-toggle');
-    const label  = document.getElementById('toggle-label');
-    const path   = document.getElementById('toggle-path');
-
-    // Sun icon path
-    const SUN  = 'M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-4a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V4a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm9-9h-1a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zM4 12a1 1 0 0 1-1 1H2a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm14.95 5.54-.7-.71a1 1 0 0 1 1.41-1.41l.71.7a1 1 0 0 1-1.41 1.42zm-13.9 0a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7zM18.24 6.46a1 1 0 0 1 0-1.41l.71-.71a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0zm-13.9 0a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 3.63 4.34l.71.71a1 1 0 0 1 0 1.41z';
-    // Moon icon path
-    const MOON = 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z';
+    const root  = document.documentElement;
+    const btn   = document.getElementById('theme-toggle');
+    const label = document.getElementById('toggle-label');
+    const path  = document.getElementById('toggle-path');
+    const SUN   = 'M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-4a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V4a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm9-9h-1a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zM4 12a1 1 0 0 1-1 1H2a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm14.95 5.54-.7-.71a1 1 0 0 1 1.41-1.41l.71.7a1 1 0 0 1-1.41 1.42zm-13.9 0a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7zM18.24 6.46a1 1 0 0 1 0-1.41l.71-.71a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0zm-13.9 0a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 3.63 4.34l.71.71a1 1 0 0 1 0 1.41z';
+    const MOON  = 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z';
 
     function applyTheme(dark) {
       root.setAttribute('data-theme', dark ? 'dark' : 'light');
@@ -436,11 +374,8 @@
       label.textContent = dark ? 'Light' : 'Dark';
     }
 
-    // Restore saved preference
     const saved = localStorage.getItem('cv-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(saved ? saved === 'dark' : prefersDark);
-
+    applyTheme(saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches);
     btn.addEventListener('click', function () {
       const isDark = root.getAttribute('data-theme') === 'dark';
       applyTheme(!isDark);
