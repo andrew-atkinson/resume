@@ -6,76 +6,90 @@
  */
 "use strict";
 
-const fs   = require("fs");
+const fs = require("fs");
 const path = require("path");
 
-const cv       = JSON.parse(fs.readFileSync(path.join(__dirname, "Atkinson_CV.json"), "utf8"));
+const cv = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "Atkinson_CV.json"), "utf8"),
+);
 const sections = cv.sections;
 
 // ── Layout constants ───────────────────────────────────────────────────────
-const PX_PER_YEAR  = 80;
-const MIN_YEAR     = 1993;
-const MAX_YEAR     = 2028;
+const PX_PER_YEAR = 80;
+const MIN_YEAR = 1993;
+const MAX_YEAR = 2028;
 const PRESENT_YEAR = 2026;
-const TOTAL_W      = (MAX_YEAR - MIN_YEAR) * PX_PER_YEAR;  // 2800 px
+const TOTAL_W = (MAX_YEAR - MIN_YEAR) * PX_PER_YEAR; // 2800 px
 
-const LABEL_W      = 160;
-const HEADER_H     =  48;
-const SPAN_TRACK_H =  28;   // px per span swim-lane
-const ITEM_H       =  17;   // px per list / point row
-const BTN_H        =  20;   // px for the "+X more" button
-const TOP_PAD      =   4;   // top padding inside each column
+const LABEL_W = 160;
+const HEADER_H = 48;
+const SPAN_TRACK_H = 28; // px per span swim-lane
+const ITEM_H = 17; // px per list / point row
+const BTN_H = 20; // px for the "+X more" button
+const TOP_PAD = 4; // top padding inside each column
 
 // ── Row definitions ────────────────────────────────────────────────────────
 const ROWS = [
-  { id: "education",     label: "Education",            mode: "spans"               },
-  { id: "employment",    label: "Employment",            mode: "spans"               },
-  { id: "teaching",      label: "Teaching",              mode: "spans"               },
-  { id: "exhibitions",   label: "Exhibitions",           mode: "list",   maxLines: 4 },
-  { id: "scholarship",   label: "Scholarship",           mode: "points", maxLines: 5 },
-  { id: "presentations", label: "Presentations",         mode: "list",   maxLines: 2 },
-  { id: "grants",        label: "Grants &\nResidencies", mode: "points", maxLines: 5 },
+  { id: "education", label: "Education", mode: "spans" },
+  { id: "employment", label: "Employment", mode: "spans" },
+  { id: "teaching", label: "Teaching", mode: "spans" },
+  { id: "exhibitions", label: "Exhibitions", mode: "list", maxLines: 4 },
+  { id: "scholarship", label: "Scholarship", mode: "points", maxLines: 5 },
+  { id: "presentations", label: "Presentations", mode: "list", maxLines: 2 },
+  { id: "grants", label: "Grants &\nResidencies", mode: "points", maxLines: 5 },
 ];
 
 // ── Section / data helpers ─────────────────────────────────────────────────
 function findSection(kw) {
-  return sections.find(s => s.section.toLowerCase().includes(kw.toLowerCase()));
+  return sections.find((s) =>
+    s.section.toLowerCase().includes(kw.toLowerCase()),
+  );
 }
 function allEntries(sec) {
   if (!sec) return [];
-  if (sec.entries)     return sec.entries;
-  if (sec.subsections) return sec.subsections.flatMap(ss => ss.entries || []);
+  if (sec.entries) return sec.entries;
+  if (sec.subsections) return sec.subsections.flatMap((ss) => ss.entries || []);
   return [];
 }
 
 const data = {};
-data.education     = allEntries(findSection("Education")).filter(e => e.year);
-data.employment    = [
+data.education = allEntries(findSection("Education")).filter((e) => e.year);
+data.employment = [
   ...allEntries(findSection("Professional Experience")),
   ...allEntries(findSection("Professional Service")),
-].filter(e => e.year);
-data.teaching      = allEntries(findSection("Classes Taught")).filter(e => e.year);
-data.exhibitions   = allEntries(findSection("Exhibition")).filter(e => e.year);
-data.scholarship   = allEntries(findSection("Scholarship")).filter(e => e.year);
-data.presentations = allEntries(findSection("Presentation")).filter(e => e.year);
-data.grants        = [
+].filter((e) => e.year);
+data.teaching = allEntries(findSection("Classes Taught")).filter((e) => e.year);
+data.exhibitions = allEntries(findSection("Exhibition")).filter((e) => e.year);
+data.scholarship = allEntries(findSection("Scholarship")).filter((e) => e.year);
+data.presentations = allEntries(findSection("Presentation")).filter(
+  (e) => e.year,
+);
+data.grants = [
   ...allEntries(findSection("Grant")),
   ...allEntries(findSection("Residenc")),
-].filter(e => e.year);
+].filter((e) => e.year);
 
 // ── Geometry (newest = LEFT) ───────────────────────────────────────────────
-function xPos(year)  { return (MAX_YEAR - year) * PX_PER_YEAR; }
-function effEnd(e)   { return e.present ? PRESENT_YEAR : (e.yearEnd || e.year + 1); }
-function barLeft(e)  { return xPos(effEnd(e)); }
-function barW(e)     { return (effEnd(e) - e.year) * PX_PER_YEAR; }
+function xPos(year) {
+  return (MAX_YEAR - year) * PX_PER_YEAR;
+}
+function effEnd(e) {
+  return e.present ? PRESENT_YEAR : e.yearEnd || e.year + 1;
+}
+function barLeft(e) {
+  return xPos(effEnd(e));
+}
+function barW(e) {
+  return (effEnd(e) - e.year) * PX_PER_YEAR;
+}
 
 // ── Escaping ───────────────────────────────────────────────────────────────
 function esc(s) {
   return String(s || "")
-    .replace(/&/g,  "&amp;")
-    .replace(/</g,  "&lt;")
-    .replace(/>/g,  "&gt;")
-    .replace(/"/g,  "&quot;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 // Escape for HTML attribute values (also encodes newlines so multi-line content
 // round-trips through dataset correctly)
@@ -83,25 +97,30 @@ function escAttr(s) {
   return esc(s).replace(/\n/g, "&#10;").replace(/\r/g, "");
 }
 
-function entryLabel(e) { return e.title || e.content || ""; }
+function entryLabel(e) {
+  return e.title || e.content || "";
+}
 function fmtDate(e) {
   if (!e.year) return "";
   const s = String(e.year);
   if (e.present) return `${s}–present`;
   if (!e.yearEnd) return s;
   const sameDecade = Math.floor(e.yearEnd / 10) === Math.floor(e.year / 10);
-  const eStr = (e.yearEnd - e.year <= 9 && sameDecade)
-    ? String(e.yearEnd).slice(-2) : String(e.yearEnd);
+  const eStr =
+    e.yearEnd - e.year <= 9 && sameDecade
+      ? String(e.yearEnd).slice(-2)
+      : String(e.yearEnd);
   return `${s}–${eStr}`;
 }
 
 // Data attributes shared by every clickable entry
 function entryDataAttrs(e) {
   let s = `data-title="${escAttr(entryLabel(e))}" `;
-  if (e.place)   s += `data-place="${escAttr(e.place)}" `;
+  if (e.place) s += `data-place="${escAttr(e.place)}" `;
   s += `data-date="${escAttr(fmtDate(e))}" `;
   if (e.content) s += `data-content="${escAttr(e.content)}" `;
-  if (e.link)    s += `data-link-url="${escAttr(e.link.url)}" data-link-title="${escAttr(e.link.linkTitle)}" `;
+  if (e.link)
+    s += `data-link-url="${escAttr(e.link.url)}" data-link-title="${escAttr(e.link.linkTitle)}" `;
   return s;
 }
 
@@ -112,9 +131,11 @@ function assignTracks(entries) {
   const assignments = [];
   for (const e of sorted) {
     const end = effEnd(e);
-    let t = trackEnds.findIndex(te => te <= e.year);
-    if (t === -1) { t = trackEnds.length; trackEnds.push(end); }
-    else trackEnds[t] = end;
+    let t = trackEnds.findIndex((te) => te <= e.year);
+    if (t === -1) {
+      t = trackEnds.length;
+      trackEnds.push(end);
+    } else trackEnds[t] = end;
     assignments.push({ entry: e, track: t });
   }
   return { assignments, numTracks: trackEnds.length };
@@ -133,7 +154,8 @@ function gridLines() {
 function renderYearAxis() {
   let h = `<div class="ya-track" style="width:${TOTAL_W}px;">`;
   for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
-    const x = xPos(y), maj = y % 5 === 0;
+    const x = xPos(y),
+      maj = y % 5 === 0;
     if (maj) h += `<div class="ya-lbl" style="left:${x}px;">${y}</div>`;
     h += `<div class="ya-tick${maj ? " ya-maj" : ""}" style="left:${x}px;"></div>`;
   }
@@ -156,19 +178,23 @@ function renderSpans(entries) {
 
   let inner = gridLines();
   for (const { entry: e, track: t } of assignments) {
-    const left  = barLeft(e);
-    const w     = barW(e);
-    const top   = t * SPAN_TRACK_H + 3;
-    const lbl   = esc(entryLabel(e));
-    const date  = esc(fmtDate(e));
-    const arr   = byTrack[t];
-    const idx   = arr.findIndex(x => x === e);
+    const left = barLeft(e);
+    const w = barW(e);
+    const top = t * SPAN_TRACK_H + 3;
+    const lbl = esc(entryLabel(e));
+    const date = esc(fmtDate(e));
+    const arr = byTrack[t];
+    const idx = arr.findIndex((x) => x === e);
     const nextE = arr[idx + 1];
-    const maxW  = Math.max(nextE ? barLeft(nextE) - left - 2 : TOTAL_W - left, w);
+    const maxW = Math.max(
+      nextE ? barLeft(nextE) - left - 2 : TOTAL_W - left,
+      w,
+    );
 
     inner +=
       `<div class="span-slot" style="left:${left}px;width:${w}px;top:${top}px;height:${SPAN_TRACK_H - 4}px;" ` +
-      entryDataAttrs(e) + `>` +
+      entryDataAttrs(e) +
+      `>` +
       `<div class="sb-pill" style="max-width:${maxW}px;">` +
       `<span class="sb-lbl">${lbl}</span>` +
       `<span class="sb-date">${date}</span>` +
@@ -180,30 +206,37 @@ function renderSpans(entries) {
 // ── Point renderer ─────────────────────────────────────────────────────────
 function renderPoints(entries, rowDef) {
   const maxDots = rowDef.maxLines || 5;
-  const byYear  = {};
+  const byYear = {};
   for (const e of entries) (byYear[e.year] = byYear[e.year] || []).push(e);
 
-  const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+  const years = Object.keys(byYear)
+    .map(Number)
+    .sort((a, b) => a - b);
 
   // Max label width: gap to the next older (rightward) occupied year
   const maxWidths = {};
   for (let i = 0; i < years.length; i++) {
-    const y = years[i], olderY = years[i - 1];
-    maxWidths[y] = olderY !== undefined
-      ? Math.max((y - olderY) * PX_PER_YEAR - 6, 80)
-      : Math.max(TOTAL_W - xPos(y), 80);
+    const y = years[i],
+      olderY = years[i - 1];
+    maxWidths[y] =
+      olderY !== undefined
+        ? Math.max((y - olderY) * PX_PER_YEAR - 6, 80)
+        : Math.max(TOTAL_W - xPos(y), 80);
   }
 
-  const maxStack = Math.max(...years.map(y => Math.min(byYear[y].length, maxDots)), 1);
-  const rowH     = maxStack * ITEM_H + TOP_PAD + 4;
+  const maxStack = Math.max(
+    ...years.map((y) => Math.min(byYear[y].length, maxDots)),
+    1,
+  );
+  const rowH = maxStack * ITEM_H + TOP_PAD + 4;
 
   let inner = gridLines();
   for (const y of years) {
-    const items   = byYear[y];
-    const x       = xPos(y);
-    const mw      = maxWidths[y];
+    const items = byYear[y];
+    const x = xPos(y);
+    const mw = maxWidths[y];
     const visible = items.slice(0, maxDots);
-    const extra   = items.length - visible.length;
+    const extra = items.length - visible.length;
 
     inner += `<div class="pt-group" style="left:${x}px;max-width:${mw}px;">`;
     for (const e of visible) {
@@ -225,32 +258,36 @@ function renderPoints(entries, rowDef) {
 // animates its height so following rows slide down smoothly.
 function renderList(entries, rowDef) {
   const maxLines = rowDef.maxLines || 4;
-  const byYear   = {};
+  const byYear = {};
   for (const e of entries) (byYear[e.year] = byYear[e.year] || []).push(e);
 
-  const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+  const years = Object.keys(byYear)
+    .map(Number)
+    .sort((a, b) => a - b);
 
   // Max label width: gap to next older year
   const maxWidths = {};
   for (let i = 0; i < years.length; i++) {
-    const y = years[i], olderY = years[i - 1];
-    maxWidths[y] = olderY !== undefined
-      ? Math.max((y - olderY) * PX_PER_YEAR - 6, 80)
-      : Math.max(TOTAL_W - xPos(y), 80);
+    const y = years[i],
+      olderY = years[i - 1];
+    maxWidths[y] =
+      olderY !== undefined
+        ? Math.max((y - olderY) * PX_PER_YEAR - 6, 80)
+        : Math.max(TOTAL_W - xPos(y), 80);
   }
 
   let maxBaseH = ITEM_H + TOP_PAD;
 
   let inner = gridLines();
   for (const y of years) {
-    const items    = byYear[y];
-    const x        = xPos(y);
-    const mw       = maxWidths[y];
+    const items = byYear[y];
+    const x = xPos(y);
+    const mw = maxWidths[y];
     const hasExtra = items.length > maxLines;
     const visCount = Math.min(items.length, maxLines);
-    const hBase    = TOP_PAD + visCount * ITEM_H + (hasExtra ? BTN_H : 0);
-    const hFull    = TOP_PAD + items.length * ITEM_H + (hasExtra ? BTN_H : 0);
-    maxBaseH       = Math.max(maxBaseH, hBase);
+    const hBase = TOP_PAD + visCount * ITEM_H + (hasExtra ? BTN_H : 0);
+    const hFull = TOP_PAD + items.length * ITEM_H + (hasExtra ? BTN_H : 0);
+    maxBaseH = Math.max(maxBaseH, hBase);
 
     inner += `<div class="exp-col" style="left:${x}px;max-width:${mw}px;" data-h-base="${hBase}" data-h-full="${hFull}">`;
 
@@ -273,8 +310,9 @@ function renderList(entries, rowDef) {
       }
       inner += `</div>`;
 
-      inner += `<button class="exp-btn" data-n="${items.length - maxLines}">` +
-               `+${items.length - maxLines} more</button>`;
+      inner +=
+        `<button class="exp-btn" data-n="${items.length - maxLines}">` +
+        `+${items.length - maxLines} more</button>`;
     }
 
     inner += `</div>`;
@@ -286,23 +324,25 @@ function renderList(entries, rowDef) {
 // ── Row dispatch ───────────────────────────────────────────────────────────
 function renderRow(rowDef) {
   const entries = data[rowDef.id] || [];
-  if (rowDef.mode === "spans")  return renderSpans(entries);
+  if (rowDef.mode === "spans") return renderSpans(entries);
   if (rowDef.mode === "points") return renderPoints(entries, rowDef);
   return renderList(entries, rowDef);
 }
 
 // ── Full page ──────────────────────────────────────────────────────────────
 function buildHTML() {
-  const rendered = ROWS.map(r => ({ rowDef: r, ...renderRow(r) }));
-  const rowsHTML = rendered.map(({ rowDef: r, inner, height }) => {
-    const lbl = r.label.replace(/\n/g, "<br>");
-    return (
-      `<div class="cat-row row-${r.id}" style="height:${height}px;">` +
-      `<div class="cat-label"><span>${lbl}</span></div>` +
-      `<div class="cat-track" style="height:${height}px;">${inner}</div>` +
-      `</div>`
-    );
-  }).join("\n");
+  const rendered = ROWS.map((r) => ({ rowDef: r, ...renderRow(r) }));
+  const rowsHTML = rendered
+    .map(({ rowDef: r, inner, height }) => {
+      const lbl = r.label.replace(/\n/g, "<br>");
+      return (
+        `<div class="cat-row row-${r.id}" style="height:${height}px;">` +
+        `<div class="cat-label"><span>${lbl}</span></div>` +
+        `<div class="cat-track" style="height:${height}px;">${inner}</div>` +
+        `</div>`
+      );
+    })
+    .join("\n");
 
   return `<!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -667,10 +707,22 @@ ${rowsHTML}
     /* Expand / collapse button */
     var expBtn = e.target.closest('.exp-btn');
     if (expBtn) {
-      var col   = expBtn.closest('.exp-col');
-      var extra = col.querySelector('.exp-extra');
-      var row   = col.closest('.cat-row');
+      var col    = expBtn.closest('.exp-col');
+      var extra  = col.querySelector('.exp-extra');
+      var row    = col.closest('.cat-row');
       var isOpen = col.classList.contains('is-open');
+
+      /* Close every other open section first */
+      document.querySelectorAll('.exp-col.is-open').forEach(function (otherCol) {
+        if (otherCol === col) return;
+        var otherExtra = otherCol.querySelector('.exp-extra');
+        var otherBtn   = otherCol.querySelector('.exp-btn');
+        otherExtra.style.maxHeight = '0';
+        otherCol.classList.remove('is-open');
+        if (otherBtn) otherBtn.textContent = '+' + otherBtn.dataset.n + ' more';
+        updateRowHeight(otherCol.closest('.cat-row'));
+      });
+
       if (isOpen) {
         extra.style.maxHeight = '0';
         col.classList.remove('is-open');
@@ -711,7 +763,7 @@ ${rowsHTML}
 }
 
 // ── Write output ───────────────────────────────────────────────────────────
-const outDir  = path.join(__dirname, "..", "timeline");
+const outDir = path.join(__dirname, "..", "timeline");
 fs.mkdirSync(outDir, { recursive: true });
 const outPath = path.join(outDir, "index.html");
 fs.writeFileSync(outPath, buildHTML(), "utf8");

@@ -357,9 +357,17 @@ function buildIndexHTML(cv, formats, baseDir) {
 
 <div class="page">
   <h1 class="page-name">${escapeHtml(cv.name)}</h1>
-  <p class="page-subtitle">Select a résumé</p>
+  <p class="page-subtitle">Select a résumé or view</p>
   <nav class="cards">
     ${cards}
+
+    <div class="card-row">
+      <a class="resume-card" href="timeline/index.html">
+        <span class="card-name">Career Timeline</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <div class="card-exports" id="tl-spacer" aria-hidden="true"></div>
+    </div>
   </nav>
 </div>
 
@@ -383,6 +391,11 @@ function buildIndexHTML(cv, formats, baseDir) {
       applyTheme(!isDark);
       localStorage.setItem('cv-theme', isDark ? 'light' : 'dark');
     });
+  })();
+  (function () {
+    var ref    = document.querySelector('.card-exports:not(#tl-spacer)');
+    var spacer = document.getElementById('tl-spacer');
+    if (ref && spacer) spacer.style.width = ref.offsetWidth + 'px';
   })();
 </script>
 
@@ -479,6 +492,18 @@ const exports_ = spawnSync(
 if (exports_.status !== 0) {
   console.error("html-to-exports.js exited with an error.");
   process.exit(exports_.status ?? 1);
+}
+
+// ── 6. Timeline ───────────────────────────────────────────────────────────────
+
+const timeline = spawnSync(
+  process.execPath,
+  [path.join(scriptDir, "json-to-timeline.js")],
+  { stdio: "inherit" }
+);
+if (timeline.status !== 0) {
+  console.error("json-to-timeline.js exited with an error.");
+  process.exit(timeline.status ?? 1);
 }
 
 console.log("Done.\n");
