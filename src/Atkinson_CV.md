@@ -28,14 +28,14 @@ He has developed creative coding curricula for Vidcode and serves as a consultan
 
 **Montclair State University, Montclair, NJ** — _2004–present_
 
-- Deputy Chair, Dept. of Art and Design, September 2019 – May 2023
 - Assistant Professor of Digital Photography, September 2004 – Present
 - Department of Art and Design Summer Chair, Summers 2014–17, 2019–24
+- Deputy Chair, Dept. of Art and Design, September 2019 – May 2023
 - Director of the MFA in Studio Arts, Sept 2009 – Jan 2017
 
 **Vidcode — Curriculum Developer** — _2017–2019_
 
-- Developed curriculum for introductory creative coding courses including for Girl Scouts and BrainPop
+- Collaborated with Vidcode to design and develop a three-course K–12 JavaScript curriculum that taught creative coding through project-based work, built to be accessible to non-technical teachers and adaptable across subject areas. I wrote tutorials, reviewed curriculum, aligned standards to CSTA and AP CSP frameworks, and adapted course materials for external partners including Girl Scouts USA and BrainPOP.
 
 **Institute for the Advancement of Philosophy for Children** — _2021–present_
 

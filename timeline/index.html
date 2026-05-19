@@ -1,2693 +1,392 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Andrew Atkinson — Timeline</title>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap");
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Andrew Atkinson — Timeline</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap');
 
-      :root {
-        --bg: #ffffff;
-        --ink-1: #1a1a1a;
-        --ink-2: #444444;
-        --ink-3: #555555;
-        --ink-4: #999999;
-        --rule-1: #cccccc;
-        --rule-2: #e8e8e8;
-        --rule-3: #f0f0f0;
-        --accent: #3a3a8c;
-        --clr-edu: #5a5350;
-        --clr-emp: #746e6a;
-        --clr-tch: #8e8884;
-      }
-      [data-theme="dark"] {
-        --bg: #161616;
-        --ink-1: #e2e2e2;
-        --ink-2: #b2b2b2;
-        --ink-3: #909090;
-        --ink-4: #5e5e5e;
-        --rule-1: #383838;
-        --rule-2: #2c2c2c;
-        --rule-3: #222222;
-        --accent: #6a6acc;
-        --clr-edu: #888280;
-        --clr-emp: #a09a96;
-        --clr-tch: #bab4b0;
-      }
+    :root {
+      --bg:      #ffffff; --ink-1: #1a1a1a; --ink-2: #444444;
+      --ink-3:   #555555; --ink-4: #999999;
+      --rule-1:  #cccccc; --rule-2: #e8e8e8; --rule-3: #f0f0f0;
+      --accent:  #3a3a8c;
+      --clr-edu: #5a5350; --clr-emp: #746e6a; --clr-tch: #8e8884;
+    }
+    [data-theme="dark"] {
+      --bg:      #161616; --ink-1: #e2e2e2; --ink-2: #b2b2b2;
+      --ink-3:   #909090; --ink-4: #5e5e5e;
+      --rule-1:  #383838; --rule-2: #2c2c2c; --rule-3: #222222;
+      --accent:  #6a6acc;
+      --clr-edu: #888280; --clr-emp: #a09a96; --clr-tch: #bab4b0;
+    }
 
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        padding: 0 0 5rem;
-        background: var(--bg);
-        color: var(--ink-1);
-        font-family: "DM Sans", sans-serif;
-        font-weight: 300;
-        font-size: 13px;
-        transition:
-          background 0.2s,
-          color 0.2s;
-      }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0 0 5rem;
+      background: var(--bg); color: var(--ink-1);
+      font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: 13px;
+      transition: background 0.2s, color 0.2s;
+    }
 
-      /* ── Theme toggle ── */
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 600;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        background: var(--bg);
-        border: 0.5px solid var(--rule-1);
-        border-radius: 4px;
-        color: var(--ink-4);
-        cursor: pointer;
-        padding: 5px 9px;
-        font-size: 11px;
-        font-family: "DM Sans", sans-serif;
-        font-weight: 300;
-        letter-spacing: 0.04em;
-        transition:
-          color 0.2s,
-          border-color 0.2s,
-          background 0.2s;
-      }
-      .theme-toggle:hover {
-        color: var(--ink-2);
-        border-color: var(--ink-4);
-      }
-      .theme-toggle svg {
-        width: 12px;
-        height: 12px;
-        fill: currentColor;
-        flex-shrink: 0;
-      }
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      position: fixed; top: 1rem; right: 1rem; z-index: 600;
+      display: flex; align-items: center; gap: 5px;
+      background: var(--bg); border: 0.5px solid var(--rule-1); border-radius: 4px;
+      color: var(--ink-4); cursor: pointer; padding: 5px 9px;
+      font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 300;
+      letter-spacing: 0.04em; transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .theme-toggle:hover { color: var(--ink-2); border-color: var(--ink-4); }
+    .theme-toggle svg { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
 
-      /* ── Page header ── */
-      .page-hd {
-        padding: 2.5rem 2.5rem 0;
-        margin-bottom: 2.5rem;
-      }
-      .page-name {
-        font-family: "Cormorant Garamond", serif;
-        font-size: 36px;
-        font-weight: 400;
-        letter-spacing: 0.02em;
-        margin: 0 0 4px;
-      }
-      .page-sub {
-        font-size: 11px;
-        color: var(--ink-4);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        margin: 0;
-      }
+    /* ── Page header ── */
+    .page-hd { padding: 2.5rem 2.5rem 0; margin-bottom: 2.5rem; }
+    .page-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px; font-weight: 400; letter-spacing: 0.02em; margin: 0 0 4px;
+    }
+    .page-sub { font-size: 11px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin: 0; }
 
-      /* ── Scroll wrapper ── */
-      .tl-outer {
-        overflow-x: auto;
-      }
-      .tl-wrap {
-        width: 2960px;
-      }
+    /* ── Scroll wrapper ── */
+    .tl-outer { overflow-x: auto; }
+    .tl-wrap  { width: 2960px; }
 
-      /* ── Year-axis (sticky top) ── */
-      .ya-row {
-        display: flex;
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        background: var(--bg);
-        border-bottom: 0.5px solid var(--rule-1);
-      }
-      .ya-spacer {
-        flex: 0 0 160px;
-        border-right: 0.5px solid var(--rule-1);
-        position: sticky;
-        left: 0;
-        z-index: 55;
-        background: var(--bg);
-      }
-      .ya-track {
-        position: relative;
-        height: 48px;
-      }
-      .ya-lbl {
-        position: absolute;
-        transform: translateX(-50%);
-        top: 5px;
-        font-size: 11px;
-        color: var(--ink-4);
-        letter-spacing: 0.04em;
-        font-variant-numeric: tabular-nums;
-        user-select: none;
-        white-space: nowrap;
-      }
-      .ya-tick {
-        position: absolute;
-        bottom: 0;
-        width: 0.5px;
-        height: 7px;
-        background: var(--rule-1);
-      }
-      .ya-tick.ya-maj {
-        height: 14px;
-      }
+    /* ── Year-axis (sticky top) ── */
+    .ya-row {
+      display: flex; position: sticky; top: 0; z-index: 50;
+      background: var(--bg); border-bottom: 0.5px solid var(--rule-1);
+    }
+    .ya-spacer { flex: 0 0 160px; border-right: 0.5px solid var(--rule-1); position: sticky; left: 0; z-index: 55; background: var(--bg); }
+    .ya-track  { position: relative; height: 48px; }
+    .ya-lbl {
+      position: absolute; transform: translateX(-50%); top: 5px;
+      font-size: 11px; color: var(--ink-4); letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums; user-select: none; white-space: nowrap;
+    }
+    .ya-tick        { position: absolute; bottom: 0; width: 0.5px; height: 7px;  background: var(--rule-1); }
+    .ya-tick.ya-maj { height: 14px; }
 
-      /* ── Category rows ── */
-      .cat-row {
-        display: flex;
-        border-bottom: 0.5px solid var(--rule-2);
-        overflow: visible;
-        position: relative;
-      }
-      .cat-row:last-child {
-        border-bottom: none;
-      }
+    /* ── Category rows ── */
+    .cat-row {
+      display: flex; border-bottom: 0.5px solid var(--rule-2);
+      overflow: visible; position: relative;
+    }
+    .cat-row:last-child { border-bottom: none; }
 
-      .cat-label {
-        flex: 0 0 160px;
-        position: sticky;
-        left: 0;
-        z-index: 20;
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-end;
-        padding: 4px 14px 0 0;
-        text-align: right;
-        font-size: 10px;
-        color: var(--ink-4);
-        letter-spacing: 0.07em;
-        text-transform: uppercase;
-        line-height: 1.5;
-        border-right: 0.5px solid var(--rule-1);
-        user-select: none;
-        background: var(--bg);
-      }
-      .cat-track {
-        position: relative;
-        width: 2800px;
-        overflow: visible;
-      }
+    .cat-label {
+      flex: 0 0 160px;
+      position: sticky; left: 0; z-index: 20;
+      display: flex; align-items: flex-start; justify-content: flex-end;
+      padding: 4px 14px 0 0; text-align: right;
+      font-size: 10px; color: var(--ink-4); letter-spacing: 0.07em;
+      text-transform: uppercase; line-height: 1.5;
+      border-right: 0.5px solid var(--rule-1); user-select: none;
+      background: var(--bg);
+    }
+    .cat-track { position: relative; width: 2800px; overflow: visible; }
 
-      /* ── Grid lines ── */
-      .gl {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 0.5px;
-        background: var(--rule-3);
-        pointer-events: none;
-      }
-      .gl.gl-maj {
-        background: var(--rule-2);
-      }
+    /* ── Grid lines ── */
+    .gl        { position: absolute; top: 0; bottom: 0; width: 0.5px; background: var(--rule-3); pointer-events: none; }
+    .gl.gl-maj { background: var(--rule-2); }
 
-      /* ── Span bar colours ── */
-      .row-education {
-        --bar-clr: var(--clr-edu);
-      }
-      .row-employment {
-        --bar-clr: var(--clr-emp);
-      }
-      .row-teaching {
-        --bar-clr: var(--clr-tch);
-      }
+    /* ── Span bar colours ── */
+    .row-education  { --bar-clr: var(--clr-edu); }
+    .row-employment { --bar-clr: var(--clr-emp); }
+    .row-teaching   { --bar-clr: var(--clr-tch); }
 
-      /* ── Span bars ── */
-      .span-slot {
-        position: absolute;
-        overflow: visible;
-        cursor: pointer;
-      }
-      .sb-pill {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 0 6px;
-        height: 100%;
-        min-width: 100%;
-        background: var(--bar-clr, var(--accent));
-        border-radius: 2px;
-        overflow: hidden;
-        opacity: 0.82;
-        transition: opacity 0.15s;
-      }
-      .span-slot:hover .sb-pill {
-        opacity: 1;
-        position: relative;
-        z-index: 10;
-      }
-      .sb-lbl {
-        font-size: 9.5px;
-        color: #fff;
-        white-space: nowrap;
-        flex: 1 1 0;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .sb-date {
-        font-size: 8.5px;
-        color: rgba(255, 255, 255, 0.6);
-        white-space: nowrap;
-        flex: 0 0 auto;
-      }
+    /* ── Span bars ── */
+    .span-slot { position: absolute; overflow: visible; cursor: pointer; }
+    .sb-pill {
+      display: flex; align-items: center; gap: 4px; padding: 0 6px;
+      height: 100%; min-width: 100%;
+      background: var(--bar-clr, var(--accent)); border-radius: 2px;
+      overflow: hidden; opacity: 0.82;
+      transition: opacity 0.15s;
+    }
+    .span-slot:hover .sb-pill { opacity: 1; position: relative; z-index: 10; }
+    .sb-lbl  { font-size: 9.5px; color: #fff; white-space: nowrap; flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .sb-date { font-size: 8.5px; color: rgba(255,255,255,0.6); white-space: nowrap; flex: 0 0 auto; }
 
-      /* ── Point events ── */
-      .pt-group {
-        position: absolute;
-        top: 4px;
-        overflow: hidden;
-      }
-      .pt-row {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        height: 17px;
-        cursor: pointer;
-      }
-      .pt-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: var(--ink-3);
-        flex: 0 0 auto;
-      }
-      .pt-lbl {
-        font-size: 9.5px;
-        color: var(--ink-2);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .pt-more {
-        font-size: 9px;
-        color: var(--ink-4);
-        padding-left: 10px;
-        line-height: 17px;
-      }
+    /* ── Point events ── */
+    .pt-group { position: absolute; top: 4px; overflow: hidden; }
+    .pt-row   { display: flex; align-items: center; gap: 5px; height: 17px; cursor: pointer; }
+    .pt-dot   { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3); flex: 0 0 auto; }
+    .pt-lbl   { font-size: 9.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pt-more  { font-size: 9px; color: var(--ink-4); padding-left: 10px; line-height: 17px; }
 
-      /* ── List columns ── */
-      .exp-col {
-        position: absolute;
-        top: 4px;
-        overflow: hidden;
-      }
-      .lst-item {
-        height: 17px;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-      }
-      .lst-lbl {
-        font-size: 9.5px;
-        color: var(--ink-2);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .exp-extra {
-        overflow: hidden;
-      }
-      .exp-btn {
-        display: block;
-        height: 20px;
-        line-height: 20px;
-        font-size: 9px;
-        color: var(--ink-4);
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        font-family: inherit;
-        font-weight: 300;
-        transition: color 0.15s;
-      }
-      .exp-btn:hover {
-        color: var(--accent);
-      }
+    /* ── List columns ── */
+    .exp-col  { position: absolute; top: 4px; overflow: hidden; }
+    .lst-item { height: 17px; display: flex; align-items: center; cursor: pointer; }
+    .lst-lbl  { font-size: 9.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .exp-extra { overflow: hidden; }
+    .exp-btn {
+      display: block; height: 20px; line-height: 20px;
+      font-size: 9px; color: var(--ink-4); background: none; border: none; padding: 0;
+      cursor: pointer; font-family: inherit; font-weight: 300; transition: color 0.15s;
+    }
+    .exp-btn:hover { color: var(--accent); }
 
-      /* ── Hover label ── */
-      #hover-lbl {
-        display: none;
-        position: fixed;
-        z-index: 400;
-        background: var(--bg);
-        border: 0.5px solid var(--rule-1);
-        border-radius: 3px;
-        padding: 2px 8px;
-        font-family: "DM Sans", sans-serif;
-        font-weight: 300;
-        font-size: 10px;
-        color: var(--ink-1);
-        white-space: nowrap;
-        pointer-events: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        transform: translateY(-110%);
-      }
+    /* ── Hover label ── */
+    #hover-lbl {
+      display: none; position: fixed; z-index: 400;
+      background: var(--bg); border: 0.5px solid var(--rule-1); border-radius: 3px;
+      padding: 2px 8px;
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      font-size: 10px; color: var(--ink-1);
+      white-space: nowrap; pointer-events: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transform: translateY(-110%);
+    }
 
-      /* ── Detail popup ── */
-      #dpop {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 500;
-        align-items: center;
-        justify-content: center;
-      }
-      .dp-backdrop {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.25);
-      }
-      .dp-card {
-        position: relative;
-        z-index: 1;
-        background: var(--bg);
-        border: 0.5px solid var(--rule-1);
-        border-radius: 6px;
-        padding: 1.75rem 2rem 1.5rem;
-        max-width: 520px;
-        width: 90%;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
-      }
-      .dp-close {
-        position: absolute;
-        top: 12px;
-        right: 14px;
-        background: none;
-        border: none;
-        padding: 0 4px;
-        font-size: 20px;
-        line-height: 1;
-        color: var(--ink-4);
-        cursor: pointer;
-        font-family: inherit;
-        transition: color 0.15s;
-      }
-      .dp-close:hover {
-        color: var(--ink-1);
-      }
-      .dp-title {
-        font-family: "Cormorant Garamond", serif;
-        font-size: 22px;
-        font-weight: 400;
-        color: var(--ink-1);
-        margin: 0 0 8px;
-        line-height: 1.3;
-      }
-      .dp-meta {
-        font-size: 11px;
-        color: var(--ink-4);
-        margin-bottom: 12px;
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .dp-sep {
-        color: var(--rule-1);
-      }
-      .dp-content {
-        font-size: 12px;
-        color: var(--ink-2);
-        line-height: 1.65;
-        white-space: pre-wrap;
-        margin-bottom: 10px;
-      }
-      .dp-link {
-        display: inline-block;
-        font-size: 11px;
-        color: var(--accent);
-        text-decoration: none;
-        border-bottom: 0.5px solid currentColor;
-        transition: opacity 0.15s;
-      }
-      .dp-link:hover {
-        opacity: 0.7;
-      }
+    /* ── Detail popup ── */
+    #dpop { display: none; position: fixed; inset: 0; z-index: 500; align-items: center; justify-content: center; }
+    .dp-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.25); }
+    .dp-card {
+      position: relative; z-index: 1; background: var(--bg);
+      border: 0.5px solid var(--rule-1); border-radius: 6px;
+      padding: 1.75rem 2rem 1.5rem; max-width: 520px; width: 90%;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.14);
+    }
+    .dp-close { position: absolute; top: 12px; right: 14px; background: none; border: none; padding: 0 4px; font-size: 20px; line-height: 1; color: var(--ink-4); cursor: pointer; font-family: inherit; transition: color 0.15s; }
+    .dp-close:hover { color: var(--ink-1); }
+    .dp-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--ink-1); margin: 0 0 8px; line-height: 1.3; }
+    .dp-meta  { font-size: 11px; color: var(--ink-4); margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .dp-sep   { color: var(--rule-1); }
+    .dp-content { font-size: 12px; color: var(--ink-2); line-height: 1.65; white-space: pre-wrap; margin-bottom: 10px; }
+    .dp-link  { display: inline-block; font-size: 11px; color: var(--accent); text-decoration: none; border-bottom: 0.5px solid currentColor; transition: opacity 0.15s; }
+    .dp-link:hover { opacity: 0.7; }
 
-      /* ════════════════════════════════════════════════════════════════
+    /* ════════════════════════════════════════════════════════════════
        Mobile overrides  (≤ 768 px)
        ════════════════════════════════════════════════════════════════ */
-      @media (max-width: 768px) {
-        body {
-          padding: 0 0 3rem;
-          font-size: 12px;
-        }
+    @media (max-width: 768px) {
+      body { padding: 0 0 3rem; font-size: 12px; }
 
-        /* Compact header */
-        .page-hd {
-          margin-bottom: 0;
-          padding: 8px 12px;
-          border-bottom: 0.5px solid var(--rule-2);
-          display: flex;
-          align-items: center;
-        }
-        .page-name {
-          font-size: 20px;
-          margin: 0;
-          flex: 1;
-        }
-        .page-sub {
-          display: none;
-        }
+      /* Compact header */
+      .page-hd   { margin-bottom: 0; padding: 8px 12px; border-bottom: 0.5px solid var(--rule-2); display: flex; align-items: center; }
+      .page-name { font-size: 20px; margin: 0; flex: 1; }
+      .page-sub  { display: none; }
 
-        /* Theme toggle inline with header */
-        .theme-toggle {
-          position: static;
-          margin-left: 10px;
-          padding: 3px 7px;
-          font-size: 10px;
-          flex-shrink: 0;
-        }
+      /* Theme toggle inline with header */
+      .theme-toggle { position: static; margin-left: 10px; padding: 3px 7px; font-size: 10px; flex-shrink: 0; }
 
-        /* Compact label column */
-        .cat-label {
-          flex: 0 0 84px;
-          font-size: 8px;
-          padding: 4px 6px 0 2px;
-          letter-spacing: 0.05em;
-        }
-        .ya-spacer {
-          flex: 0 0 84px;
-        }
+      /* Compact label column */
+      .cat-label { flex: 0 0 84px; font-size: 8px; padding: 4px 6px 0 2px; letter-spacing: 0.05em; }
+      .ya-spacer { flex: 0 0 84px; }
 
-        /* Slightly smaller year labels */
-        .ya-lbl {
-          font-size: 10px;
-          top: 4px;
+      /* Slightly smaller year labels */
+      .ya-lbl  { font-size: 10px; top: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+  <svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path id="toggle-path" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+  </svg>
+  <span id="toggle-label">Dark</span>
+</button>
+
+<div class="page-hd">
+  <h1 class="page-name">Andrew Atkinson</h1>
+  <p class="page-sub">Career Timeline</p>
+</div>
+
+<div class="tl-outer" id="tl-outer">
+  <div class="tl-wrap">
+    <div class="ya-row">
+      <div class="ya-spacer"></div>
+      <div class="ya-track" style="width:2800px;"><div class="ya-tick" style="left:2800px;"></div><div class="ya-tick" style="left:2720px;"></div><div class="ya-lbl" style="left:2640px;">1995</div><div class="ya-tick ya-maj" style="left:2640px;"></div><div class="ya-tick" style="left:2560px;"></div><div class="ya-tick" style="left:2480px;"></div><div class="ya-tick" style="left:2400px;"></div><div class="ya-tick" style="left:2320px;"></div><div class="ya-lbl" style="left:2240px;">2000</div><div class="ya-tick ya-maj" style="left:2240px;"></div><div class="ya-tick" style="left:2160px;"></div><div class="ya-tick" style="left:2080px;"></div><div class="ya-tick" style="left:2000px;"></div><div class="ya-tick" style="left:1920px;"></div><div class="ya-lbl" style="left:1840px;">2005</div><div class="ya-tick ya-maj" style="left:1840px;"></div><div class="ya-tick" style="left:1760px;"></div><div class="ya-tick" style="left:1680px;"></div><div class="ya-tick" style="left:1600px;"></div><div class="ya-tick" style="left:1520px;"></div><div class="ya-lbl" style="left:1440px;">2010</div><div class="ya-tick ya-maj" style="left:1440px;"></div><div class="ya-tick" style="left:1360px;"></div><div class="ya-tick" style="left:1280px;"></div><div class="ya-tick" style="left:1200px;"></div><div class="ya-tick" style="left:1120px;"></div><div class="ya-lbl" style="left:1040px;">2015</div><div class="ya-tick ya-maj" style="left:1040px;"></div><div class="ya-tick" style="left:960px;"></div><div class="ya-tick" style="left:880px;"></div><div class="ya-tick" style="left:800px;"></div><div class="ya-tick" style="left:720px;"></div><div class="ya-lbl" style="left:640px;">2020</div><div class="ya-tick ya-maj" style="left:640px;"></div><div class="ya-tick" style="left:560px;"></div><div class="ya-tick" style="left:480px;"></div><div class="ya-tick" style="left:400px;"></div><div class="ya-tick" style="left:320px;"></div><div class="ya-lbl" style="left:240px;">2025</div><div class="ya-tick ya-maj" style="left:240px;"></div><div class="ya-tick" style="left:160px;"></div><div class="ya-tick" style="left:80px;"></div><div class="ya-tick" style="left:0px;"></div></div>
+    </div>
+<div class="cat-row row-education" style="height:34px;"><div class="cat-label"><span>Education</span></div><div class="cat-track" style="height:34px;"><div class="gl" style="left:2800px;"></div><div class="gl" style="left:2720px;"></div><div class="gl gl-maj" style="left:2640px;"></div><div class="gl" style="left:2560px;"></div><div class="gl" style="left:2480px;"></div><div class="gl" style="left:2400px;"></div><div class="gl" style="left:2320px;"></div><div class="gl gl-maj" style="left:2240px;"></div><div class="gl" style="left:2160px;"></div><div class="gl" style="left:2080px;"></div><div class="gl" style="left:2000px;"></div><div class="gl" style="left:1920px;"></div><div class="gl gl-maj" style="left:1840px;"></div><div class="gl" style="left:1760px;"></div><div class="gl" style="left:1680px;"></div><div class="gl" style="left:1600px;"></div><div class="gl" style="left:1520px;"></div><div class="gl gl-maj" style="left:1440px;"></div><div class="gl" style="left:1360px;"></div><div class="gl" style="left:1280px;"></div><div class="gl" style="left:1200px;"></div><div class="gl" style="left:1120px;"></div><div class="gl gl-maj" style="left:1040px;"></div><div class="gl" style="left:960px;"></div><div class="gl" style="left:880px;"></div><div class="gl" style="left:800px;"></div><div class="gl" style="left:720px;"></div><div class="gl gl-maj" style="left:640px;"></div><div class="gl" style="left:560px;"></div><div class="gl" style="left:480px;"></div><div class="gl" style="left:400px;"></div><div class="gl" style="left:320px;"></div><div class="gl gl-maj" style="left:240px;"></div><div class="gl" style="left:160px;"></div><div class="gl" style="left:80px;"></div><div class="gl" style="left:0px;"></div><div class="span-slot" style="left:2560px;width:240px;top:3px;height:24px;" data-title="University of the West of England, Bristol" data-date="1993–96" data-content="BA (hons) Fine Art" ><div class="sb-pill" style="max-width:240px;"><span class="sb-lbl">University of the West of England, Bristol</span><span class="sb-date">1993–96</span></div></div><div class="span-slot" style="left:2240px;width:80px;top:3px;height:24px;" data-title="University of the Arts, Philadelphia" data-date="1999–2000" data-content="Postgraduate studies" ><div class="sb-pill" style="max-width:318px;"><span class="sb-lbl">University of the Arts, Philadelphia</span><span class="sb-date">1999–2000</span></div></div><div class="span-slot" style="left:1920px;width:320px;top:3px;height:24px;" data-title="University of the West of England, Bristol" data-date="2000–04" data-content="Ph.D. — &quot;The creation of digital fine art print through the Woodburytype model&quot;" ><div class="sb-pill" style="max-width:320px;"><span class="sb-lbl">University of the West of England, Bristol</span><span class="sb-date">2000–04</span></div></div><div class="span-slot" style="left:800px;width:80px;top:3px;height:24px;" data-title="Fullstack Academy, New York" data-date="2017" ><div class="sb-pill" style="max-width:1118px;"><span class="sb-lbl">Fullstack Academy, New York</span><span class="sb-date">2017</span></div></div></div></div>
+<div class="cat-row row-employment" style="height:90px;"><div class="cat-label"><span>Employment</span></div><div class="cat-track" style="height:90px;"><div class="gl" style="left:2800px;"></div><div class="gl" style="left:2720px;"></div><div class="gl gl-maj" style="left:2640px;"></div><div class="gl" style="left:2560px;"></div><div class="gl" style="left:2480px;"></div><div class="gl" style="left:2400px;"></div><div class="gl" style="left:2320px;"></div><div class="gl gl-maj" style="left:2240px;"></div><div class="gl" style="left:2160px;"></div><div class="gl" style="left:2080px;"></div><div class="gl" style="left:2000px;"></div><div class="gl" style="left:1920px;"></div><div class="gl gl-maj" style="left:1840px;"></div><div class="gl" style="left:1760px;"></div><div class="gl" style="left:1680px;"></div><div class="gl" style="left:1600px;"></div><div class="gl" style="left:1520px;"></div><div class="gl gl-maj" style="left:1440px;"></div><div class="gl" style="left:1360px;"></div><div class="gl" style="left:1280px;"></div><div class="gl" style="left:1200px;"></div><div class="gl" style="left:1120px;"></div><div class="gl gl-maj" style="left:1040px;"></div><div class="gl" style="left:960px;"></div><div class="gl" style="left:880px;"></div><div class="gl" style="left:800px;"></div><div class="gl" style="left:720px;"></div><div class="gl gl-maj" style="left:640px;"></div><div class="gl" style="left:560px;"></div><div class="gl" style="left:480px;"></div><div class="gl" style="left:400px;"></div><div class="gl" style="left:320px;"></div><div class="gl gl-maj" style="left:240px;"></div><div class="gl" style="left:160px;"></div><div class="gl" style="left:80px;"></div><div class="gl" style="left:0px;"></div><div class="span-slot" style="left:160px;width:1760px;top:3px;height:24px;" data-title="Montclair State University" data-place="Montclair, NJ" data-date="2004–present" data-content="Assistant Professor of Digital Photography, September 2004 – Present&#10;Department of Art and Design Summer Chair, Summers 2014–17, 2019–24&#10;Deputy Chair, Dept. of Art and Design, September 2019 – May 2023&#10;Director of the MFA in Studio Arts, Sept 2009 – Jan 2017" ><div class="sb-pill" style="max-width:2640px;"><span class="sb-lbl">Montclair State University</span><span class="sb-date">2004–present</span></div></div><div class="span-slot" style="left:720px;width:160px;top:31px;height:24px;" data-title="Vidcode — Curriculum Developer" data-date="2017–19" data-content="Collaborated with Vidcode to design and develop a three-course K–12 JavaScript curriculum that taught creative coding through project-based work, built to be accessible to non-technical teachers and adaptable across subject areas. I wrote tutorials, reviewed curriculum, aligned standards to CSTA and AP CSP frameworks, and adapted course materials for external partners including Girl Scouts USA and BrainPOP." ><div class="sb-pill" style="max-width:2080px;"><span class="sb-lbl">Vidcode — Curriculum Developer</span><span class="sb-date">2017–19</span></div></div><div class="span-slot" style="left:320px;width:320px;top:31px;height:24px;" data-title="Passaic Public Schools Digital Art CTE Advisory Committee" data-date="2020–24" data-content="2020–24 — Board Member, helped create partnership between MSU and the Passaic Public School, designing two school courses for equivalency at MSU." ><div class="sb-pill" style="max-width:398px;"><span class="sb-lbl">Passaic Public Schools Digital Art CTE Advisory Committee</span><span class="sb-date">2020–24</span></div></div><div class="span-slot" style="left:160px;width:400px;top:59px;height:24px;" data-title="Institute for the Advancement of Philosophy for Children" data-date="2021–present" data-content="Updated novel design for accessibility and digital access" ><div class="sb-pill" style="max-width:2640px;"><span class="sb-lbl">Institute for the Advancement of Philosophy for Children</span><span class="sb-date">2021–present</span></div></div></div></div>
+<div class="cat-row row-teaching" style="height:202px;"><div class="cat-label"><span>Teaching</span></div><div class="cat-track" style="height:202px;"><div class="gl" style="left:2800px;"></div><div class="gl" style="left:2720px;"></div><div class="gl gl-maj" style="left:2640px;"></div><div class="gl" style="left:2560px;"></div><div class="gl" style="left:2480px;"></div><div class="gl" style="left:2400px;"></div><div class="gl" style="left:2320px;"></div><div class="gl gl-maj" style="left:2240px;"></div><div class="gl" style="left:2160px;"></div><div class="gl" style="left:2080px;"></div><div class="gl" style="left:2000px;"></div><div class="gl" style="left:1920px;"></div><div class="gl gl-maj" style="left:1840px;"></div><div class="gl" style="left:1760px;"></div><div class="gl" style="left:1680px;"></div><div class="gl" style="left:1600px;"></div><div class="gl" style="left:1520px;"></div><div class="gl gl-maj" style="left:1440px;"></div><div class="gl" style="left:1360px;"></div><div class="gl" style="left:1280px;"></div><div class="gl" style="left:1200px;"></div><div class="gl" style="left:1120px;"></div><div class="gl gl-maj" style="left:1040px;"></div><div class="gl" style="left:960px;"></div><div class="gl" style="left:880px;"></div><div class="gl" style="left:800px;"></div><div class="gl" style="left:720px;"></div><div class="gl gl-maj" style="left:640px;"></div><div class="gl" style="left:560px;"></div><div class="gl" style="left:480px;"></div><div class="gl" style="left:400px;"></div><div class="gl" style="left:320px;"></div><div class="gl gl-maj" style="left:240px;"></div><div class="gl" style="left:160px;"></div><div class="gl" style="left:80px;"></div><div class="gl" style="left:0px;"></div><div class="span-slot" style="left:400px;width:1520px;top:3px;height:24px;" data-title="Digital Photography and Imaging 1" data-date="2004–2023" data-content="ARPH201" ><div class="sb-pill" style="max-width:2400px;"><span class="sb-lbl">Digital Photography and Imaging 1</span><span class="sb-date">2004–2023</span></div></div><div class="span-slot" style="left:720px;width:1120px;top:31px;height:24px;" data-title="Digital Photography and Imaging 2" data-date="2005–2019" data-content="ARPH211" ><div class="sb-pill" style="max-width:2080px;"><span class="sb-lbl">Digital Photography and Imaging 2</span><span class="sb-date">2005–2019</span></div></div><div class="span-slot" style="left:880px;width:960px;top:59px;height:24px;" data-title="Various MFA Thesis Independent Studies" data-date="2005–2017" data-content="ARST502, 503, 532, 604, 610, 633" ><div class="sb-pill" style="max-width:1920px;"><span class="sb-lbl">Various MFA Thesis Independent Studies</span><span class="sb-date">2005–2017</span></div></div><div class="span-slot" style="left:80px;width:1440px;top:87px;height:24px;" data-title="MFA Thesis Exhibition/Thesis Extension" data-date="2009–2027" data-content="ARST650/1" ><div class="sb-pill" style="max-width:2720px;"><span class="sb-lbl">MFA Thesis Exhibition/Thesis Extension</span><span class="sb-date">2009–2027</span></div></div><div class="span-slot" style="left:880px;width:160px;top:115px;height:24px;" data-title="MA Thesis Seminar" data-date="2015–17" data-content="ARST600" ><div class="sb-pill" style="max-width:1920px;"><span class="sb-lbl">MA Thesis Seminar</span><span class="sb-date">2015–17</span></div></div><div class="span-slot" style="left:400px;width:480px;top:59px;height:24px;" data-title="Art Forum" data-date="2017–2023" data-content="ARGS280" ><div class="sb-pill" style="max-width:480px;"><span class="sb-lbl">Art Forum</span><span class="sb-date">2017–2023</span></div></div><div class="span-slot" style="left:320px;width:400px;top:31px;height:24px;" data-title="Integrative Studio III – BA Thesis Exhibition" data-date="2019–2024" data-content="ARST406/411" ><div class="sb-pill" style="max-width:400px;"><span class="sb-lbl">Integrative Studio III – BA Thesis Exhibition</span><span class="sb-date">2019–2024</span></div></div><div class="span-slot" style="left:400px;width:320px;top:115px;height:24px;" data-title="Digital Literacy" data-date="2019–2023" data-content="ARFD106" ><div class="sb-pill" style="max-width:478px;"><span class="sb-lbl">Digital Literacy</span><span class="sb-date">2019–2023</span></div></div><div class="span-slot" style="left:480px;width:80px;top:143px;height:24px;" data-title="Documentary Photography: Capturing the History of Now" data-date="2021" data-content="ARGS260" ><div class="sb-pill" style="max-width:2320px;"><span class="sb-lbl">Documentary Photography: Capturing the History of Now</span><span class="sb-date">2021</span></div></div><div class="span-slot" style="left:400px;width:160px;top:171px;height:24px;" data-title="Cooperative Education Mentor" data-date="2021–23" data-content="COED401" ><div class="sb-pill" style="max-width:2400px;"><span class="sb-lbl">Cooperative Education Mentor</span><span class="sb-date">2021–23</span></div></div><div class="span-slot" style="left:240px;width:240px;top:143px;height:24px;" data-title="Creative Coding for Graphic Designers/for Artists" data-date="2022–25" data-content="VCDS225/ARGS260" ><div class="sb-pill" style="max-width:240px;"><span class="sb-lbl">Creative Coding for Graphic Designers/for Artists</span><span class="sb-date">2022–25</span></div></div><div class="span-slot" style="left:240px;width:80px;top:3px;height:24px;" data-title="Photography for Majors" data-date="2024–25" data-content="ARST215" ><div class="sb-pill" style="max-width:158px;"><span class="sb-lbl">Photography for Majors</span><span class="sb-date">2024–25</span></div></div></div></div>
+<div class="cat-row row-exhibitions" style="height:92px;"><div class="cat-label"><span>Exhibitions</span></div><div class="cat-track" style="height:92px;"><div class="gl" style="left:2800px;"></div><div class="gl" style="left:2720px;"></div><div class="gl gl-maj" style="left:2640px;"></div><div class="gl" style="left:2560px;"></div><div class="gl" style="left:2480px;"></div><div class="gl" style="left:2400px;"></div><div class="gl" style="left:2320px;"></div><div class="gl gl-maj" style="left:2240px;"></div><div class="gl" style="left:2160px;"></div><div class="gl" style="left:2080px;"></div><div class="gl" style="left:2000px;"></div><div class="gl" style="left:1920px;"></div><div class="gl gl-maj" style="left:1840px;"></div><div class="gl" style="left:1760px;"></div><div class="gl" style="left:1680px;"></div><div class="gl" style="left:1600px;"></div><div class="gl" style="left:1520px;"></div><div class="gl gl-maj" style="left:1440px;"></div><div class="gl" style="left:1360px;"></div><div class="gl" style="left:1280px;"></div><div class="gl" style="left:1200px;"></div><div class="gl" style="left:1120px;"></div><div class="gl gl-maj" style="left:1040px;"></div><div class="gl" style="left:960px;"></div><div class="gl" style="left:880px;"></div><div class="gl" style="left:800px;"></div><div class="gl" style="left:720px;"></div><div class="gl gl-maj" style="left:640px;"></div><div class="gl" style="left:560px;"></div><div class="gl" style="left:480px;"></div><div class="gl" style="left:400px;"></div><div class="gl" style="left:320px;"></div><div class="gl gl-maj" style="left:240px;"></div><div class="gl" style="left:160px;"></div><div class="gl" style="left:80px;"></div><div class="gl" style="left:0px;"></div><div class="exp-col" style="left:2560px;max-width:240px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="Miniprint Shows" data-place="Bristol" data-date="1996–2003" ><span class="lst-lbl">Miniprint Shows</span></div></div><div class="exp-col" style="left:2480px;max-width:80px;" data-h-base="72" data-h-full="72"><div class="lst-item" data-title="10 years of the Miniprint" data-place="Bankside gallery, London; Ohio SU; Rhodes uni; S. Africa; Uni of So. Illinois; Kent SU; Cleveland Institute; AKI, Enschede, Holland" data-date="1997" ><span class="lst-lbl">10 years of the Miniprint</span></div><div class="lst-item" data-title="Booksy" data-place="group show, Newcastle-upon-Tyne" data-date="1997" ><span class="lst-lbl">Booksy</span></div><div class="lst-item" data-title="Imbue" data-place="group show, The Old Leadworks, Bristol" data-date="1997" ><span class="lst-lbl">Imbue</span></div><div class="lst-item" data-title="Artist's Book Fair" data-place="Barbican, London" data-date="1997–2003" ><span class="lst-lbl">Artist's Book Fair</span></div></div><div class="exp-col" style="left:2400px;max-width:80px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="Halifax Book Fair" data-place="Dean Clough Gallery" data-date="1998–2004" ><span class="lst-lbl">Halifax Book Fair</span></div></div><div class="exp-col" style="left:2320px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Impact print conference" data-place="Bristol: Artists' Books 1989–1999, flexography and 'Mind the Gap' shows" data-date="1999" ><span class="lst-lbl">Impact print conference</span></div><div class="lst-item" data-title="Indiana University print exchange" data-place="Bloomington, IA" data-date="1999" ><span class="lst-lbl">Indiana University print exchange</span></div></div><div class="exp-col" style="left:2240px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Chongqing Print Festival" data-place="Chongqing, China" data-date="2000" ><span class="lst-lbl">Chongqing Print Festival</span></div><div class="lst-item" data-title="Photomechanical print survey" data-place="Create Centre, Bristol" data-date="2000" ><span class="lst-lbl">Photomechanical print survey</span></div></div><div class="exp-col" style="left:2160px;max-width:80px;" data-h-base="92" data-h-full="160"><div class="lst-item" data-title="Curtains and first international Miniprint Show" data-place="Gittins Gallery, University of Utah, Salt Lake City" data-date="2001" ><span class="lst-lbl">Curtains and first international Miniprint Show</span></div><div class="lst-item" data-title="7th Wexford Artists Book Exhibition" data-place="Ireland" data-date="2001" ><span class="lst-lbl">7th Wexford Artists Book Exhibition</span></div><div class="lst-item" data-title="Feat of Clay" data-place="V&amp;A Museum, London" data-date="2001" ><span class="lst-lbl">Feat of Clay</span></div><div class="lst-item" data-title="Tallinn Print Triennial" data-place="Tallinn, Estonia" data-date="2001" ><span class="lst-lbl">Tallinn Print Triennial</span></div><div class="exp-extra"><div class="lst-item" data-title="Photomechanical print survey" data-place="CADE, Glasgow School of Art" data-date="2001" ><span class="lst-lbl">Photomechanical print survey</span></div><div class="lst-item" data-title="Society of Graphic Art" data-place="Hotbath Gallery, Bath" data-date="2001" ><span class="lst-lbl">Society of Graphic Art</span></div><div class="lst-item" data-title="SGC Conference" data-place="Austin, Texas" data-date="2001" ><span class="lst-lbl">SGC Conference</span></div><div class="lst-item" data-title="A Tale of Two Cities" data-place="Center for Book Arts, New York and Off-Centre Gallery, Bristol" data-date="2001" ><span class="lst-lbl">A Tale of Two Cities</span></div></div><button class="exp-btn" data-n="4">+4 more</button></div><div class="exp-col" style="left:2080px;max-width:80px;" data-h-base="72" data-h-full="72"><div class="lst-item" data-title="Artists Book Show" data-place="Sherborne, UK" data-date="2002" ><span class="lst-lbl">Artists Book Show</span></div><div class="lst-item" data-title="20:20" data-place="Hereford College, UK" data-date="2002" ><span class="lst-lbl">20:20</span></div><div class="lst-item" data-title="here here there there" data-place="University of Dundee and UWE, UK" data-date="2002" ><span class="lst-lbl">here here there there</span></div><div class="lst-item" data-title="7è Concurs Internacional de Gravat Premi" data-place="Girona, Spain" data-date="2002" ><span class="lst-lbl">7è Concurs Internacional de Gravat Premi</span></div></div><div class="exp-col" style="left:2000px;max-width:80px;" data-h-base="92" data-h-full="296"><div class="lst-item" data-title="International Graphic Art Biennial" data-place="Split, Croatia" data-date="2003" ><span class="lst-lbl">International Graphic Art Biennial</span></div><div class="lst-item" data-title="Macedonian Print Triennial" data-place="Bitola, Macedonia" data-date="2003" ><span class="lst-lbl">Macedonian Print Triennial</span></div><div class="lst-item" data-title="Gravat.olot" data-place="Olot, Spain" data-date="2003" ><span class="lst-lbl">Gravat.olot</span></div><div class="lst-item" data-title="Gravat" data-place="Häsinglands Museum of Hudiksvall, Sweden" data-date="2003" ><span class="lst-lbl">Gravat</span></div><div class="exp-extra"><div class="lst-item" data-title="Portraits" data-place="University of Montana" data-date="2003" ><span class="lst-lbl">Portraits</span></div><div class="lst-item" data-title="International Print Biennial" data-place="Varna, Bulgaria" data-date="2003" ><span class="lst-lbl">International Print Biennial</span></div><div class="lst-item" data-title="Masereel: 10 Years of Prints" data-place="Edinburgh Printmakers, Edinburgh, UK" data-date="2003" ><span class="lst-lbl">Masereel: 10 Years of Prints</span></div><div class="lst-item" data-title="International Print Biennial" data-place="Beijing, China" data-date="2003" ><span class="lst-lbl">International Print Biennial</span></div><div class="lst-item" data-title="Featured Artist" data-place="Center for Book Arts, New York" data-date="2003" ><span class="lst-lbl">Featured Artist</span></div><div class="lst-item" data-title="Curtains" data-place="Manhattan Graphics Center, New York" data-date="2003" ><span class="lst-lbl">Curtains</span></div><div class="lst-item" data-title="The history book that never was" data-place="Boston" data-date="2003" ><span class="lst-lbl">The history book that never was</span></div><div class="lst-item" data-title="Portfolio show" data-place="Boston" data-date="2003" ><span class="lst-lbl">Portfolio show</span></div><div class="lst-item" data-title="25 years of The Frans Masereel Centrum" data-place="Belgium" data-date="2003" ><span class="lst-lbl">25 years of The Frans Masereel Centrum</span></div><div class="lst-item" data-title="Secrets" data-place="University of Tennessee at Chattanooga" data-date="2003" ><span class="lst-lbl">Secrets</span></div><div class="lst-item" data-title="Mainz Minibuchverlagmesse" data-place="Mainz, Germany" data-date="2003" ><span class="lst-lbl">Mainz Minibuchverlagmesse</span></div><div class="lst-item" data-title="9th Wexford Artists Book Exhibition" data-place="Ireland" data-date="2003" ><span class="lst-lbl">9th Wexford Artists Book Exhibition</span></div></div><button class="exp-btn" data-n="12">+12 more</button></div><div class="exp-col" style="left:1920px;max-width:80px;" data-h-base="92" data-h-full="143"><div class="lst-item" data-title="13th Print Triennial" data-place="Tallinn, Estonia" data-date="2004" ><span class="lst-lbl">13th Print Triennial</span></div><div class="lst-item" data-title="Solo show" data-place="Prema Arts Centre, Uley, UK" data-date="2004" ><span class="lst-lbl">Solo show</span></div><div class="lst-item" data-title="New Directions in Printmaking" data-place="Miskolc Gallery of Fine Arts, Hungary" data-date="2004" ><span class="lst-lbl">New Directions in Printmaking</span></div><div class="lst-item" data-title="Artists' Book show" data-place="University of Tennessee" data-date="2004" ><span class="lst-lbl">Artists' Book show</span></div><div class="exp-extra"><div class="lst-item" data-title="Artists' Book show" data-place="HouseRoom, Bath, UK" data-date="2004" ><span class="lst-lbl">Artists' Book show</span></div><div class="lst-item" data-title="Altered Images" data-place="Digital Interpretations Inspired by Geo. Cartlidge's Portrait Tiles, The Potteries Museum and Gallery, Stoke-on-Trent, UK" data-date="2004" ><span class="lst-lbl">Altered Images</span></div><div class="lst-item" data-title="Bookmarks Project" data-place="UWE, UK" data-date="2004" ><span class="lst-lbl">Bookmarks Project</span></div></div><button class="exp-btn" data-n="3">+3 more</button></div><div class="exp-col" style="left:1840px;max-width:80px;" data-h-base="92" data-h-full="160"><div class="lst-item" data-title="Faculty Show" data-place="MSU, NJ" data-date="2005" ><span class="lst-lbl">Faculty Show</span></div><div class="lst-item" data-title="Icon-Data" data-place="online invitational show as part of the Polish Print Triennial, Kracow, Poland" data-date="2005" ><span class="lst-lbl">Icon-Data</span></div><div class="lst-item" data-title="Dangen Art" data-place="Nashville, TN" data-date="2005" ><span class="lst-lbl">Dangen Art</span></div><div class="lst-item" data-title="Hand to Mouse" data-place="Royal West of England Academy, Bristol, UK" data-date="2005" ><span class="lst-lbl">Hand to Mouse</span></div><div class="exp-extra"><div class="lst-item" data-title="Broekhuis Boekhandel" data-place="Enschede, The Netherlands" data-date="2005" ><span class="lst-lbl">Broekhuis Boekhandel</span></div><div class="lst-item" data-title="Book show at University of Tennessee at Chattanooga" data-date="2005" data-content="Book show at University of Tennessee at Chattanooga" ><span class="lst-lbl">Book show at University of Tennessee at Chattanooga</span></div><div class="lst-item" data-title="Member's Show" data-place="CEPA Gallery, Buffalo" data-date="2005" ><span class="lst-lbl">Member's Show</span></div><div class="lst-item" data-title="Boxing Clever" data-place="University of the West of England and the Royal West of England Academy, Bristol, UK" data-date="2005" ><span class="lst-lbl">Boxing Clever</span></div></div><button class="exp-btn" data-n="4">+4 more</button></div><div class="exp-col" style="left:1760px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Book marks I" data-place="II, III, Stewart Center Gallery, Purdue University, IN" data-date="2006" ><span class="lst-lbl">Book marks I</span></div><div class="lst-item" data-title="New Pages" data-place="UIAH, Helsinki, Finland" data-date="2006" ><span class="lst-lbl">New Pages</span></div></div><div class="exp-col" style="left:1680px;max-width:80px;" data-h-base="55" data-h-full="55"><div class="lst-item" data-title="Time Sensitive Material" data-place="Adamson-Eric Museum, Talinn, Estonia" data-date="2007" ><span class="lst-lbl">Time Sensitive Material</span></div><div class="lst-item" data-title="Gyeongnam International Art Festival" data-place="Gyeongnam Art Museum, South Korea" data-date="2007" ><span class="lst-lbl">Gyeongnam International Art Festival</span></div><div class="lst-item" data-title="Poetry Books: Reading Books" data-place="Enschede, The Netherlands" data-date="2007" ><span class="lst-lbl">Poetry Books: Reading Books</span></div></div><div class="exp-col" style="left:1600px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Fotografi Emergenti" data-place="Palazzo San Vitale, Parma, Italy" data-date="2008" ><span class="lst-lbl">Fotografi Emergenti</span></div><div class="lst-item" data-title="Not the Westside Highway" data-place="PCNJ, Sommerville, NJ" data-date="2008" ><span class="lst-lbl">Not the Westside Highway</span></div></div><div class="exp-col" style="left:1520px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Emerging Photographers" data-place="Sol Mednick Gallery, UArts, Philadelphia, PA" data-date="2009" ><span class="lst-lbl">Emerging Photographers</span></div><div class="lst-item" data-title="Global Impact" data-place="Bing-Davis Gallery, Upper Iowa University, Iowa" data-date="2009" ><span class="lst-lbl">Global Impact</span></div></div><div class="exp-col" style="left:1440px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="New York Emergentes" data-place="UNC Cordoba, Argentina" data-date="2010" ><span class="lst-lbl">New York Emergentes</span></div><div class="lst-item" data-title="Paper Trails" data-place="Whitecliffe College, New Zealand" data-date="2010" ><span class="lst-lbl">Paper Trails</span></div></div><div class="exp-col" style="left:1360px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Zone Imaginaria" data-place="Buenos Aires, Argentina" data-date="2011" ><span class="lst-lbl">Zone Imaginaria</span></div><div class="lst-item" data-title="Japan Now" data-place="Camel Arts, Brooklyn" data-date="2011" ><span class="lst-lbl">Japan Now</span></div></div><div class="exp-col" style="left:1200px;max-width:154px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Sideshow Nation" data-place="Sideshow Gallery, Brooklyn" data-date="2013" ><span class="lst-lbl">Sideshow Nation</span></div><div class="lst-item" data-title="Howard Gardens Gallery" data-place="Cardiff, Wales" data-date="2013" ><span class="lst-lbl">Howard Gardens Gallery</span></div></div><div class="exp-col" style="left:1120px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Festival de la Luz" data-place="Zona Imaginaria, Buenos Aires, Argentina" data-date="2014" ><span class="lst-lbl">Festival de la Luz</span></div><div class="lst-item" data-title="Destination Unknown" data-place="MagnanMetz, Chelsea, NY" data-date="2014" ><span class="lst-lbl">Destination Unknown</span></div></div><div class="exp-col" style="left:1040px;max-width:80px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="Faculty Exhibition" data-place="Segal Gallery, Montclair State University, Montclair, NJ" data-date="2015" ><span class="lst-lbl">Faculty Exhibition</span></div></div><div class="exp-col" style="left:880px;max-width:154px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Last Stop Before Utopia" data-place="Sarasota Art Center, Sarasota, FL" data-date="2017" ><span class="lst-lbl">Last Stop Before Utopia</span></div><div class="lst-item" data-title="Zona Imaginaria" data-place="Buenos Aires, Argentina" data-date="2017" ><span class="lst-lbl">Zona Imaginaria</span></div></div><div class="exp-col" style="left:480px;max-width:394px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="CCRMA" data-place="Ocean Memory Concert, Stanford University" data-date="2022" data-link-url="https://vimeo.com/553111781?share=copy#t=424" data-link-title="CCRMA, Ocean Memory Concert, Stanford University" ><span class="lst-lbl">CCRMA</span></div></div></div></div>
+<div class="cat-row row-scholarship" style="height:76px;"><div class="cat-label"><span>Scholarship</span></div><div class="cat-track" style="height:76px;"><div class="gl" style="left:2800px;"></div><div class="gl" style="left:2720px;"></div><div class="gl gl-maj" style="left:2640px;"></div><div class="gl" style="left:2560px;"></div><div class="gl" style="left:2480px;"></div><div class="gl" style="left:2400px;"></div><div class="gl" style="left:2320px;"></div><div class="gl gl-maj" style="left:2240px;"></div><div class="gl" style="left:2160px;"></div><div class="gl" style="left:2080px;"></div><div class="gl" style="left:2000px;"></div><div class="gl" style="left:1920px;"></div><div class="gl gl-maj" style="left:1840px;"></div><div class="gl" style="left:1760px;"></div><div class="gl" style="left:1680px;"></div><div class="gl" style="left:1600px;"></div><div class="gl" style="left:1520px;"></div><div class="gl gl-maj" style="left:1440px;"></div><div class="gl" style="left:1360px;"></div><div class="gl" style="left:1280px;"></div><div class="gl" style="left:1200px;"></div><div class="gl" style="left:1120px;"></div><div class="gl gl-maj" style="left:1040px;"></div><div class="gl" style="left:960px;"></div><div class="gl" style="left:880px;"></div><div class="gl" style="left:800px;"></div><div class="gl" style="left:720px;"></div><div class="gl gl-maj" style="left:640px;"></div><div class="gl" style="left:560px;"></div><div class="gl" style="left:480px;"></div><div class="gl" style="left:400px;"></div><div class="gl" style="left:320px;"></div><div class="gl gl-maj" style="left:240px;"></div><div class="gl" style="left:160px;"></div><div class="gl" style="left:80px;"></div><div class="gl" style="left:0px;"></div><div class="pt-group" style="left:2320px;max-width:480px;"><div class="pt-row" data-title="Artists' Newsletter" data-place="Sarah Bodman; Artists' Books, Ed. Sarah Bodman. Impact Press" data-date="1999" ><div class="pt-dot"></div><div class="pt-lbl">Artists' Newsletter</div></div></div><div class="pt-group" style="left:2240px;max-width:80px;"><div class="pt-row" data-title="Photomechanical Print Survey" data-place="Ed. Carinna Parraman, Impact Press; World Etching, Chongqing Print Festival" data-date="2000" ><div class="pt-dot"></div><div class="pt-lbl">Photomechanical Print Survey</div></div></div><div class="pt-group" style="left:2160px;max-width:80px;"><div class="pt-row" data-title="Artists' Book Yearbook" data-place="Ed. Sarah Bodman. Impact Press; _Ceramics and Print_, Paul Scott, A&amp;C Black; Mutating Image: 12th Tallinn print triennial catalogue; A Tale of Two Cities, Ed. Sarah Bodman. Impact Press" data-date="2001" ><div class="pt-dot"></div><div class="pt-lbl">Artists' Book Yearbook</div></div></div><div class="pt-group" style="left:2080px;max-width:80px;"><div class="pt-row" data-title="'The history book that never was' review" data-place="_The Art Book_, Sept.; 20:20, 20 artists using photomechanical processes, CD-ROM, Impact Press; Artists' Book Yearbook review, _The Art Book_" data-date="2002" ><div class="pt-dot"></div><div class="pt-lbl">'The history book that never was' review</div></div></div><div class="pt-group" style="left:2000px;max-width:80px;"><div class="pt-row" data-title="Gravat.olot" data-place="CD-ROM Catalogue, Spain; International Print Biennial catalogue, Bulgaria; Beijing International Print Biennial catalogue" data-date="2003" ><div class="pt-dot"></div><div class="pt-lbl">Gravat.olot</div></div></div><div class="pt-group" style="left:1920px;max-width:80px;"><div class="pt-row" data-title="In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue" data-date="2004" data-content="In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue" ><div class="pt-dot"></div><div class="pt-lbl">In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue</div></div></div><div class="pt-group" style="left:1680px;max-width:234px;"><div class="pt-row" data-title="Gyeongnam International Art Festival catalogue" data-date="2007" data-content="Gyeongnam International Art Festival catalogue" ><div class="pt-dot"></div><div class="pt-lbl">Gyeongnam International Art Festival catalogue</div></div><div class="pt-row" data-title="MSU Alumni Show" data-place="P.P.O.W Gallery, New York, NY" data-date="2007" ><div class="pt-dot"></div><div class="pt-lbl">MSU Alumni Show</div></div></div><div class="pt-group" style="left:1600px;max-width:80px;"><div class="pt-row" data-title="Fotografi Emergenti catalogue" data-date="2008" data-content="Fotografi Emergenti catalogue" ><div class="pt-dot"></div><div class="pt-lbl">Fotografi Emergenti catalogue</div></div><div class="pt-row" data-title="Emerging Photographers" data-place="Palezzetto Eucherio Sanvitale, Parma, Italy (traveled to Philadelphia, 2009; Cordoba, 2010)" data-date="2008–2010" ><div class="pt-dot"></div><div class="pt-lbl">Emerging Photographers</div></div><div class="pt-row" data-title="Co-curator" data-place="Italian Sense of Place II: Luigi Ghirri, Franco Guerzoni, and Nancy Goldring, George Segal Gallery, MSU, Montclair" data-date="2008" ><div class="pt-dot"></div><div class="pt-lbl">Co-curator</div></div><div class="pt-row" data-title="Co-curator" data-place="Italian Sense of Place I: Giuseppe Morandi, Micio, and Angelo Novi, George Segal Gallery, MSU, Montclair" data-date="2008" ><div class="pt-dot"></div><div class="pt-lbl">Co-curator</div></div></div><div class="pt-group" style="left:1520px;max-width:80px;"><div class="pt-row" data-title="30 Years of the Sol Mednick Gallery" data-date="2009" data-content="30 Years of the Sol Mednick Gallery" ><div class="pt-dot"></div><div class="pt-lbl">30 Years of the Sol Mednick Gallery</div></div><div class="pt-row" data-title="The End Days of Print: Raffone in Naples" data-place="EI institute, Columbia University" data-date="2009" ><div class="pt-dot"></div><div class="pt-lbl">The End Days of Print: Raffone in Naples</div></div></div><div class="pt-group" style="left:1440px;max-width:80px;"><div class="pt-row" data-title="La Voz del Interior" data-place="19th, 20th and 21st of July 2010; Revista Ohlala, August 2010" data-date="2010" ><div class="pt-dot"></div><div class="pt-lbl">La Voz del Interior</div></div></div><div class="pt-group" style="left:880px;max-width:554px;"><div class="pt-row" data-title="Zona Imaginaria" data-place="Buenos Aires" data-date="2017" ><div class="pt-dot"></div><div class="pt-lbl">Zona Imaginaria</div></div></div><div class="pt-group" style="left:240px;max-width:634px;"><div class="pt-row" data-title="Jody W. Deming; Ocean Memory: Unimagined Perspectives. Leonardo 2025; 58 (1): 105–110." data-date="2025" data-content="Jody W. Deming; Ocean Memory: Unimagined Perspectives. Leonardo 2025; 58 (1): 105–110." data-link-url="https://doi.org/10.1162/leon_a_02644" data-link-title="Ocean Memory: Unimagined Perspectives. _Leonardo_ 2025; 58 (1): 105–110." ><div class="pt-dot"></div><div class="pt-lbl">Jody W. Deming; Ocean Memory: Unimagined Perspectives. Leonardo 2025; 58 (1): 105–110.</div></div></div></div></div>
+<div class="cat-row row-presentations" style="height:58px;"><div class="cat-label"><span>Presentations</span></div><div class="cat-track" style="height:58px;"><div class="gl" style="left:2800px;"></div><div class="gl" style="left:2720px;"></div><div class="gl gl-maj" style="left:2640px;"></div><div class="gl" style="left:2560px;"></div><div class="gl" style="left:2480px;"></div><div class="gl" style="left:2400px;"></div><div class="gl" style="left:2320px;"></div><div class="gl gl-maj" style="left:2240px;"></div><div class="gl" style="left:2160px;"></div><div class="gl" style="left:2080px;"></div><div class="gl" style="left:2000px;"></div><div class="gl" style="left:1920px;"></div><div class="gl gl-maj" style="left:1840px;"></div><div class="gl" style="left:1760px;"></div><div class="gl" style="left:1680px;"></div><div class="gl" style="left:1600px;"></div><div class="gl" style="left:1520px;"></div><div class="gl gl-maj" style="left:1440px;"></div><div class="gl" style="left:1360px;"></div><div class="gl" style="left:1280px;"></div><div class="gl" style="left:1200px;"></div><div class="gl" style="left:1120px;"></div><div class="gl gl-maj" style="left:1040px;"></div><div class="gl" style="left:960px;"></div><div class="gl" style="left:880px;"></div><div class="gl" style="left:800px;"></div><div class="gl" style="left:720px;"></div><div class="gl gl-maj" style="left:640px;"></div><div class="gl" style="left:560px;"></div><div class="gl" style="left:480px;"></div><div class="gl" style="left:400px;"></div><div class="gl" style="left:320px;"></div><div class="gl gl-maj" style="left:240px;"></div><div class="gl" style="left:160px;"></div><div class="gl" style="left:80px;"></div><div class="gl" style="left:0px;"></div><div class="exp-col" style="left:2320px;max-width:480px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Artists' talk during show on 'Picasso and post-war printmaking in Paris" data-place="' Arnolfini Gallery, Bristol" data-date="1999" ><span class="lst-lbl">Artists' talk during show on 'Picasso and post-war printmaking in Paris</span></div><div class="lst-item" data-title="'CAB' urban spaces projects. Collaborative screen printed installation for UWE &amp; Lloyd's Bank" data-date="1999" data-content="'CAB' urban spaces projects. Collaborative screen printed installation for UWE &amp; Lloyd's Bank" ><span class="lst-lbl">'CAB' urban spaces projects. Collaborative screen printed installation for UWE &amp; Lloyd's Bank</span></div></div><div class="exp-col" style="left:2240px;max-width:80px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Fine print research for development of flexography for fine print and tests on new waterwashable inks for relief printing" data-place="University of the West of England" data-date="2000" ><span class="lst-lbl">Fine print research for development of flexography for fine print and tests on new waterwashable inks for relief printing</span></div><div class="lst-item" data-title="Member of Faculty research committee" data-place="University of the West of England" data-date="2000" ><span class="lst-lbl">Member of Faculty research committee</span></div></div><div class="exp-col" style="left:2160px;max-width:80px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="'Ongoing Ph.D research' at Research Colloquium" data-place="Winchester School of Art" data-date="2001" ><span class="lst-lbl">'Ongoing Ph.D research' at Research Colloquium</span></div></div><div class="exp-col" style="left:2080px;max-width:80px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="Regional Ph.D seminar" data-place="'Empirical research and critical practice,' University of the West of England" data-date="2002" ><span class="lst-lbl">Regional Ph.D seminar</span></div></div><div class="exp-col" style="left:2000px;max-width:80px;" data-h-base="58" data-h-full="109"><div class="lst-item" data-title="Artist's talk" data-place="Center for Book Arts, New York" data-date="2003" ><span class="lst-lbl">Artist's talk</span></div><div class="lst-item" data-title="'Investigating the problems of empirical research through the work of Joan Fontcuberta" data-place="' paper for CADE 2003, Hull, UK" data-date="2003" ><span class="lst-lbl">'Investigating the problems of empirical research through the work of Joan Fontcuberta</span></div><div class="exp-extra"><div class="lst-item" data-title="'Continuous Tone Alternatives to the Halftone Model Through Historical Reflection" data-place="' Paper at PICS digital imaging conference, Rochester NY" data-date="2003" ><span class="lst-lbl">'Continuous Tone Alternatives to the Halftone Model Through Historical Reflection</span></div><div class="lst-item" data-title="Artist talk" data-place="Glasgow School of Art" data-date="2003" ><span class="lst-lbl">Artist talk</span></div><div class="lst-item" data-title="Member of library users group" data-place="University of the West of England" data-date="2003" ><span class="lst-lbl">Member of library users group</span></div></div><button class="exp-btn" data-n="3">+3 more</button></div><div class="exp-col" style="left:1920px;max-width:80px;" data-h-base="58" data-h-full="109"><div class="lst-item" data-title="Polymergravure demonstration" data-place="University of Delaware, Newark" data-date="2004" ><span class="lst-lbl">Polymergravure demonstration</span></div><div class="lst-item" data-title="Artist's talk" data-place="University of Delaware, Newark" data-date="2004" ><span class="lst-lbl">Artist's talk</span></div><div class="exp-extra"><div class="lst-item" data-title="'A history of Woodburytypes" data-place="' University of Delaware, Newark" data-date="2004" ><span class="lst-lbl">'A history of Woodburytypes</span></div><div class="lst-item" data-title="Artist's talk" data-place="Drexel University, Philadelphia" data-date="2004" ><span class="lst-lbl">Artist's talk</span></div><div class="lst-item" data-title="'The development of early photographic reproduction processes" data-place="' University of Virginia, Charlottesville" data-date="2004" ><span class="lst-lbl">'The development of early photographic reproduction processes</span></div></div><button class="exp-btn" data-n="3">+3 more</button></div><div class="exp-col" style="left:1840px;max-width:80px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="'Interstitial Languages: photography and printmaking" data-place="' Impact 4 Conference, Poznan Museum, Poland" data-date="2005" ><span class="lst-lbl">'Interstitial Languages: photography and printmaking</span></div></div><div class="exp-col" style="left:1600px;max-width:234px;" data-h-base="38" data-h-full="38"><div class="lst-item" data-title="Visiting Critic for BFA Photography" data-place="Pratt College of Art, Brooklyn" data-date="2008" ><span class="lst-lbl">Visiting Critic for BFA Photography</span></div><div class="lst-item" data-title="'Giuseppe Morandi And The Lega Cultura Di Piadena Practicing Contemporary Neo-realism" data-place="' Hawaii International Conference on Arts and Humanities, University of Louisville, Honolulu, HI" data-date="2008" ><span class="lst-lbl">'Giuseppe Morandi And The Lega Cultura Di Piadena Practicing Contemporary Neo-realism</span></div></div><div class="exp-col" style="left:1280px;max-width:314px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="Visiting Lecturer and External Assessor" data-place="Whitecliffe College, Auckland, NZ" data-date="2012" ><span class="lst-lbl">Visiting Lecturer and External Assessor</span></div></div><div class="exp-col" style="left:1200px;max-width:80px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="Visiting Critic for BFA Photography" data-place="NYU, NY" data-date="2013" ><span class="lst-lbl">Visiting Critic for BFA Photography</span></div></div><div class="exp-col" style="left:880px;max-width:314px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="Artist PhD presentation for Volta Art Fair" data-place="New York" data-date="2017" ><span class="lst-lbl">Artist PhD presentation for Volta Art Fair</span></div></div><div class="exp-col" style="left:480px;max-width:394px;" data-h-base="21" data-h-full="21"><div class="lst-item" data-title="Harbor Six" data-place="Ocean Memory Project, Online" data-date="2022" ><span class="lst-lbl">Harbor Six</span></div></div></div></div>
+<div class="cat-row row-grants" style="height:59px;"><div class="cat-label"><span>Grants &<br>Residencies</span></div><div class="cat-track" style="height:59px;"><div class="gl" style="left:2800px;"></div><div class="gl" style="left:2720px;"></div><div class="gl gl-maj" style="left:2640px;"></div><div class="gl" style="left:2560px;"></div><div class="gl" style="left:2480px;"></div><div class="gl" style="left:2400px;"></div><div class="gl" style="left:2320px;"></div><div class="gl gl-maj" style="left:2240px;"></div><div class="gl" style="left:2160px;"></div><div class="gl" style="left:2080px;"></div><div class="gl" style="left:2000px;"></div><div class="gl" style="left:1920px;"></div><div class="gl gl-maj" style="left:1840px;"></div><div class="gl" style="left:1760px;"></div><div class="gl" style="left:1680px;"></div><div class="gl" style="left:1600px;"></div><div class="gl" style="left:1520px;"></div><div class="gl gl-maj" style="left:1440px;"></div><div class="gl" style="left:1360px;"></div><div class="gl" style="left:1280px;"></div><div class="gl" style="left:1200px;"></div><div class="gl" style="left:1120px;"></div><div class="gl gl-maj" style="left:1040px;"></div><div class="gl" style="left:960px;"></div><div class="gl" style="left:880px;"></div><div class="gl" style="left:800px;"></div><div class="gl" style="left:720px;"></div><div class="gl gl-maj" style="left:640px;"></div><div class="gl" style="left:560px;"></div><div class="gl" style="left:480px;"></div><div class="gl" style="left:400px;"></div><div class="gl" style="left:320px;"></div><div class="gl gl-maj" style="left:240px;"></div><div class="gl" style="left:160px;"></div><div class="gl" style="left:80px;"></div><div class="gl" style="left:0px;"></div><div class="pt-group" style="left:2080px;max-width:720px;"><div class="pt-row" data-title="Residency" data-place="Frans Masereel Centrum, Kasterlee, Belgium" data-date="2002" ><div class="pt-dot"></div><div class="pt-lbl">Residency</div></div></div><div class="pt-group" style="left:2000px;max-width:80px;"><div class="pt-row" data-title="Gravat.olot" data-place="Olot, Spain _(Awarded gold prize)_" data-date="2003" ><div class="pt-dot"></div><div class="pt-lbl">Gravat.olot</div></div><div class="pt-row" data-title="Sally R. Bishop Fellowship and residency" data-place="Center for Book Arts, NY" data-date="2003" ><div class="pt-dot"></div><div class="pt-lbl">Sally R. Bishop Fellowship and residency</div></div><div class="pt-row" data-title="Artist in Residence" data-place="Glasgow School of Art, UK" data-date="2003" ><div class="pt-dot"></div><div class="pt-lbl">Artist in Residence</div></div></div><div class="pt-group" style="left:1680px;max-width:314px;"><div class="pt-row" data-title="Global Education grant" data-place="MSU, $2,000 — Developing the Italian Sense of Place Conference" data-date="2007" ><div class="pt-dot"></div><div class="pt-lbl">Global Education grant</div></div></div><div class="pt-group" style="left:1600px;max-width:80px;"><div class="pt-row" data-title="Global Education grant" data-place="MSU, $4,000 — Emerging Photographers Exhibition" data-date="2008" ><div class="pt-dot"></div><div class="pt-lbl">Global Education grant</div></div></div><div class="pt-group" style="left:480px;max-width:1114px;"><div class="pt-row" data-title="American Philosophical Association" data-place="$5,000, Institute for Advancement of Philosophy for Children Book Prototype" data-date="2022" ><div class="pt-dot"></div><div class="pt-lbl">American Philosophical Association</div></div><div class="pt-row" data-title="Ocean Memory Project" data-place="Senses Sensing, $9,000" data-date="2022" ><div class="pt-dot"></div><div class="pt-lbl">Ocean Memory Project</div></div></div><div class="pt-group" style="left:400px;max-width:80px;"><div class="pt-row" data-title="Ocean Memory Project" data-place="The Architectural Memory of Sea Ice, $10,000" data-date="2023" ><div class="pt-dot"></div><div class="pt-lbl">Ocean Memory Project</div></div></div><div class="pt-group" style="left:240px;max-width:154px;"><div class="pt-row" data-title="Ocean Memory Project" data-place="Nuuk Research Trip, $2,000" data-date="2025" ><div class="pt-dot"></div><div class="pt-lbl">Ocean Memory Project</div></div></div></div></div>
+  </div>
+</div>
+
+<!-- Hover label -->
+<div id="hover-lbl"></div>
+
+<!-- Detail popup -->
+<div id="dpop" role="dialog" aria-modal="true">
+  <div class="dp-backdrop" id="dp-backdrop"></div>
+  <div class="dp-card">
+    <button class="dp-close" id="dp-close" aria-label="Close">×</button>
+    <div class="dp-title" id="dp-title"></div>
+    <div class="dp-meta" id="dp-meta">
+      <span id="dp-place"></span>
+      <span class="dp-sep" id="dp-sep">·</span>
+      <span id="dp-date"></span>
+    </div>
+    <div class="dp-content" id="dp-content"></div>
+    <a class="dp-link" id="dp-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── 1. Theme toggle ── */
+  var tBtn = document.getElementById('theme-toggle');
+  var tLbl = document.getElementById('toggle-label');
+  var tPth = document.getElementById('toggle-path');
+  var SUN  = 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7z';
+  var MOON = 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z';
+  tBtn.addEventListener('click', function () {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+    tLbl.textContent = dark ? 'Dark' : 'Light';
+    tPth.setAttribute('d', dark ? MOON : SUN);
+  });
+
+  /* ── 2. Expand / collapse ── */
+  var extras = document.querySelectorAll('.exp-extra');
+  extras.forEach(function (el) { el.style.maxHeight = '0'; el.style.overflow = 'hidden'; });
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      extras.forEach(function (el) { el.style.transition = 'max-height 0.35s ease'; });
+      document.querySelectorAll('.cat-row').forEach(function (row) {
+        if (row.querySelector('.exp-col')) {
+          row.style.transition = 'height 0.35s ease';
+          var track = row.querySelector('.cat-track');
+          if (track) track.style.transition = 'height 0.35s ease';
         }
+      });
+    });
+  });
+
+  function updateRowHeight(row) {
+    var track = row.querySelector('.cat-track');
+    var maxH  = 0;
+    track.querySelectorAll('.exp-col').forEach(function (col) {
+      var h = col.classList.contains('is-open')
+        ? parseInt(col.dataset.hFull, 10) : parseInt(col.dataset.hBase, 10);
+      if (h > maxH) maxH = h;
+    });
+    var newH = (maxH + 4) + 'px';
+    row.style.height   = newH;
+    track.style.height = newH;
+  }
+
+  /* ── 3. Hover label (desktop only) ── */
+  var hoverLbl = document.getElementById('hover-lbl');
+  document.addEventListener('mouseover', function (e) {
+    var el = e.target.closest('.lst-lbl, .pt-lbl, .sb-lbl');
+    if (!el) { hoverLbl.style.display = 'none'; return; }
+    if (el.scrollWidth <= el.offsetWidth + 1) { hoverLbl.style.display = 'none'; return; }
+    var rect = el.getBoundingClientRect();
+    hoverLbl.textContent   = el.textContent.trim();
+    hoverLbl.style.left    = rect.left + 'px';
+    hoverLbl.style.top     = rect.bottom + 'px';
+    hoverLbl.style.display = 'block';
+  });
+  document.addEventListener('mouseout', function (e) {
+    if (e.target.closest('.lst-lbl, .pt-lbl, .sb-lbl')) hoverLbl.style.display = 'none';
+  });
+
+  /* ── 4. Sticky span labels — keep label text visible as bar scrolls off left ── */
+  //  Works on both desktop and mobile: when scrollLeft > bar's left edge,
+  //  shift the pill's padding so the text slides into the visible area.
+  var tlOuter   = document.getElementById('tl-outer');
+  var allSlots  = document.querySelectorAll('.span-slot');
+  tlOuter.addEventListener('scroll', function () {
+    var sl = tlOuter.scrollLeft;
+    allSlots.forEach(function (slot) {
+      var left  = parseFloat(slot.style.left);
+      var w     = parseFloat(slot.style.width);
+      var pill  = slot.querySelector('.sb-pill');
+      if (!pill) return;
+      var shift = sl - left;
+      if (shift > 0 && shift < w - 20) {
+        pill.style.paddingLeft = (shift + 2) + 'px';
+      } else {
+        pill.style.paddingLeft = '';
       }
-    </style>
-  </head>
-  <body>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-      <svg
-        id="toggle-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-      >
-        <path
-          id="toggle-path"
-          d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
-        />
-      </svg>
-      <span id="toggle-label">Dark</span>
-    </button>
+    });
+  }, { passive: true });
 
-    <div class="page-hd">
-      <h1 class="page-name">Andrew Atkinson</h1>
-      <p class="page-sub">Career Timeline</p>
-    </div>
+  /* ── 5. Detail popup ── */
+  var dpop    = document.getElementById('dpop');
+  var dpTitle = document.getElementById('dp-title');
+  var dpPlace = document.getElementById('dp-place');
+  var dpSep   = document.getElementById('dp-sep');
+  var dpDate  = document.getElementById('dp-date');
+  var dpCont  = document.getElementById('dp-content');
+  var dpLink  = document.getElementById('dp-link');
 
-    <div class="tl-outer" id="tl-outer">
-      <div class="tl-wrap">
-        <div class="ya-row">
-          <div class="ya-spacer"></div>
-          <div class="ya-track" style="width: 2800px">
-            <div class="ya-tick" style="left: 2800px"></div>
-            <div class="ya-tick" style="left: 2720px"></div>
-            <div class="ya-lbl" style="left: 2640px">1995</div>
-            <div class="ya-tick ya-maj" style="left: 2640px"></div>
-            <div class="ya-tick" style="left: 2560px"></div>
-            <div class="ya-tick" style="left: 2480px"></div>
-            <div class="ya-tick" style="left: 2400px"></div>
-            <div class="ya-tick" style="left: 2320px"></div>
-            <div class="ya-lbl" style="left: 2240px">2000</div>
-            <div class="ya-tick ya-maj" style="left: 2240px"></div>
-            <div class="ya-tick" style="left: 2160px"></div>
-            <div class="ya-tick" style="left: 2080px"></div>
-            <div class="ya-tick" style="left: 2000px"></div>
-            <div class="ya-tick" style="left: 1920px"></div>
-            <div class="ya-lbl" style="left: 1840px">2005</div>
-            <div class="ya-tick ya-maj" style="left: 1840px"></div>
-            <div class="ya-tick" style="left: 1760px"></div>
-            <div class="ya-tick" style="left: 1680px"></div>
-            <div class="ya-tick" style="left: 1600px"></div>
-            <div class="ya-tick" style="left: 1520px"></div>
-            <div class="ya-lbl" style="left: 1440px">2010</div>
-            <div class="ya-tick ya-maj" style="left: 1440px"></div>
-            <div class="ya-tick" style="left: 1360px"></div>
-            <div class="ya-tick" style="left: 1280px"></div>
-            <div class="ya-tick" style="left: 1200px"></div>
-            <div class="ya-tick" style="left: 1120px"></div>
-            <div class="ya-lbl" style="left: 1040px">2015</div>
-            <div class="ya-tick ya-maj" style="left: 1040px"></div>
-            <div class="ya-tick" style="left: 960px"></div>
-            <div class="ya-tick" style="left: 880px"></div>
-            <div class="ya-tick" style="left: 800px"></div>
-            <div class="ya-tick" style="left: 720px"></div>
-            <div class="ya-lbl" style="left: 640px">2020</div>
-            <div class="ya-tick ya-maj" style="left: 640px"></div>
-            <div class="ya-tick" style="left: 560px"></div>
-            <div class="ya-tick" style="left: 480px"></div>
-            <div class="ya-tick" style="left: 400px"></div>
-            <div class="ya-tick" style="left: 320px"></div>
-            <div class="ya-lbl" style="left: 240px">2025</div>
-            <div class="ya-tick ya-maj" style="left: 240px"></div>
-            <div class="ya-tick" style="left: 160px"></div>
-            <div class="ya-tick" style="left: 80px"></div>
-            <div class="ya-tick" style="left: 0px"></div>
-          </div>
-        </div>
-        <div class="cat-row row-education" style="height: 34px">
-          <div class="cat-label"><span>Education</span></div>
-          <div class="cat-track" style="height: 34px">
-            <div class="gl" style="left: 2800px"></div>
-            <div class="gl" style="left: 2720px"></div>
-            <div class="gl gl-maj" style="left: 2640px"></div>
-            <div class="gl" style="left: 2560px"></div>
-            <div class="gl" style="left: 2480px"></div>
-            <div class="gl" style="left: 2400px"></div>
-            <div class="gl" style="left: 2320px"></div>
-            <div class="gl gl-maj" style="left: 2240px"></div>
-            <div class="gl" style="left: 2160px"></div>
-            <div class="gl" style="left: 2080px"></div>
-            <div class="gl" style="left: 2000px"></div>
-            <div class="gl" style="left: 1920px"></div>
-            <div class="gl gl-maj" style="left: 1840px"></div>
-            <div class="gl" style="left: 1760px"></div>
-            <div class="gl" style="left: 1680px"></div>
-            <div class="gl" style="left: 1600px"></div>
-            <div class="gl" style="left: 1520px"></div>
-            <div class="gl gl-maj" style="left: 1440px"></div>
-            <div class="gl" style="left: 1360px"></div>
-            <div class="gl" style="left: 1280px"></div>
-            <div class="gl" style="left: 1200px"></div>
-            <div class="gl" style="left: 1120px"></div>
-            <div class="gl gl-maj" style="left: 1040px"></div>
-            <div class="gl" style="left: 960px"></div>
-            <div class="gl" style="left: 880px"></div>
-            <div class="gl" style="left: 800px"></div>
-            <div class="gl" style="left: 720px"></div>
-            <div class="gl gl-maj" style="left: 640px"></div>
-            <div class="gl" style="left: 560px"></div>
-            <div class="gl" style="left: 480px"></div>
-            <div class="gl" style="left: 400px"></div>
-            <div class="gl" style="left: 320px"></div>
-            <div class="gl gl-maj" style="left: 240px"></div>
-            <div class="gl" style="left: 160px"></div>
-            <div class="gl" style="left: 80px"></div>
-            <div class="gl" style="left: 0px"></div>
-            <div
-              class="span-slot"
-              style="left: 2560px; width: 240px; top: 3px; height: 24px"
-              data-title="University of the West of England, Bristol"
-              data-date="1993–96"
-              data-content="BA (hons) Fine Art"
-            >
-              <div class="sb-pill" style="max-width: 240px">
-                <span class="sb-lbl"
-                  >University of the West of England, Bristol</span
-                ><span class="sb-date">1993–96</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 2240px; width: 80px; top: 3px; height: 24px"
-              data-title="University of the Arts, Philadelphia"
-              data-date="1999–2000"
-              data-content="Postgraduate studies"
-            >
-              <div class="sb-pill" style="max-width: 318px">
-                <span class="sb-lbl">University of the Arts, Philadelphia</span
-                ><span class="sb-date">1999–2000</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 1920px; width: 320px; top: 3px; height: 24px"
-              data-title="University of the West of England, Bristol"
-              data-date="2000–04"
-              data-content='Ph.D. — "The creation of digital fine art print through the Woodburytype model"'
-            >
-              <div class="sb-pill" style="max-width: 320px">
-                <span class="sb-lbl"
-                  >University of the West of England, Bristol</span
-                ><span class="sb-date">2000–04</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 800px; width: 80px; top: 3px; height: 24px"
-              data-title="Fullstack Academy, New York"
-              data-date="2017"
-            >
-              <div class="sb-pill" style="max-width: 1118px">
-                <span class="sb-lbl">Fullstack Academy, New York</span
-                ><span class="sb-date">2017</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="cat-row row-employment" style="height: 90px">
-          <div class="cat-label"><span>Employment</span></div>
-          <div class="cat-track" style="height: 90px">
-            <div class="gl" style="left: 2800px"></div>
-            <div class="gl" style="left: 2720px"></div>
-            <div class="gl gl-maj" style="left: 2640px"></div>
-            <div class="gl" style="left: 2560px"></div>
-            <div class="gl" style="left: 2480px"></div>
-            <div class="gl" style="left: 2400px"></div>
-            <div class="gl" style="left: 2320px"></div>
-            <div class="gl gl-maj" style="left: 2240px"></div>
-            <div class="gl" style="left: 2160px"></div>
-            <div class="gl" style="left: 2080px"></div>
-            <div class="gl" style="left: 2000px"></div>
-            <div class="gl" style="left: 1920px"></div>
-            <div class="gl gl-maj" style="left: 1840px"></div>
-            <div class="gl" style="left: 1760px"></div>
-            <div class="gl" style="left: 1680px"></div>
-            <div class="gl" style="left: 1600px"></div>
-            <div class="gl" style="left: 1520px"></div>
-            <div class="gl gl-maj" style="left: 1440px"></div>
-            <div class="gl" style="left: 1360px"></div>
-            <div class="gl" style="left: 1280px"></div>
-            <div class="gl" style="left: 1200px"></div>
-            <div class="gl" style="left: 1120px"></div>
-            <div class="gl gl-maj" style="left: 1040px"></div>
-            <div class="gl" style="left: 960px"></div>
-            <div class="gl" style="left: 880px"></div>
-            <div class="gl" style="left: 800px"></div>
-            <div class="gl" style="left: 720px"></div>
-            <div class="gl gl-maj" style="left: 640px"></div>
-            <div class="gl" style="left: 560px"></div>
-            <div class="gl" style="left: 480px"></div>
-            <div class="gl" style="left: 400px"></div>
-            <div class="gl" style="left: 320px"></div>
-            <div class="gl gl-maj" style="left: 240px"></div>
-            <div class="gl" style="left: 160px"></div>
-            <div class="gl" style="left: 80px"></div>
-            <div class="gl" style="left: 0px"></div>
-            <div
-              class="span-slot"
-              style="left: 160px; width: 1760px; top: 3px; height: 24px"
-              data-title="Montclair State University"
-              data-place="Montclair, NJ"
-              data-date="2004–present"
-              data-content="Deputy Chair, Dept. of Art and Design, September 2019 – May 2023&#10;Assistant Professor of Digital Photography, September 2004 – Present&#10;Department of Art and Design Summer Chair, Summers 2014–17, 2019–24&#10;Director of the MFA in Studio Arts, Sept 2009 – Jan 2017"
-            >
-              <div class="sb-pill" style="max-width: 2640px">
-                <span class="sb-lbl">Montclair State University</span
-                ><span class="sb-date">2004–present</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 720px; width: 160px; top: 31px; height: 24px"
-              data-title="Vidcode — Curriculum Developer"
-              data-date="2017–19"
-              data-content="Developed curriculum for introductory creative coding courses including for Girl Scouts and BrainPop"
-            >
-              <div class="sb-pill" style="max-width: 2080px">
-                <span class="sb-lbl">Vidcode — Curriculum Developer</span
-                ><span class="sb-date">2017–19</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 320px; width: 320px; top: 31px; height: 24px"
-              data-title="Passaic Public Schools Digital Art CTE Advisory Committee"
-              data-date="2020–24"
-              data-content="2020–24 — Board Member, helped create partnership between MSU and the Passaic Public School, designing two school courses for equivalency at MSU."
-            >
-              <div class="sb-pill" style="max-width: 398px">
-                <span class="sb-lbl"
-                  >Passaic Public Schools Digital Art CTE Advisory
-                  Committee</span
-                ><span class="sb-date">2020–24</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 160px; width: 400px; top: 59px; height: 24px"
-              data-title="Institute for the Advancement of Philosophy for Children"
-              data-date="2021–present"
-              data-content="Updated novel design for accessibility and digital access"
-            >
-              <div class="sb-pill" style="max-width: 2640px">
-                <span class="sb-lbl"
-                  >Institute for the Advancement of Philosophy for
-                  Children</span
-                ><span class="sb-date">2021–present</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="cat-row row-teaching" style="height: 202px">
-          <div class="cat-label"><span>Teaching</span></div>
-          <div class="cat-track" style="height: 202px">
-            <div class="gl" style="left: 2800px"></div>
-            <div class="gl" style="left: 2720px"></div>
-            <div class="gl gl-maj" style="left: 2640px"></div>
-            <div class="gl" style="left: 2560px"></div>
-            <div class="gl" style="left: 2480px"></div>
-            <div class="gl" style="left: 2400px"></div>
-            <div class="gl" style="left: 2320px"></div>
-            <div class="gl gl-maj" style="left: 2240px"></div>
-            <div class="gl" style="left: 2160px"></div>
-            <div class="gl" style="left: 2080px"></div>
-            <div class="gl" style="left: 2000px"></div>
-            <div class="gl" style="left: 1920px"></div>
-            <div class="gl gl-maj" style="left: 1840px"></div>
-            <div class="gl" style="left: 1760px"></div>
-            <div class="gl" style="left: 1680px"></div>
-            <div class="gl" style="left: 1600px"></div>
-            <div class="gl" style="left: 1520px"></div>
-            <div class="gl gl-maj" style="left: 1440px"></div>
-            <div class="gl" style="left: 1360px"></div>
-            <div class="gl" style="left: 1280px"></div>
-            <div class="gl" style="left: 1200px"></div>
-            <div class="gl" style="left: 1120px"></div>
-            <div class="gl gl-maj" style="left: 1040px"></div>
-            <div class="gl" style="left: 960px"></div>
-            <div class="gl" style="left: 880px"></div>
-            <div class="gl" style="left: 800px"></div>
-            <div class="gl" style="left: 720px"></div>
-            <div class="gl gl-maj" style="left: 640px"></div>
-            <div class="gl" style="left: 560px"></div>
-            <div class="gl" style="left: 480px"></div>
-            <div class="gl" style="left: 400px"></div>
-            <div class="gl" style="left: 320px"></div>
-            <div class="gl gl-maj" style="left: 240px"></div>
-            <div class="gl" style="left: 160px"></div>
-            <div class="gl" style="left: 80px"></div>
-            <div class="gl" style="left: 0px"></div>
-            <div
-              class="span-slot"
-              style="left: 400px; width: 1520px; top: 3px; height: 24px"
-              data-title="Digital Photography and Imaging 1"
-              data-date="2004–2023"
-              data-content="ARPH201"
-            >
-              <div class="sb-pill" style="max-width: 2400px">
-                <span class="sb-lbl">Digital Photography and Imaging 1</span
-                ><span class="sb-date">2004–2023</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 720px; width: 1120px; top: 31px; height: 24px"
-              data-title="Digital Photography and Imaging 2"
-              data-date="2005–2019"
-              data-content="ARPH211"
-            >
-              <div class="sb-pill" style="max-width: 2080px">
-                <span class="sb-lbl">Digital Photography and Imaging 2</span
-                ><span class="sb-date">2005–2019</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 880px; width: 960px; top: 59px; height: 24px"
-              data-title="Various MFA Thesis Independent Studies"
-              data-date="2005–2017"
-              data-content="ARST502, 503, 532, 604, 610, 633"
-            >
-              <div class="sb-pill" style="max-width: 1920px">
-                <span class="sb-lbl"
-                  >Various MFA Thesis Independent Studies</span
-                ><span class="sb-date">2005–2017</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 80px; width: 1440px; top: 87px; height: 24px"
-              data-title="MFA Thesis Exhibition/Thesis Extension"
-              data-date="2009–2027"
-              data-content="ARST650/1"
-            >
-              <div class="sb-pill" style="max-width: 2720px">
-                <span class="sb-lbl"
-                  >MFA Thesis Exhibition/Thesis Extension</span
-                ><span class="sb-date">2009–2027</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 880px; width: 160px; top: 115px; height: 24px"
-              data-title="MA Thesis Seminar"
-              data-date="2015–17"
-              data-content="ARST600"
-            >
-              <div class="sb-pill" style="max-width: 1920px">
-                <span class="sb-lbl">MA Thesis Seminar</span
-                ><span class="sb-date">2015–17</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 400px; width: 480px; top: 59px; height: 24px"
-              data-title="Art Forum"
-              data-date="2017–2023"
-              data-content="ARGS280"
-            >
-              <div class="sb-pill" style="max-width: 480px">
-                <span class="sb-lbl">Art Forum</span
-                ><span class="sb-date">2017–2023</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 320px; width: 400px; top: 31px; height: 24px"
-              data-title="Integrative Studio III – BA Thesis Exhibition"
-              data-date="2019–2024"
-              data-content="ARST406/411"
-            >
-              <div class="sb-pill" style="max-width: 400px">
-                <span class="sb-lbl"
-                  >Integrative Studio III – BA Thesis Exhibition</span
-                ><span class="sb-date">2019–2024</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 400px; width: 320px; top: 115px; height: 24px"
-              data-title="Digital Literacy"
-              data-date="2019–2023"
-              data-content="ARFD106"
-            >
-              <div class="sb-pill" style="max-width: 478px">
-                <span class="sb-lbl">Digital Literacy</span
-                ><span class="sb-date">2019–2023</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 480px; width: 80px; top: 143px; height: 24px"
-              data-title="Documentary Photography: Capturing the History of Now"
-              data-date="2021"
-              data-content="ARGS260"
-            >
-              <div class="sb-pill" style="max-width: 2320px">
-                <span class="sb-lbl"
-                  >Documentary Photography: Capturing the History of Now</span
-                ><span class="sb-date">2021</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 400px; width: 160px; top: 171px; height: 24px"
-              data-title="Cooperative Education Mentor"
-              data-date="2021–23"
-              data-content="COED401"
-            >
-              <div class="sb-pill" style="max-width: 2400px">
-                <span class="sb-lbl">Cooperative Education Mentor</span
-                ><span class="sb-date">2021–23</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 240px; width: 240px; top: 143px; height: 24px"
-              data-title="Creative Coding for Graphic Designers/for Artists"
-              data-date="2022–25"
-              data-content="VCDS225/ARGS260"
-            >
-              <div class="sb-pill" style="max-width: 240px">
-                <span class="sb-lbl"
-                  >Creative Coding for Graphic Designers/for Artists</span
-                ><span class="sb-date">2022–25</span>
-              </div>
-            </div>
-            <div
-              class="span-slot"
-              style="left: 240px; width: 80px; top: 3px; height: 24px"
-              data-title="Photography for Majors"
-              data-date="2024–25"
-              data-content="ARST215"
-            >
-              <div class="sb-pill" style="max-width: 158px">
-                <span class="sb-lbl">Photography for Majors</span
-                ><span class="sb-date">2024–25</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="cat-row row-exhibitions" style="height: 92px">
-          <div class="cat-label"><span>Exhibitions</span></div>
-          <div class="cat-track" style="height: 92px">
-            <div class="gl" style="left: 2800px"></div>
-            <div class="gl" style="left: 2720px"></div>
-            <div class="gl gl-maj" style="left: 2640px"></div>
-            <div class="gl" style="left: 2560px"></div>
-            <div class="gl" style="left: 2480px"></div>
-            <div class="gl" style="left: 2400px"></div>
-            <div class="gl" style="left: 2320px"></div>
-            <div class="gl gl-maj" style="left: 2240px"></div>
-            <div class="gl" style="left: 2160px"></div>
-            <div class="gl" style="left: 2080px"></div>
-            <div class="gl" style="left: 2000px"></div>
-            <div class="gl" style="left: 1920px"></div>
-            <div class="gl gl-maj" style="left: 1840px"></div>
-            <div class="gl" style="left: 1760px"></div>
-            <div class="gl" style="left: 1680px"></div>
-            <div class="gl" style="left: 1600px"></div>
-            <div class="gl" style="left: 1520px"></div>
-            <div class="gl gl-maj" style="left: 1440px"></div>
-            <div class="gl" style="left: 1360px"></div>
-            <div class="gl" style="left: 1280px"></div>
-            <div class="gl" style="left: 1200px"></div>
-            <div class="gl" style="left: 1120px"></div>
-            <div class="gl gl-maj" style="left: 1040px"></div>
-            <div class="gl" style="left: 960px"></div>
-            <div class="gl" style="left: 880px"></div>
-            <div class="gl" style="left: 800px"></div>
-            <div class="gl" style="left: 720px"></div>
-            <div class="gl gl-maj" style="left: 640px"></div>
-            <div class="gl" style="left: 560px"></div>
-            <div class="gl" style="left: 480px"></div>
-            <div class="gl" style="left: 400px"></div>
-            <div class="gl" style="left: 320px"></div>
-            <div class="gl gl-maj" style="left: 240px"></div>
-            <div class="gl" style="left: 160px"></div>
-            <div class="gl" style="left: 80px"></div>
-            <div class="gl" style="left: 0px"></div>
-            <div
-              class="exp-col"
-              style="left: 2560px; max-width: 240px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="Miniprint Shows"
-                data-place="Bristol"
-                data-date="1996–2003"
-              >
-                <span class="lst-lbl">Miniprint Shows</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2480px; max-width: 80px"
-              data-h-base="72"
-              data-h-full="72"
-            >
-              <div
-                class="lst-item"
-                data-title="10 years of the Miniprint"
-                data-place="Bankside gallery, London; Ohio SU; Rhodes uni; S. Africa; Uni of So. Illinois; Kent SU; Cleveland Institute; AKI, Enschede, Holland"
-                data-date="1997"
-              >
-                <span class="lst-lbl">10 years of the Miniprint</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Booksy"
-                data-place="group show, Newcastle-upon-Tyne"
-                data-date="1997"
-              >
-                <span class="lst-lbl">Booksy</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Imbue"
-                data-place="group show, The Old Leadworks, Bristol"
-                data-date="1997"
-              >
-                <span class="lst-lbl">Imbue</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Artist's Book Fair"
-                data-place="Barbican, London"
-                data-date="1997–2003"
-              >
-                <span class="lst-lbl">Artist's Book Fair</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2400px; max-width: 80px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="Halifax Book Fair"
-                data-place="Dean Clough Gallery"
-                data-date="1998–2004"
-              >
-                <span class="lst-lbl">Halifax Book Fair</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2320px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Impact print conference"
-                data-place="Bristol: Artists' Books 1989–1999, flexography and 'Mind the Gap' shows"
-                data-date="1999"
-              >
-                <span class="lst-lbl">Impact print conference</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Indiana University print exchange"
-                data-place="Bloomington, IA"
-                data-date="1999"
-              >
-                <span class="lst-lbl">Indiana University print exchange</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2240px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Chongqing Print Festival"
-                data-place="Chongqing, China"
-                data-date="2000"
-              >
-                <span class="lst-lbl">Chongqing Print Festival</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Photomechanical print survey"
-                data-place="Create Centre, Bristol"
-                data-date="2000"
-              >
-                <span class="lst-lbl">Photomechanical print survey</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2160px; max-width: 80px"
-              data-h-base="92"
-              data-h-full="160"
-            >
-              <div
-                class="lst-item"
-                data-title="Curtains and first international Miniprint Show"
-                data-place="Gittins Gallery, University of Utah, Salt Lake City"
-                data-date="2001"
-              >
-                <span class="lst-lbl"
-                  >Curtains and first international Miniprint Show</span
-                >
-              </div>
-              <div
-                class="lst-item"
-                data-title="7th Wexford Artists Book Exhibition"
-                data-place="Ireland"
-                data-date="2001"
-              >
-                <span class="lst-lbl">7th Wexford Artists Book Exhibition</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Feat of Clay"
-                data-place="V&amp;A Museum, London"
-                data-date="2001"
-              >
-                <span class="lst-lbl">Feat of Clay</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Tallinn Print Triennial"
-                data-place="Tallinn, Estonia"
-                data-date="2001"
-              >
-                <span class="lst-lbl">Tallinn Print Triennial</span>
-              </div>
-              <div class="exp-extra">
-                <div
-                  class="lst-item"
-                  data-title="Photomechanical print survey"
-                  data-place="CADE, Glasgow School of Art"
-                  data-date="2001"
-                >
-                  <span class="lst-lbl">Photomechanical print survey</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Society of Graphic Art"
-                  data-place="Hotbath Gallery, Bath"
-                  data-date="2001"
-                >
-                  <span class="lst-lbl">Society of Graphic Art</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="SGC Conference"
-                  data-place="Austin, Texas"
-                  data-date="2001"
-                >
-                  <span class="lst-lbl">SGC Conference</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="A Tale of Two Cities"
-                  data-place="Center for Book Arts, New York and Off-Centre Gallery, Bristol"
-                  data-date="2001"
-                >
-                  <span class="lst-lbl">A Tale of Two Cities</span>
-                </div>
-              </div>
-              <button class="exp-btn" data-n="4">+4 more</button>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2080px; max-width: 80px"
-              data-h-base="72"
-              data-h-full="72"
-            >
-              <div
-                class="lst-item"
-                data-title="Artists Book Show"
-                data-place="Sherborne, UK"
-                data-date="2002"
-              >
-                <span class="lst-lbl">Artists Book Show</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="20:20"
-                data-place="Hereford College, UK"
-                data-date="2002"
-              >
-                <span class="lst-lbl">20:20</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="here here there there"
-                data-place="University of Dundee and UWE, UK"
-                data-date="2002"
-              >
-                <span class="lst-lbl">here here there there</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="7è Concurs Internacional de Gravat Premi"
-                data-place="Girona, Spain"
-                data-date="2002"
-              >
-                <span class="lst-lbl"
-                  >7è Concurs Internacional de Gravat Premi</span
-                >
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2000px; max-width: 80px"
-              data-h-base="92"
-              data-h-full="296"
-            >
-              <div
-                class="lst-item"
-                data-title="International Graphic Art Biennial"
-                data-place="Split, Croatia"
-                data-date="2003"
-              >
-                <span class="lst-lbl">International Graphic Art Biennial</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Macedonian Print Triennial"
-                data-place="Bitola, Macedonia"
-                data-date="2003"
-              >
-                <span class="lst-lbl">Macedonian Print Triennial</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Gravat.olot"
-                data-place="Olot, Spain"
-                data-date="2003"
-              >
-                <span class="lst-lbl">Gravat.olot</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Gravat"
-                data-place="Häsinglands Museum of Hudiksvall, Sweden"
-                data-date="2003"
-              >
-                <span class="lst-lbl">Gravat</span>
-              </div>
-              <div class="exp-extra">
-                <div
-                  class="lst-item"
-                  data-title="Portraits"
-                  data-place="University of Montana"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Portraits</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="International Print Biennial"
-                  data-place="Varna, Bulgaria"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">International Print Biennial</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Masereel: 10 Years of Prints"
-                  data-place="Edinburgh Printmakers, Edinburgh, UK"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Masereel: 10 Years of Prints</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="International Print Biennial"
-                  data-place="Beijing, China"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">International Print Biennial</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Featured Artist"
-                  data-place="Center for Book Arts, New York"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Featured Artist</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Curtains"
-                  data-place="Manhattan Graphics Center, New York"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Curtains</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="The history book that never was"
-                  data-place="Boston"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">The history book that never was</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Portfolio show"
-                  data-place="Boston"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Portfolio show</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="25 years of The Frans Masereel Centrum"
-                  data-place="Belgium"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl"
-                    >25 years of The Frans Masereel Centrum</span
-                  >
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Secrets"
-                  data-place="University of Tennessee at Chattanooga"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Secrets</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Mainz Minibuchverlagmesse"
-                  data-place="Mainz, Germany"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Mainz Minibuchverlagmesse</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="9th Wexford Artists Book Exhibition"
-                  data-place="Ireland"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl"
-                    >9th Wexford Artists Book Exhibition</span
-                  >
-                </div>
-              </div>
-              <button class="exp-btn" data-n="12">+12 more</button>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1920px; max-width: 80px"
-              data-h-base="92"
-              data-h-full="143"
-            >
-              <div
-                class="lst-item"
-                data-title="13th Print Triennial"
-                data-place="Tallinn, Estonia"
-                data-date="2004"
-              >
-                <span class="lst-lbl">13th Print Triennial</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Solo show"
-                data-place="Prema Arts Centre, Uley, UK"
-                data-date="2004"
-              >
-                <span class="lst-lbl">Solo show</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="New Directions in Printmaking"
-                data-place="Miskolc Gallery of Fine Arts, Hungary"
-                data-date="2004"
-              >
-                <span class="lst-lbl">New Directions in Printmaking</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Artists' Book show"
-                data-place="University of Tennessee"
-                data-date="2004"
-              >
-                <span class="lst-lbl">Artists' Book show</span>
-              </div>
-              <div class="exp-extra">
-                <div
-                  class="lst-item"
-                  data-title="Artists' Book show"
-                  data-place="HouseRoom, Bath, UK"
-                  data-date="2004"
-                >
-                  <span class="lst-lbl">Artists' Book show</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Altered Images"
-                  data-place="Digital Interpretations Inspired by Geo. Cartlidge's Portrait Tiles, The Potteries Museum and Gallery, Stoke-on-Trent, UK"
-                  data-date="2004"
-                >
-                  <span class="lst-lbl">Altered Images</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Bookmarks Project"
-                  data-place="UWE, UK"
-                  data-date="2004"
-                >
-                  <span class="lst-lbl">Bookmarks Project</span>
-                </div>
-              </div>
-              <button class="exp-btn" data-n="3">+3 more</button>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1840px; max-width: 80px"
-              data-h-base="92"
-              data-h-full="160"
-            >
-              <div
-                class="lst-item"
-                data-title="Faculty Show"
-                data-place="MSU, NJ"
-                data-date="2005"
-              >
-                <span class="lst-lbl">Faculty Show</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Icon-Data"
-                data-place="online invitational show as part of the Polish Print Triennial, Kracow, Poland"
-                data-date="2005"
-              >
-                <span class="lst-lbl">Icon-Data</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Dangen Art"
-                data-place="Nashville, TN"
-                data-date="2005"
-              >
-                <span class="lst-lbl">Dangen Art</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Hand to Mouse"
-                data-place="Royal West of England Academy, Bristol, UK"
-                data-date="2005"
-              >
-                <span class="lst-lbl">Hand to Mouse</span>
-              </div>
-              <div class="exp-extra">
-                <div
-                  class="lst-item"
-                  data-title="Broekhuis Boekhandel"
-                  data-place="Enschede, The Netherlands"
-                  data-date="2005"
-                >
-                  <span class="lst-lbl">Broekhuis Boekhandel</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Book show at University of Tennessee at Chattanooga"
-                  data-date="2005"
-                  data-content="Book show at University of Tennessee at Chattanooga"
-                >
-                  <span class="lst-lbl"
-                    >Book show at University of Tennessee at Chattanooga</span
-                  >
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Member's Show"
-                  data-place="CEPA Gallery, Buffalo"
-                  data-date="2005"
-                >
-                  <span class="lst-lbl">Member's Show</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Boxing Clever"
-                  data-place="University of the West of England and the Royal West of England Academy, Bristol, UK"
-                  data-date="2005"
-                >
-                  <span class="lst-lbl">Boxing Clever</span>
-                </div>
-              </div>
-              <button class="exp-btn" data-n="4">+4 more</button>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1760px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Book marks I"
-                data-place="II, III, Stewart Center Gallery, Purdue University, IN"
-                data-date="2006"
-              >
-                <span class="lst-lbl">Book marks I</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="New Pages"
-                data-place="UIAH, Helsinki, Finland"
-                data-date="2006"
-              >
-                <span class="lst-lbl">New Pages</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1680px; max-width: 80px"
-              data-h-base="55"
-              data-h-full="55"
-            >
-              <div
-                class="lst-item"
-                data-title="Time Sensitive Material"
-                data-place="Adamson-Eric Museum, Talinn, Estonia"
-                data-date="2007"
-              >
-                <span class="lst-lbl">Time Sensitive Material</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Gyeongnam International Art Festival"
-                data-place="Gyeongnam Art Museum, South Korea"
-                data-date="2007"
-              >
-                <span class="lst-lbl"
-                  >Gyeongnam International Art Festival</span
-                >
-              </div>
-              <div
-                class="lst-item"
-                data-title="Poetry Books: Reading Books"
-                data-place="Enschede, The Netherlands"
-                data-date="2007"
-              >
-                <span class="lst-lbl">Poetry Books: Reading Books</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1600px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Fotografi Emergenti"
-                data-place="Palazzo San Vitale, Parma, Italy"
-                data-date="2008"
-              >
-                <span class="lst-lbl">Fotografi Emergenti</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Not the Westside Highway"
-                data-place="PCNJ, Sommerville, NJ"
-                data-date="2008"
-              >
-                <span class="lst-lbl">Not the Westside Highway</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1520px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Emerging Photographers"
-                data-place="Sol Mednick Gallery, UArts, Philadelphia, PA"
-                data-date="2009"
-              >
-                <span class="lst-lbl">Emerging Photographers</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Global Impact"
-                data-place="Bing-Davis Gallery, Upper Iowa University, Iowa"
-                data-date="2009"
-              >
-                <span class="lst-lbl">Global Impact</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1440px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="New York Emergentes"
-                data-place="UNC Cordoba, Argentina"
-                data-date="2010"
-              >
-                <span class="lst-lbl">New York Emergentes</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Paper Trails"
-                data-place="Whitecliffe College, New Zealand"
-                data-date="2010"
-              >
-                <span class="lst-lbl">Paper Trails</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1360px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Zone Imaginaria"
-                data-place="Buenos Aires, Argentina"
-                data-date="2011"
-              >
-                <span class="lst-lbl">Zone Imaginaria</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Japan Now"
-                data-place="Camel Arts, Brooklyn"
-                data-date="2011"
-              >
-                <span class="lst-lbl">Japan Now</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1200px; max-width: 154px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Sideshow Nation"
-                data-place="Sideshow Gallery, Brooklyn"
-                data-date="2013"
-              >
-                <span class="lst-lbl">Sideshow Nation</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Howard Gardens Gallery"
-                data-place="Cardiff, Wales"
-                data-date="2013"
-              >
-                <span class="lst-lbl">Howard Gardens Gallery</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1120px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Festival de la Luz"
-                data-place="Zona Imaginaria, Buenos Aires, Argentina"
-                data-date="2014"
-              >
-                <span class="lst-lbl">Festival de la Luz</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Destination Unknown"
-                data-place="MagnanMetz, Chelsea, NY"
-                data-date="2014"
-              >
-                <span class="lst-lbl">Destination Unknown</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1040px; max-width: 80px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="Faculty Exhibition"
-                data-place="Segal Gallery, Montclair State University, Montclair, NJ"
-                data-date="2015"
-              >
-                <span class="lst-lbl">Faculty Exhibition</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 880px; max-width: 154px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Last Stop Before Utopia"
-                data-place="Sarasota Art Center, Sarasota, FL"
-                data-date="2017"
-              >
-                <span class="lst-lbl">Last Stop Before Utopia</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Zona Imaginaria"
-                data-place="Buenos Aires, Argentina"
-                data-date="2017"
-              >
-                <span class="lst-lbl">Zona Imaginaria</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 480px; max-width: 394px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="CCRMA"
-                data-place="Ocean Memory Concert, Stanford University"
-                data-date="2022"
-                data-link-url="https://vimeo.com/553111781?share=copy#t=424"
-                data-link-title="CCRMA, Ocean Memory Concert, Stanford University"
-              >
-                <span class="lst-lbl">CCRMA</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="cat-row row-scholarship" style="height: 76px">
-          <div class="cat-label"><span>Scholarship</span></div>
-          <div class="cat-track" style="height: 76px">
-            <div class="gl" style="left: 2800px"></div>
-            <div class="gl" style="left: 2720px"></div>
-            <div class="gl gl-maj" style="left: 2640px"></div>
-            <div class="gl" style="left: 2560px"></div>
-            <div class="gl" style="left: 2480px"></div>
-            <div class="gl" style="left: 2400px"></div>
-            <div class="gl" style="left: 2320px"></div>
-            <div class="gl gl-maj" style="left: 2240px"></div>
-            <div class="gl" style="left: 2160px"></div>
-            <div class="gl" style="left: 2080px"></div>
-            <div class="gl" style="left: 2000px"></div>
-            <div class="gl" style="left: 1920px"></div>
-            <div class="gl gl-maj" style="left: 1840px"></div>
-            <div class="gl" style="left: 1760px"></div>
-            <div class="gl" style="left: 1680px"></div>
-            <div class="gl" style="left: 1600px"></div>
-            <div class="gl" style="left: 1520px"></div>
-            <div class="gl gl-maj" style="left: 1440px"></div>
-            <div class="gl" style="left: 1360px"></div>
-            <div class="gl" style="left: 1280px"></div>
-            <div class="gl" style="left: 1200px"></div>
-            <div class="gl" style="left: 1120px"></div>
-            <div class="gl gl-maj" style="left: 1040px"></div>
-            <div class="gl" style="left: 960px"></div>
-            <div class="gl" style="left: 880px"></div>
-            <div class="gl" style="left: 800px"></div>
-            <div class="gl" style="left: 720px"></div>
-            <div class="gl gl-maj" style="left: 640px"></div>
-            <div class="gl" style="left: 560px"></div>
-            <div class="gl" style="left: 480px"></div>
-            <div class="gl" style="left: 400px"></div>
-            <div class="gl" style="left: 320px"></div>
-            <div class="gl gl-maj" style="left: 240px"></div>
-            <div class="gl" style="left: 160px"></div>
-            <div class="gl" style="left: 80px"></div>
-            <div class="gl" style="left: 0px"></div>
-            <div class="pt-group" style="left: 2320px; max-width: 480px">
-              <div
-                class="pt-row"
-                data-title="Artists' Newsletter"
-                data-place="Sarah Bodman; Artists' Books, Ed. Sarah Bodman. Impact Press"
-                data-date="1999"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Artists' Newsletter</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 2240px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="Photomechanical Print Survey"
-                data-place="Ed. Carinna Parraman, Impact Press; World Etching, Chongqing Print Festival"
-                data-date="2000"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Photomechanical Print Survey</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 2160px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="Artists' Book Yearbook"
-                data-place="Ed. Sarah Bodman. Impact Press; _Ceramics and Print_, Paul Scott, A&amp;C Black; Mutating Image: 12th Tallinn print triennial catalogue; A Tale of Two Cities, Ed. Sarah Bodman. Impact Press"
-                data-date="2001"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Artists' Book Yearbook</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 2080px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="'The history book that never was' review"
-                data-place="_The Art Book_, Sept.; 20:20, 20 artists using photomechanical processes, CD-ROM, Impact Press; Artists' Book Yearbook review, _The Art Book_"
-                data-date="2002"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">
-                  'The history book that never was' review
-                </div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 2000px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="Gravat.olot"
-                data-place="CD-ROM Catalogue, Spain; International Print Biennial catalogue, Bulgaria; Beijing International Print Biennial catalogue"
-                data-date="2003"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Gravat.olot</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 1920px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue"
-                data-date="2004"
-                data-content="In Exile: 13th Tallinn print triennial catalogue; New Directions in Printmaking catalogue"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">
-                  In Exile: 13th Tallinn print triennial catalogue; New
-                  Directions in Printmaking catalogue
-                </div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 1680px; max-width: 234px">
-              <div
-                class="pt-row"
-                data-title="Gyeongnam International Art Festival catalogue"
-                data-date="2007"
-                data-content="Gyeongnam International Art Festival catalogue"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">
-                  Gyeongnam International Art Festival catalogue
-                </div>
-              </div>
-              <div
-                class="pt-row"
-                data-title="MSU Alumni Show"
-                data-place="P.P.O.W Gallery, New York, NY"
-                data-date="2007"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">MSU Alumni Show</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 1600px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="Fotografi Emergenti catalogue"
-                data-date="2008"
-                data-content="Fotografi Emergenti catalogue"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Fotografi Emergenti catalogue</div>
-              </div>
-              <div
-                class="pt-row"
-                data-title="Emerging Photographers"
-                data-place="Palezzetto Eucherio Sanvitale, Parma, Italy (traveled to Philadelphia, 2009; Cordoba, 2010)"
-                data-date="2008–2010"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Emerging Photographers</div>
-              </div>
-              <div
-                class="pt-row"
-                data-title="Co-curator"
-                data-place="Italian Sense of Place II: Luigi Ghirri, Franco Guerzoni, and Nancy Goldring, George Segal Gallery, MSU, Montclair"
-                data-date="2008"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Co-curator</div>
-              </div>
-              <div
-                class="pt-row"
-                data-title="Co-curator"
-                data-place="Italian Sense of Place I: Giuseppe Morandi, Micio, and Angelo Novi, George Segal Gallery, MSU, Montclair"
-                data-date="2008"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Co-curator</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 1520px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="30 Years of the Sol Mednick Gallery"
-                data-date="2009"
-                data-content="30 Years of the Sol Mednick Gallery"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">30 Years of the Sol Mednick Gallery</div>
-              </div>
-              <div
-                class="pt-row"
-                data-title="The End Days of Print: Raffone in Naples"
-                data-place="EI institute, Columbia University"
-                data-date="2009"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">
-                  The End Days of Print: Raffone in Naples
-                </div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 1440px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="La Voz del Interior"
-                data-place="19th, 20th and 21st of July 2010; Revista Ohlala, August 2010"
-                data-date="2010"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">La Voz del Interior</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 880px; max-width: 554px">
-              <div
-                class="pt-row"
-                data-title="Zona Imaginaria"
-                data-place="Buenos Aires"
-                data-date="2017"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Zona Imaginaria</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 240px; max-width: 634px">
-              <div
-                class="pt-row"
-                data-title="Jody W. Deming; Ocean Memory: Unimagined Perspectives. Leonardo 2025; 58 (1): 105–110."
-                data-date="2025"
-                data-content="Jody W. Deming; Ocean Memory: Unimagined Perspectives. Leonardo 2025; 58 (1): 105–110."
-                data-link-url="https://doi.org/10.1162/leon_a_02644"
-                data-link-title="Ocean Memory: Unimagined Perspectives. _Leonardo_ 2025; 58 (1): 105–110."
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">
-                  Jody W. Deming; Ocean Memory: Unimagined Perspectives.
-                  Leonardo 2025; 58 (1): 105–110.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="cat-row row-presentations" style="height: 58px">
-          <div class="cat-label"><span>Presentations</span></div>
-          <div class="cat-track" style="height: 58px">
-            <div class="gl" style="left: 2800px"></div>
-            <div class="gl" style="left: 2720px"></div>
-            <div class="gl gl-maj" style="left: 2640px"></div>
-            <div class="gl" style="left: 2560px"></div>
-            <div class="gl" style="left: 2480px"></div>
-            <div class="gl" style="left: 2400px"></div>
-            <div class="gl" style="left: 2320px"></div>
-            <div class="gl gl-maj" style="left: 2240px"></div>
-            <div class="gl" style="left: 2160px"></div>
-            <div class="gl" style="left: 2080px"></div>
-            <div class="gl" style="left: 2000px"></div>
-            <div class="gl" style="left: 1920px"></div>
-            <div class="gl gl-maj" style="left: 1840px"></div>
-            <div class="gl" style="left: 1760px"></div>
-            <div class="gl" style="left: 1680px"></div>
-            <div class="gl" style="left: 1600px"></div>
-            <div class="gl" style="left: 1520px"></div>
-            <div class="gl gl-maj" style="left: 1440px"></div>
-            <div class="gl" style="left: 1360px"></div>
-            <div class="gl" style="left: 1280px"></div>
-            <div class="gl" style="left: 1200px"></div>
-            <div class="gl" style="left: 1120px"></div>
-            <div class="gl gl-maj" style="left: 1040px"></div>
-            <div class="gl" style="left: 960px"></div>
-            <div class="gl" style="left: 880px"></div>
-            <div class="gl" style="left: 800px"></div>
-            <div class="gl" style="left: 720px"></div>
-            <div class="gl gl-maj" style="left: 640px"></div>
-            <div class="gl" style="left: 560px"></div>
-            <div class="gl" style="left: 480px"></div>
-            <div class="gl" style="left: 400px"></div>
-            <div class="gl" style="left: 320px"></div>
-            <div class="gl gl-maj" style="left: 240px"></div>
-            <div class="gl" style="left: 160px"></div>
-            <div class="gl" style="left: 80px"></div>
-            <div class="gl" style="left: 0px"></div>
-            <div
-              class="exp-col"
-              style="left: 2320px; max-width: 480px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Artists' talk during show on 'Picasso and post-war printmaking in Paris"
-                data-place="' Arnolfini Gallery, Bristol"
-                data-date="1999"
-              >
-                <span class="lst-lbl"
-                  >Artists' talk during show on 'Picasso and post-war
-                  printmaking in Paris</span
-                >
-              </div>
-              <div
-                class="lst-item"
-                data-title="'CAB' urban spaces projects. Collaborative screen printed installation for UWE &amp; Lloyd's Bank"
-                data-date="1999"
-                data-content="'CAB' urban spaces projects. Collaborative screen printed installation for UWE &amp; Lloyd's Bank"
-              >
-                <span class="lst-lbl"
-                  >'CAB' urban spaces projects. Collaborative screen printed
-                  installation for UWE &amp; Lloyd's Bank</span
-                >
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2240px; max-width: 80px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Fine print research for development of flexography for fine print and tests on new waterwashable inks for relief printing"
-                data-place="University of the West of England"
-                data-date="2000"
-              >
-                <span class="lst-lbl"
-                  >Fine print research for development of flexography for fine
-                  print and tests on new waterwashable inks for relief
-                  printing</span
-                >
-              </div>
-              <div
-                class="lst-item"
-                data-title="Member of Faculty research committee"
-                data-place="University of the West of England"
-                data-date="2000"
-              >
-                <span class="lst-lbl"
-                  >Member of Faculty research committee</span
-                >
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2160px; max-width: 80px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="'Ongoing Ph.D research' at Research Colloquium"
-                data-place="Winchester School of Art"
-                data-date="2001"
-              >
-                <span class="lst-lbl"
-                  >'Ongoing Ph.D research' at Research Colloquium</span
-                >
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2080px; max-width: 80px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="Regional Ph.D seminar"
-                data-place="'Empirical research and critical practice,' University of the West of England"
-                data-date="2002"
-              >
-                <span class="lst-lbl">Regional Ph.D seminar</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 2000px; max-width: 80px"
-              data-h-base="58"
-              data-h-full="109"
-            >
-              <div
-                class="lst-item"
-                data-title="Artist's talk"
-                data-place="Center for Book Arts, New York"
-                data-date="2003"
-              >
-                <span class="lst-lbl">Artist's talk</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="'Investigating the problems of empirical research through the work of Joan Fontcuberta"
-                data-place="' paper for CADE 2003, Hull, UK"
-                data-date="2003"
-              >
-                <span class="lst-lbl"
-                  >'Investigating the problems of empirical research through the
-                  work of Joan Fontcuberta</span
-                >
-              </div>
-              <div class="exp-extra">
-                <div
-                  class="lst-item"
-                  data-title="'Continuous Tone Alternatives to the Halftone Model Through Historical Reflection"
-                  data-place="' Paper at PICS digital imaging conference, Rochester NY"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl"
-                    >'Continuous Tone Alternatives to the Halftone Model Through
-                    Historical Reflection</span
-                  >
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Artist talk"
-                  data-place="Glasgow School of Art"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Artist talk</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Member of library users group"
-                  data-place="University of the West of England"
-                  data-date="2003"
-                >
-                  <span class="lst-lbl">Member of library users group</span>
-                </div>
-              </div>
-              <button class="exp-btn" data-n="3">+3 more</button>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1920px; max-width: 80px"
-              data-h-base="58"
-              data-h-full="109"
-            >
-              <div
-                class="lst-item"
-                data-title="Polymergravure demonstration"
-                data-place="University of Delaware, Newark"
-                data-date="2004"
-              >
-                <span class="lst-lbl">Polymergravure demonstration</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="Artist's talk"
-                data-place="University of Delaware, Newark"
-                data-date="2004"
-              >
-                <span class="lst-lbl">Artist's talk</span>
-              </div>
-              <div class="exp-extra">
-                <div
-                  class="lst-item"
-                  data-title="'A history of Woodburytypes"
-                  data-place="' University of Delaware, Newark"
-                  data-date="2004"
-                >
-                  <span class="lst-lbl">'A history of Woodburytypes</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="Artist's talk"
-                  data-place="Drexel University, Philadelphia"
-                  data-date="2004"
-                >
-                  <span class="lst-lbl">Artist's talk</span>
-                </div>
-                <div
-                  class="lst-item"
-                  data-title="'The development of early photographic reproduction processes"
-                  data-place="' University of Virginia, Charlottesville"
-                  data-date="2004"
-                >
-                  <span class="lst-lbl"
-                    >'The development of early photographic reproduction
-                    processes</span
-                  >
-                </div>
-              </div>
-              <button class="exp-btn" data-n="3">+3 more</button>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1840px; max-width: 80px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="'Interstitial Languages: photography and printmaking"
-                data-place="' Impact 4 Conference, Poznan Museum, Poland"
-                data-date="2005"
-              >
-                <span class="lst-lbl"
-                  >'Interstitial Languages: photography and printmaking</span
-                >
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1600px; max-width: 234px"
-              data-h-base="38"
-              data-h-full="38"
-            >
-              <div
-                class="lst-item"
-                data-title="Visiting Critic for BFA Photography"
-                data-place="Pratt College of Art, Brooklyn"
-                data-date="2008"
-              >
-                <span class="lst-lbl">Visiting Critic for BFA Photography</span>
-              </div>
-              <div
-                class="lst-item"
-                data-title="'Giuseppe Morandi And The Lega Cultura Di Piadena Practicing Contemporary Neo-realism"
-                data-place="' Hawaii International Conference on Arts and Humanities, University of Louisville, Honolulu, HI"
-                data-date="2008"
-              >
-                <span class="lst-lbl"
-                  >'Giuseppe Morandi And The Lega Cultura Di Piadena Practicing
-                  Contemporary Neo-realism</span
-                >
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1280px; max-width: 314px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="Visiting Lecturer and External Assessor"
-                data-place="Whitecliffe College, Auckland, NZ"
-                data-date="2012"
-              >
-                <span class="lst-lbl"
-                  >Visiting Lecturer and External Assessor</span
-                >
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 1200px; max-width: 80px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="Visiting Critic for BFA Photography"
-                data-place="NYU, NY"
-                data-date="2013"
-              >
-                <span class="lst-lbl">Visiting Critic for BFA Photography</span>
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 880px; max-width: 314px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="Artist PhD presentation for Volta Art Fair"
-                data-place="New York"
-                data-date="2017"
-              >
-                <span class="lst-lbl"
-                  >Artist PhD presentation for Volta Art Fair</span
-                >
-              </div>
-            </div>
-            <div
-              class="exp-col"
-              style="left: 480px; max-width: 394px"
-              data-h-base="21"
-              data-h-full="21"
-            >
-              <div
-                class="lst-item"
-                data-title="Harbor Six"
-                data-place="Ocean Memory Project, Online"
-                data-date="2022"
-              >
-                <span class="lst-lbl">Harbor Six</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="cat-row row-grants" style="height: 59px">
-          <div class="cat-label">
-            <span>Grants &<br />Residencies</span>
-          </div>
-          <div class="cat-track" style="height: 59px">
-            <div class="gl" style="left: 2800px"></div>
-            <div class="gl" style="left: 2720px"></div>
-            <div class="gl gl-maj" style="left: 2640px"></div>
-            <div class="gl" style="left: 2560px"></div>
-            <div class="gl" style="left: 2480px"></div>
-            <div class="gl" style="left: 2400px"></div>
-            <div class="gl" style="left: 2320px"></div>
-            <div class="gl gl-maj" style="left: 2240px"></div>
-            <div class="gl" style="left: 2160px"></div>
-            <div class="gl" style="left: 2080px"></div>
-            <div class="gl" style="left: 2000px"></div>
-            <div class="gl" style="left: 1920px"></div>
-            <div class="gl gl-maj" style="left: 1840px"></div>
-            <div class="gl" style="left: 1760px"></div>
-            <div class="gl" style="left: 1680px"></div>
-            <div class="gl" style="left: 1600px"></div>
-            <div class="gl" style="left: 1520px"></div>
-            <div class="gl gl-maj" style="left: 1440px"></div>
-            <div class="gl" style="left: 1360px"></div>
-            <div class="gl" style="left: 1280px"></div>
-            <div class="gl" style="left: 1200px"></div>
-            <div class="gl" style="left: 1120px"></div>
-            <div class="gl gl-maj" style="left: 1040px"></div>
-            <div class="gl" style="left: 960px"></div>
-            <div class="gl" style="left: 880px"></div>
-            <div class="gl" style="left: 800px"></div>
-            <div class="gl" style="left: 720px"></div>
-            <div class="gl gl-maj" style="left: 640px"></div>
-            <div class="gl" style="left: 560px"></div>
-            <div class="gl" style="left: 480px"></div>
-            <div class="gl" style="left: 400px"></div>
-            <div class="gl" style="left: 320px"></div>
-            <div class="gl gl-maj" style="left: 240px"></div>
-            <div class="gl" style="left: 160px"></div>
-            <div class="gl" style="left: 80px"></div>
-            <div class="gl" style="left: 0px"></div>
-            <div class="pt-group" style="left: 2080px; max-width: 720px">
-              <div
-                class="pt-row"
-                data-title="Residency"
-                data-place="Frans Masereel Centrum, Kasterlee, Belgium"
-                data-date="2002"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Residency</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 2000px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="Gravat.olot"
-                data-place="Olot, Spain _(Awarded gold prize)_"
-                data-date="2003"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Gravat.olot</div>
-              </div>
-              <div
-                class="pt-row"
-                data-title="Sally R. Bishop Fellowship and residency"
-                data-place="Center for Book Arts, NY"
-                data-date="2003"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">
-                  Sally R. Bishop Fellowship and residency
-                </div>
-              </div>
-              <div
-                class="pt-row"
-                data-title="Artist in Residence"
-                data-place="Glasgow School of Art, UK"
-                data-date="2003"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Artist in Residence</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 1680px; max-width: 314px">
-              <div
-                class="pt-row"
-                data-title="Global Education grant"
-                data-place="MSU, $2,000 — Developing the Italian Sense of Place Conference"
-                data-date="2007"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Global Education grant</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 1600px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="Global Education grant"
-                data-place="MSU, $4,000 — Emerging Photographers Exhibition"
-                data-date="2008"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Global Education grant</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 480px; max-width: 1114px">
-              <div
-                class="pt-row"
-                data-title="American Philosophical Association"
-                data-place="$5,000, Institute for Advancement of Philosophy for Children Book Prototype"
-                data-date="2022"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">American Philosophical Association</div>
-              </div>
-              <div
-                class="pt-row"
-                data-title="Ocean Memory Project"
-                data-place="Senses Sensing, $9,000"
-                data-date="2022"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Ocean Memory Project</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 400px; max-width: 80px">
-              <div
-                class="pt-row"
-                data-title="Ocean Memory Project"
-                data-place="The Architectural Memory of Sea Ice, $10,000"
-                data-date="2023"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Ocean Memory Project</div>
-              </div>
-            </div>
-            <div class="pt-group" style="left: 240px; max-width: 154px">
-              <div
-                class="pt-row"
-                data-title="Ocean Memory Project"
-                data-place="Nuuk Research Trip, $2,000"
-                data-date="2025"
-              >
-                <div class="pt-dot"></div>
-                <div class="pt-lbl">Ocean Memory Project</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  function openPopup(entry) {
+    dpTitle.textContent = entry.dataset.title   || '';
+    dpPlace.textContent = entry.dataset.place   || '';
+    dpDate.textContent  = entry.dataset.date    || '';
+    dpCont.textContent  = entry.dataset.content || '';
+    dpSep.style.display   = (entry.dataset.place && entry.dataset.date) ? '' : 'none';
+    dpPlace.style.display = entry.dataset.place   ? '' : 'none';
+    dpCont.style.display  = entry.dataset.content ? '' : 'none';
+    if (entry.dataset.linkUrl) {
+      dpLink.href        = entry.dataset.linkUrl;
+      dpLink.textContent = entry.dataset.linkTitle || entry.dataset.linkUrl;
+      dpLink.style.display = '';
+    } else { dpLink.style.display = 'none'; }
+    dpop.style.display = 'flex';
+  }
+  function closePopup() { dpop.style.display = 'none'; }
 
-    <!-- Hover label -->
-    <div id="hover-lbl"></div>
+  /* ── 6. Unified click handler ── */
+  document.addEventListener('click', function (e) {
 
-    <!-- Detail popup -->
-    <div id="dpop" role="dialog" aria-modal="true">
-      <div class="dp-backdrop" id="dp-backdrop"></div>
-      <div class="dp-card">
-        <button class="dp-close" id="dp-close" aria-label="Close">×</button>
-        <div class="dp-title" id="dp-title"></div>
-        <div class="dp-meta" id="dp-meta">
-          <span id="dp-place"></span>
-          <span class="dp-sep" id="dp-sep">·</span>
-          <span id="dp-date"></span>
-        </div>
-        <div class="dp-content" id="dp-content"></div>
-        <a
-          class="dp-link"
-          id="dp-link"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-        ></a>
-      </div>
-    </div>
+    /* Expand / collapse */
+    var expBtn = e.target.closest('.exp-btn');
+    if (expBtn) {
+      var col    = expBtn.closest('.exp-col');
+      var extra  = col.querySelector('.exp-extra');
+      var row    = col.closest('.cat-row');
+      var isOpen = col.classList.contains('is-open');
 
-    <script>
-      (function () {
-        "use strict";
+      /* Close every other open section first */
+      document.querySelectorAll('.exp-col.is-open').forEach(function (otherCol) {
+        if (otherCol === col) return;
+        var otherExtra = otherCol.querySelector('.exp-extra');
+        var otherBtn   = otherCol.querySelector('.exp-btn');
+        otherExtra.style.maxHeight = '0';
+        otherCol.classList.remove('is-open');
+        if (otherBtn) otherBtn.textContent = '+' + otherBtn.dataset.n + ' more';
+        updateRowHeight(otherCol.closest('.cat-row'));
+      });
 
-        /* ── 1. Theme toggle ── */
-        var tBtn = document.getElementById("theme-toggle");
-        var tLbl = document.getElementById("toggle-label");
-        var tPth = document.getElementById("toggle-path");
-        var SUN =
-          "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7z";
-        var MOON =
-          "M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z";
-        tBtn.addEventListener("click", function () {
-          var dark =
-            document.documentElement.getAttribute("data-theme") === "dark";
-          document.documentElement.setAttribute(
-            "data-theme",
-            dark ? "light" : "dark",
-          );
-          tLbl.textContent = dark ? "Dark" : "Light";
-          tPth.setAttribute("d", dark ? MOON : SUN);
-        });
+      if (isOpen) {
+        extra.style.maxHeight = '0';
+        col.classList.remove('is-open');
+        expBtn.textContent = '+' + expBtn.dataset.n + ' more';
+      } else {
+        extra.style.maxHeight = extra.scrollHeight + 'px';
+        col.classList.add('is-open');
+        expBtn.textContent = 'Show less';
+      }
+      updateRowHeight(row);
+      return;
+    }
 
-        /* ── 2. Expand / collapse ── */
-        var extras = document.querySelectorAll(".exp-extra");
-        extras.forEach(function (el) {
-          el.style.maxHeight = "0";
-          el.style.overflow = "hidden";
-        });
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            extras.forEach(function (el) {
-              el.style.transition = "max-height 0.35s ease";
-            });
-            document.querySelectorAll(".cat-row").forEach(function (row) {
-              if (row.querySelector(".exp-col")) {
-                row.style.transition = "height 0.35s ease";
-                var track = row.querySelector(".cat-track");
-                if (track) track.style.transition = "height 0.35s ease";
-              }
-            });
-          });
-        });
+    /* Close popup */
+    if (e.target.id === 'dp-backdrop' || e.target.closest('#dp-close')) { closePopup(); return; }
+    if (dpop.style.display === 'flex' && !e.target.closest('.dp-card')) { closePopup(); return; }
 
-        function updateRowHeight(row) {
-          var track = row.querySelector(".cat-track");
-          var maxH = 0;
-          track.querySelectorAll(".exp-col").forEach(function (col) {
-            var h = col.classList.contains("is-open")
-              ? parseInt(col.dataset.hFull, 10)
-              : parseInt(col.dataset.hBase, 10);
-            if (h > maxH) maxH = h;
-          });
-          var newH = maxH + 4 + "px";
-          row.style.height = newH;
-          track.style.height = newH;
-        }
+    /* Open popup */
+    var entry = e.target.closest('[data-title]');
+    if (entry && !entry.closest('#dpop')) openPopup(entry);
+  });
 
-        /* ── 3. Hover label (desktop only) ── */
-        var hoverLbl = document.getElementById("hover-lbl");
-        document.addEventListener("mouseover", function (e) {
-          var el = e.target.closest(".lst-lbl, .pt-lbl, .sb-lbl");
-          if (!el) {
-            hoverLbl.style.display = "none";
-            return;
-          }
-          if (el.scrollWidth <= el.offsetWidth + 1) {
-            hoverLbl.style.display = "none";
-            return;
-          }
-          var rect = el.getBoundingClientRect();
-          hoverLbl.textContent = el.textContent.trim();
-          hoverLbl.style.left = rect.left + "px";
-          hoverLbl.style.top = rect.bottom + "px";
-          hoverLbl.style.display = "block";
-        });
-        document.addEventListener("mouseout", function (e) {
-          if (e.target.closest(".lst-lbl, .pt-lbl, .sb-lbl"))
-            hoverLbl.style.display = "none";
-        });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePopup(); });
 
-        /* ── 4. Sticky span labels — keep label text visible as bar scrolls off left ── */
-        //  Works on both desktop and mobile: when scrollLeft > bar's left edge,
-        //  shift the pill's padding so the text slides into the visible area.
-        var tlOuter = document.getElementById("tl-outer");
-        var allSlots = document.querySelectorAll(".span-slot");
-        tlOuter.addEventListener(
-          "scroll",
-          function () {
-            var sl = tlOuter.scrollLeft;
-            allSlots.forEach(function (slot) {
-              var left = parseFloat(slot.style.left);
-              var w = parseFloat(slot.style.width);
-              var pill = slot.querySelector(".sb-pill");
-              if (!pill) return;
-              var shift = sl - left;
-              if (shift > 0 && shift < w - 20) {
-                pill.style.paddingLeft = shift + 5 + "px";
-              } else {
-                pill.style.paddingLeft = "";
-              }
-            });
-          },
-          { passive: true },
-        );
-
-        /* ── 5. Detail popup ── */
-        var dpop = document.getElementById("dpop");
-        var dpTitle = document.getElementById("dp-title");
-        var dpPlace = document.getElementById("dp-place");
-        var dpSep = document.getElementById("dp-sep");
-        var dpDate = document.getElementById("dp-date");
-        var dpCont = document.getElementById("dp-content");
-        var dpLink = document.getElementById("dp-link");
-
-        function openPopup(entry) {
-          dpTitle.textContent = entry.dataset.title || "";
-          dpPlace.textContent = entry.dataset.place || "";
-          dpDate.textContent = entry.dataset.date || "";
-          dpCont.textContent = entry.dataset.content || "";
-          dpSep.style.display =
-            entry.dataset.place && entry.dataset.date ? "" : "none";
-          dpPlace.style.display = entry.dataset.place ? "" : "none";
-          dpCont.style.display = entry.dataset.content ? "" : "none";
-          if (entry.dataset.linkUrl) {
-            dpLink.href = entry.dataset.linkUrl;
-            dpLink.textContent =
-              entry.dataset.linkTitle || entry.dataset.linkUrl;
-            dpLink.style.display = "";
-          } else {
-            dpLink.style.display = "none";
-          }
-          dpop.style.display = "flex";
-        }
-        function closePopup() {
-          dpop.style.display = "none";
-        }
-
-        /* ── 6. Unified click handler ── */
-        document.addEventListener("click", function (e) {
-          /* Expand / collapse */
-          var expBtn = e.target.closest(".exp-btn");
-          if (expBtn) {
-            var col = expBtn.closest(".exp-col");
-            var extra = col.querySelector(".exp-extra");
-            var row = col.closest(".cat-row");
-            var isOpen = col.classList.contains("is-open");
-
-            /* Close every other open section first */
-            document
-              .querySelectorAll(".exp-col.is-open")
-              .forEach(function (otherCol) {
-                if (otherCol === col) return;
-                var otherExtra = otherCol.querySelector(".exp-extra");
-                var otherBtn = otherCol.querySelector(".exp-btn");
-                otherExtra.style.maxHeight = "0";
-                otherCol.classList.remove("is-open");
-                if (otherBtn)
-                  otherBtn.textContent = "+" + otherBtn.dataset.n + " more";
-                updateRowHeight(otherCol.closest(".cat-row"));
-              });
-
-            if (isOpen) {
-              extra.style.maxHeight = "0";
-              col.classList.remove("is-open");
-              expBtn.textContent = "+" + expBtn.dataset.n + " more";
-            } else {
-              extra.style.maxHeight = extra.scrollHeight + "px";
-              col.classList.add("is-open");
-              expBtn.textContent = "Show less";
-            }
-            updateRowHeight(row);
-            return;
-          }
-
-          /* Close popup */
-          if (e.target.id === "dp-backdrop" || e.target.closest("#dp-close")) {
-            closePopup();
-            return;
-          }
-          if (dpop.style.display === "flex" && !e.target.closest(".dp-card")) {
-            closePopup();
-            return;
-          }
-
-          /* Open popup */
-          var entry = e.target.closest("[data-title]");
-          if (entry && !entry.closest("#dpop")) openPopup(entry);
-        });
-
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape") closePopup();
-        });
-      })();
-    </script>
-  </body>
+})();
+</script>
+</body>
 </html>
